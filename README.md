@@ -301,7 +301,32 @@
         </div>
     </section>
 
-
+    <section class="container">
+        <h2 class="section-title">核心团队</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="avatar">张</div>
+                <h4>张一鸣</h4>
+                <p>创始人 / 架构师</p>
+            </div>
+            <div class="team-member">
+                <div class="avatar">李</div>
+                <h4>李欣</h4>
+                <p>全栈开发</p>
+            </div>
+            <div class="team-member">
+                <div class="avatar">王</div>
+                <h4>王思远</h4>
+                <p>AI 算法工程师</p>
+            </div>
+            <div class="team-member">
+                <div class="avatar">陈</div>
+                <h4>陈雅</h4>
+                <p>产品设计</p>
+            </div>
+        </div>
+    </section>
+</main>
 
 <!-- Footer -->
 <footer>
