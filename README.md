@@ -196,6 +196,8 @@
         <div class="logo" id="homeLink">📝 我的博客</div>
         <div class="nav-links">
             <a id="homeLink2">首页</a>
+            <!-- 新增：主播空间链接 -->
+            <a href="https://space.bilibili.com/3546789558880461?spm_id_from=333.1007.0.0" target="_blank">主播空间</a>
             <a id="publishBtn" class="publish-btn">发布</a>
         </div>
     </div>
@@ -443,4 +445,5 @@
 </script>
 
 </body>
+</html>
 </html>
