@@ -174,6 +174,11 @@
             color: #94a3b8;
             font-size: 0.9rem;
         }
+        footer .hint {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
 
         /* ===== 响应式 ===== */
         @media (max-width: 640px) {
@@ -243,6 +248,8 @@
 <footer>
     <div class="container">
         <p>© 2026 我的静态博客</p>
+        <!-- 新增的提示 -->
+        <p class="hint">所有数据保存在您当前浏览器的 localStorage 中，清除浏览器缓存或更换设备后，数据会丢失。</p>
     </div>
 </footer>
 
