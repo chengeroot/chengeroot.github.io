@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>陈哥的博客</title>
     <style>
+        /* ========== 全局兼容性修复 ========== */
+        html {
+            -ms-text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        body {
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+
         /* ========== CSS 变量 ========== */
         :root {
             --bg: #fafbfc;
@@ -48,7 +59,7 @@
         /* ===== 导航栏 ===== */
         .navbar {
             background: var(--header-bg);
-            -webkit-backdrop-filter: blur(8px);   /* Safari 9+ */
+            -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             padding: 12px 0;
@@ -268,7 +279,7 @@
             position:fixed;
             inset:0;
             background:rgba(0,0,0,0.5);
-            -webkit-backdrop-filter: blur(4px);  /* Safari 9+ */
+            -webkit-backdrop-filter: blur(4px);
             backdrop-filter: blur(4px);
             z-index:999;
             justify-content:center;
