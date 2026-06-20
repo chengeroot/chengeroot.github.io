@@ -626,14 +626,14 @@
 
 <script>
     // ================================================================
-    // 数据管理
+    // 数据管理（增强容错）
     // ================================================================
     const STORAGE_KEY = 'my_blog_posts';
     const PROFILE_KEY = 'my_blog_profile';
     const THEME_KEY = 'my_blog_theme';
     const FONT_KEY = 'my_blog_font';
 
-    // 生成最新的说明文章内容（包含美化后的审核提示）
+    // 生成最新的说明文章内容
     function getGuideContent() {
         return `欢迎使用陈哥的博客！以下是一些重要信息，请仔细阅读：
 
@@ -660,7 +660,7 @@
 感谢使用，祝您写作愉快！`;
     }
 
-    // 默认文章（包含说明文章 + 三篇示例）
+    // 默认文章（包含说明 + 三篇示例）
     function getDefaultPosts() {
         return [
             {
@@ -710,32 +710,47 @@
         ];
     }
 
+    // 安全读取文章数据，自动修复缺失字段
     function getPosts() {
         let posts = [];
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 posts = JSON.parse(stored);
-                // 查找是否存在说明文章（标题含“说明”或“提示”）
+                // 确保每条记录都有必要字段，并补全缺失
+                posts = posts.map(p => ({
+                    id: p.id || 0,
+                    title: p.title || '无标题',
+                    date: p.date || new Date().toISOString().slice(0,10),
+                    summary: p.summary || '',
+                    content: p.content || '',
+                    image: p.image || '',
+                    tags: Array.isArray(p.tags) ? p.tags : [],
+                    pinned: !!p.pinned,
+                    status: p.status || 'published'
+                }));
+                // 检查是否存在说明文章（标题含“说明”或“提示”）
                 let guideIndex = posts.findIndex(p => p.title && (p.title.includes('说明') || p.title.includes('提示')));
-                if (guideIndex !== -1) {
-                    // 更新其内容和置顶状态
+                if (guideIndex === -1) {
+                    // 没有则插入一篇
+                    const guide = getDefaultPosts()[0];
+                    const maxId = posts.reduce((max, p) => Math.max(max, p.id), 0);
+                    guide.id = maxId + 1;
+                    posts.push(guide);
+                } else {
+                    // 更新说明文章内容，确保最新
                     posts[guideIndex].content = getGuideContent();
                     posts[guideIndex].pinned = true;
                     posts[guideIndex].date = new Date().toISOString().slice(0,10);
                     if (!posts[guideIndex].tags || !posts[guideIndex].tags.includes('说明')) {
                         posts[guideIndex].tags = ['说明', '功能', '提示'];
                     }
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-                } else {
-                    const guide = getDefaultPosts()[0];
-                    const maxId = posts.reduce((max, p) => Math.max(max, p.id), 0);
-                    guide.id = maxId + 1;
-                    posts.push(guide);
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 }
+                // 保存修复后的数据
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 return posts;
-            } catch {
+            } catch (e) {
+                // 解析失败则重置为默认
                 posts = getDefaultPosts();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 return posts;
@@ -747,8 +762,23 @@
         }
     }
 
-    function savePosts(posts) { localStorage.setItem(STORAGE_KEY, JSON.stringify(posts)); }
+    function savePosts(posts) {
+        // 保存前再次清理数据，确保字段完整
+        const clean = posts.map(p => ({
+            id: p.id || 0,
+            title: p.title || '无标题',
+            date: p.date || new Date().toISOString().slice(0,10),
+            summary: p.summary || '',
+            content: p.content || '',
+            image: p.image || '',
+            tags: Array.isArray(p.tags) ? p.tags : [],
+            pinned: !!p.pinned,
+            status: p.status || 'published'
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+    }
 
+    // 个人简介
     function getProfile() {
         const stored = localStorage.getItem(PROFILE_KEY);
         if (stored) {
@@ -762,6 +792,7 @@
     }
     function saveProfile(profile) { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }
 
+    // 主题 & 字体
     function getTheme() { return localStorage.getItem(THEME_KEY) || 'light'; }
     function setTheme(theme) { localStorage.setItem(THEME_KEY, theme); document.documentElement.setAttribute('data-theme', theme); }
 
@@ -769,16 +800,12 @@
     function setFontSize(size) { localStorage.setItem(FONT_KEY, size); document.documentElement.style.setProperty('--font-size', size); }
 
     // ================================================================
-    // 核心功能
+    // 核心功能（所有渲染均做了空值保护）
     // ================================================================
     let currentPostId = null;
     let allPosts = [];
     let currentFilter = 'all';
     let searchKeyword = '';
-
-    function getPublishedPosts() {
-        return allPosts.filter(p => p.status !== 'draft');
-    }
 
     function getAllTags() {
         const tagSet = new Set();
@@ -793,9 +820,9 @@
         if (searchKeyword.trim()) {
             const kw = searchKeyword.trim().toLowerCase();
             filtered = filtered.filter(p => 
-                p.title.toLowerCase().includes(kw) ||
-                (p.summary && p.summary.toLowerCase().includes(kw)) ||
-                p.content.toLowerCase().includes(kw)
+                (p.title || '').toLowerCase().includes(kw) ||
+                (p.summary || '').toLowerCase().includes(kw) ||
+                (p.content || '').toLowerCase().includes(kw)
             );
         }
         if (currentFilter !== 'all') {
@@ -804,7 +831,7 @@
         filtered.sort((a,b) => {
             if (a.pinned && !b.pinned) return -1;
             if (!a.pinned && b.pinned) return 1;
-            return new Date(b.date) - new Date(a.date);
+            return new Date(b.date || 0) - new Date(a.date || 0);
         });
 
         const container = document.getElementById('postCards');
@@ -814,6 +841,8 @@
         }
         let html = '';
         filtered.forEach(post => {
+            const tagsHtml = (post.tags||[]).map(t => `<span>${t}</span>`).join('');
+            const summary = post.summary || (post.content ? post.content.slice(0, 80) : '');
             html += `
                 <div class="card" data-id="${post.id}">
                     <div class="top-tag">
@@ -822,10 +851,10 @@
                     </div>
                     <img src="${post.image || 'https://picsum.photos/seed/default/600/300'}" alt="${post.title}" loading="lazy" />
                     <h3>${post.title}</h3>
-                    <p>${post.summary || post.content.slice(0, 80)}...</p>
+                    <p>${summary}...</p>
                     <div class="meta">
-                        <span>${post.date}</span>
-                        <span class="tags">${(post.tags||[]).map(t => `<span>${t}</span>`).join('')}</span>
+                        <span>${post.date || ''}</span>
+                        <span class="tags">${tagsHtml}</span>
                     </div>
                 </div>
             `;
@@ -849,6 +878,10 @@
 
     function updateTagCloud(tags) {
         const container = document.getElementById('tagCloud');
+        if (!tags || !tags.length) {
+            container.innerHTML = '';
+            return;
+        }
         container.innerHTML = tags.map(t => 
             `<span style="background:var(--border);padding:2px 12px;border-radius:20px;font-size:0.85rem;cursor:pointer;color:var(--text-secondary);" data-tag="${t}">${t}</span>`
         ).join('');
@@ -868,7 +901,9 @@
         const container = document.getElementById('archiveContainer');
         const groups = {};
         posts.forEach(p => {
+            if (!p.date) return;
             const parts = p.date.split('-');
+            if (parts.length < 2) return;
             const key = parts[0] + '-' + parts[1];
             if (!groups[key]) groups[key] = [];
             groups[key].push(p);
@@ -884,7 +919,7 @@
             });
             html += `</div></div>`;
         });
-        container.innerHTML = html;
+        container.innerHTML = html || '<p style="color:var(--text-secondary);">暂无归档</p>';
         container.querySelectorAll('.post-link').forEach(el => {
             el.addEventListener('click', function() {
                 const id = parseInt(this.dataset.id);
@@ -913,13 +948,17 @@
         });
     }
 
+    // ================================================================
+    // 模态框操作（增强容错）
+    // ================================================================
     function openModal(post) {
+        if (!post) return;
         currentPostId = post.id;
         document.getElementById('modalImage').src = post.image || 'https://picsum.photos/seed/default/600/300';
-        document.getElementById('modalTitle').textContent = post.title;
-        document.getElementById('modalDate').textContent = post.date;
+        document.getElementById('modalTitle').textContent = post.title || '无标题';
+        document.getElementById('modalDate').textContent = post.date || '';
         document.getElementById('modalTags').innerHTML = (post.tags||[]).map(t => `<span>${t}</span>`).join('');
-        document.getElementById('modalContent').textContent = post.content;
+        document.getElementById('modalContent').textContent = post.content || '（内容为空）';
         const actionDiv = document.getElementById('actionButtons');
         actionDiv.innerHTML = `
             <button class="edit-btn" id="editPostBtn">编辑</button>
@@ -930,6 +969,7 @@
         document.getElementById('deletePostBtn').addEventListener('click', () => deletePost(post.id));
         document.getElementById('pinPostBtn').addEventListener('click', () => togglePin(post.id));
 
+        // 相关文章
         const related = getRelatedPosts(post);
         const relatedContainer = document.getElementById('relatedPosts');
         const relatedList = document.getElementById('relatedList');
@@ -969,13 +1009,16 @@
         if (!post.tags || !post.tags.length) return [];
         const others = allPosts.filter(p => p.id !== post.id && p.status !== 'draft');
         const scored = others.map(p => {
-            const common = (p.tags||[]).filter(t => post.tags.includes(t)).length;
+            const common = (p.tags||[]).filter(t => (post.tags||[]).includes(t)).length;
             return { ...p, score: common };
         });
         scored.sort((a,b) => b.score - a.score);
         return scored.slice(0, limit).filter(p => p.score > 0);
     }
 
+    // ================================================================
+    // 发布/编辑/删除/置顶（均加固）
+    // ================================================================
     function deletePost(id) {
         if (!confirm('确定删除？不可撤销！')) return;
         allPosts = allPosts.filter(p => p.id !== id);
@@ -997,9 +1040,9 @@
 
     function openEdit(post) {
         document.getElementById('editPostId').value = post.id;
-        document.getElementById('editTitle').value = post.title;
+        document.getElementById('editTitle').value = post.title || '';
         document.getElementById('editSummary').value = post.summary || '';
-        document.getElementById('editContent').value = post.content;
+        document.getElementById('editContent').value = post.content || '';
         document.getElementById('editTags').value = (post.tags||[]).join(', ');
         document.getElementById('editImage').value = post.image || '';
         document.getElementById('editStatus').value = post.status || 'published';
@@ -1010,13 +1053,12 @@
     document.getElementById('editForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = parseInt(document.getElementById('editPostId').value);
-        const title = document.getElementById('editTitle').value.trim();
+        const title = document.getElementById('editTitle').value.trim() || '无标题';
         const summary = document.getElementById('editSummary').value.trim();
-        const content = document.getElementById('editContent').value.trim();
+        const content = document.getElementById('editContent').value.trim() || '（无内容）';
         const tags = document.getElementById('editTags').value.split(',').map(s=>s.trim()).filter(Boolean);
         const image = document.getElementById('editImage').value.trim();
         const status = document.getElementById('editStatus').value;
-        if (!title || !content) { alert('标题和正文不能为空'); return; }
         const idx = allPosts.findIndex(p => p.id === id);
         if (idx === -1) return;
         allPosts[idx] = { ...allPosts[idx], title, summary, content, tags, image, status };
@@ -1031,6 +1073,7 @@
         document.body.style.overflow = '';
     }
 
+    // 发布
     document.getElementById('publishBtn').addEventListener('click', function() {
         document.getElementById('publishOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1046,13 +1089,12 @@
 
     document.getElementById('publishForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const title = document.getElementById('pubTitle').value.trim();
+        const title = document.getElementById('pubTitle').value.trim() || '无标题';
         const summary = document.getElementById('pubSummary').value.trim();
-        const content = document.getElementById('pubContent').value.trim();
+        const content = document.getElementById('pubContent').value.trim() || '（无内容）';
         const tags = document.getElementById('pubTags').value.split(',').map(s=>s.trim()).filter(Boolean);
         const image = document.getElementById('pubImage').value.trim();
         const status = document.getElementById('pubStatus').value;
-        if (!title || !content) { alert('标题和正文不能为空'); return; }
         const newId = allPosts.length ? Math.max(...allPosts.map(p=>p.id)) + 1 : 1;
         const newPost = {
             id: newId,
@@ -1073,6 +1115,9 @@
         document.getElementById('postListSection').scrollIntoView({ behavior:'smooth' });
     });
 
+    // ================================================================
+    // 个人简介（不变）
+    // ================================================================
     function loadProfile() {
         const profile = getProfile();
         document.getElementById('profileNameDisplay').textContent = profile.name;
@@ -1136,6 +1181,9 @@
         closeProfile();
     });
 
+    // ================================================================
+    // 搜索、字体、主题、导入导出
+    // ================================================================
     document.getElementById('searchInput').addEventListener('input', function() {
         searchKeyword = this.value;
         renderPosts();
@@ -1156,7 +1204,7 @@
         const data = {
             posts: allPosts,
             profile: getProfile(),
-            version: '1.0'
+            version: '1.1'
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
         const url = URL.createObjectURL(blob);
@@ -1199,6 +1247,9 @@
         this.value = '';
     });
 
+    // ================================================================
+    // 导航 & 键盘
+    // ================================================================
     function goHome() {
         closeModal(); closePublish(); closeEdit(); closeProfile();
         document.getElementById('postListSection').scrollIntoView({ behavior:'smooth' });
@@ -1221,6 +1272,9 @@
         if (e.target === this) closeEdit();
     });
 
+    // ================================================================
+    // 初始化
+    // ================================================================
     function init() {
         const theme = getTheme();
         setTheme(theme);
