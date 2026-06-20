@@ -639,7 +639,7 @@
 
 <script>
     // ================================================================
-    // 数据管理（增强容错）
+    // 数据管理（增强容错 + 自动修复不完整数据）
     // ================================================================
     const STORAGE_KEY = 'my_blog_posts';
     const PROFILE_KEY = 'my_blog_profile';
@@ -723,24 +723,37 @@
         ];
     }
 
-    // 安全读取文章数据，自动修复缺失字段
+    // 修复单篇文章字段（确保 date 和 tags 有效）
+    function fixPost(post) {
+        // 确保日期有效
+        if (!post.date || !/^\d{4}-\d{2}-\d{2}$/.test(post.date)) {
+            post.date = new Date().toISOString().slice(0,10);
+        }
+        // 确保 tags 是数组
+        if (!Array.isArray(post.tags)) {
+            post.tags = [];
+        }
+        // 其他字段默认值
+        post.id = post.id || 0;
+        post.title = post.title || '无标题';
+        post.summary = post.summary || '';
+        post.content = post.content || '';
+        post.image = post.image || '';
+        post.pinned = !!post.pinned;
+        post.status = post.status || 'published';
+        return post;
+    }
+
+    // 安全读取文章数据，自动修复所有字段
     function getPosts() {
         let posts = [];
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             try {
                 posts = JSON.parse(stored);
-                posts = posts.map(p => ({
-                    id: p.id || 0,
-                    title: p.title || '无标题',
-                    date: p.date || new Date().toISOString().slice(0,10),
-                    summary: p.summary || '',
-                    content: p.content || '',
-                    image: p.image || '',
-                    tags: Array.isArray(p.tags) ? p.tags : [],
-                    pinned: !!p.pinned,
-                    status: p.status || 'published'
-                }));
+                // 修复每篇文章
+                posts = posts.map(fixPost);
+                // 检查是否存在说明文章
                 let guideIndex = posts.findIndex(p => p.title && (p.title.includes('说明') || p.title.includes('提示')));
                 if (guideIndex === -1) {
                     const guide = getDefaultPosts()[0];
@@ -748,6 +761,7 @@
                     guide.id = maxId + 1;
                     posts.push(guide);
                 } else {
+                    // 更新说明文章内容
                     posts[guideIndex].content = getGuideContent();
                     posts[guideIndex].pinned = true;
                     posts[guideIndex].date = new Date().toISOString().slice(0,10);
@@ -755,6 +769,8 @@
                         posts[guideIndex].tags = ['说明', '功能', '提示'];
                     }
                 }
+                // 再次整体修复，确保万无一失
+                posts = posts.map(fixPost);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 return posts;
             } catch (e) {
@@ -770,20 +786,11 @@
     }
 
     function savePosts(posts) {
-        const clean = posts.map(p => ({
-            id: p.id || 0,
-            title: p.title || '无标题',
-            date: p.date || new Date().toISOString().slice(0,10),
-            summary: p.summary || '',
-            content: p.content || '',
-            image: p.image || '',
-            tags: Array.isArray(p.tags) ? p.tags : [],
-            pinned: !!p.pinned,
-            status: p.status || 'published'
-        }));
+        const clean = posts.map(fixPost);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
     }
 
+    // 个人简介
     function getProfile() {
         const stored = localStorage.getItem(PROFILE_KEY);
         if (stored) {
@@ -797,6 +804,7 @@
     }
     function saveProfile(profile) { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }
 
+    // 主题 & 字体
     function getTheme() { return localStorage.getItem(THEME_KEY) || 'light'; }
     function setTheme(theme) { localStorage.setItem(THEME_KEY, theme); document.documentElement.setAttribute('data-theme', theme); }
 
@@ -804,7 +812,7 @@
     function setFontSize(size) { localStorage.setItem(FONT_KEY, size); document.documentElement.style.setProperty('--font-size', size); }
 
     // ================================================================
-    // 核心功能
+    // 核心功能（其余函数保持不变，但已依赖修复后的数据）
     // ================================================================
     let currentPostId = null;
     let allPosts = [];
