@@ -48,6 +48,7 @@
         /* ===== 导航栏 ===== */
         .navbar {
             background: var(--header-bg);
+            -webkit-backdrop-filter: blur(8px);   /* Safari 9+ */
             backdrop-filter: blur(8px);
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             padding: 12px 0;
@@ -267,7 +268,8 @@
             position:fixed;
             inset:0;
             background:rgba(0,0,0,0.5);
-            backdrop-filter:blur(4px);
+            -webkit-backdrop-filter: blur(4px);  /* Safari 9+ */
+            backdrop-filter: blur(4px);
             z-index:999;
             justify-content:center;
             align-items:center;
@@ -717,7 +719,6 @@
         if (stored) {
             try {
                 posts = JSON.parse(stored);
-                // 确保每条记录都有必要字段，并补全缺失
                 posts = posts.map(p => ({
                     id: p.id || 0,
                     title: p.title || '无标题',
@@ -729,16 +730,13 @@
                     pinned: !!p.pinned,
                     status: p.status || 'published'
                 }));
-                // 检查是否存在说明文章（标题含“说明”或“提示”）
                 let guideIndex = posts.findIndex(p => p.title && (p.title.includes('说明') || p.title.includes('提示')));
                 if (guideIndex === -1) {
-                    // 没有则插入一篇
                     const guide = getDefaultPosts()[0];
                     const maxId = posts.reduce((max, p) => Math.max(max, p.id), 0);
                     guide.id = maxId + 1;
                     posts.push(guide);
                 } else {
-                    // 更新说明文章内容，确保最新
                     posts[guideIndex].content = getGuideContent();
                     posts[guideIndex].pinned = true;
                     posts[guideIndex].date = new Date().toISOString().slice(0,10);
@@ -746,11 +744,9 @@
                         posts[guideIndex].tags = ['说明', '功能', '提示'];
                     }
                 }
-                // 保存修复后的数据
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 return posts;
             } catch (e) {
-                // 解析失败则重置为默认
                 posts = getDefaultPosts();
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
                 return posts;
@@ -763,7 +759,6 @@
     }
 
     function savePosts(posts) {
-        // 保存前再次清理数据，确保字段完整
         const clean = posts.map(p => ({
             id: p.id || 0,
             title: p.title || '无标题',
@@ -778,7 +773,6 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
     }
 
-    // 个人简介
     function getProfile() {
         const stored = localStorage.getItem(PROFILE_KEY);
         if (stored) {
@@ -792,7 +786,6 @@
     }
     function saveProfile(profile) { localStorage.setItem(PROFILE_KEY, JSON.stringify(profile)); }
 
-    // 主题 & 字体
     function getTheme() { return localStorage.getItem(THEME_KEY) || 'light'; }
     function setTheme(theme) { localStorage.setItem(THEME_KEY, theme); document.documentElement.setAttribute('data-theme', theme); }
 
@@ -800,7 +793,7 @@
     function setFontSize(size) { localStorage.setItem(FONT_KEY, size); document.documentElement.style.setProperty('--font-size', size); }
 
     // ================================================================
-    // 核心功能（所有渲染均做了空值保护）
+    // 核心功能
     // ================================================================
     let currentPostId = null;
     let allPosts = [];
@@ -949,7 +942,7 @@
     }
 
     // ================================================================
-    // 模态框操作（增强容错）
+    // 模态框操作
     // ================================================================
     function openModal(post) {
         if (!post) return;
@@ -969,7 +962,6 @@
         document.getElementById('deletePostBtn').addEventListener('click', () => deletePost(post.id));
         document.getElementById('pinPostBtn').addEventListener('click', () => togglePin(post.id));
 
-        // 相关文章
         const related = getRelatedPosts(post);
         const relatedContainer = document.getElementById('relatedPosts');
         const relatedList = document.getElementById('relatedList');
@@ -1017,7 +1009,7 @@
     }
 
     // ================================================================
-    // 发布/编辑/删除/置顶（均加固）
+    // 发布/编辑/删除/置顶
     // ================================================================
     function deletePost(id) {
         if (!confirm('确定删除？不可撤销！')) return;
@@ -1073,7 +1065,6 @@
         document.body.style.overflow = '';
     }
 
-    // 发布
     document.getElementById('publishBtn').addEventListener('click', function() {
         document.getElementById('publishOverlay').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1116,7 +1107,7 @@
     });
 
     // ================================================================
-    // 个人简介（不变）
+    // 个人简介
     // ================================================================
     function loadProfile() {
         const profile = getProfile();
