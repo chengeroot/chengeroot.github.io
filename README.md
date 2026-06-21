@@ -639,7 +639,7 @@
 
 <script>
     // ================================================================
-    // 数据管理（增强容错 + 自动修复不完整数据）
+    // 数据管理（自动修复 + 增强容错）
     // ================================================================
     const STORAGE_KEY = 'my_blog_posts';
     const PROFILE_KEY = 'my_blog_profile';
@@ -1283,7 +1283,7 @@
     });
 
     // ================================================================
-    // 初始化
+    // 初始化（加载数据并自动修复）
     // ================================================================
     function init() {
         const theme = getTheme();
@@ -1291,6 +1291,7 @@
         document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
         const fontSize = getFontSize();
         setFontSize(fontSize);
+        // 读取数据时会自动修复所有文章的 date 和 tags
         allPosts = getPosts();
         renderPosts();
         loadProfile();
