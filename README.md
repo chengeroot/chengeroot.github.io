@@ -13,7 +13,7 @@ body {
     font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, sans-serif;
     min-height: 100vh;
     display: flex; justify-content: center; align-items: flex-start;
-    padding: 12px;
+    padding: 20px;
     background-image:
         radial-gradient(ellipse at 20% 0%, rgba(0, 212, 170, 0.08) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(255, 159, 67, 0.06) 0%, transparent 60%),
@@ -21,10 +21,11 @@ body {
     overflow-x: hidden;
 }
 .game-container {
-    max-width: 1000px; width: 100%;
+    max-width: min(1500px, 98vw);
+    width: 100%;
     background: linear-gradient(180deg, rgba(22, 27, 34, 0.95) 0%, rgba(13, 17, 23, 0.98) 100%);
-    border-radius: 16px;
-    padding: 22px 20px 26px;
+    border-radius: 18px;
+    padding: 28px 32px 32px;
     border: 1px solid rgba(48, 54, 61, 0.8);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     position: relative;
@@ -38,34 +39,34 @@ body {
 
 .header {
     display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px 12px; margin-bottom: 14px;
+    flex-wrap: wrap; gap: 10px 14px; margin-bottom: 20px;
 }
-.title-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.title-wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .title {
-    font-weight: 900; font-size: 1.25rem;
+    font-weight: 900; font-size: 1.7rem;
     letter-spacing: 2px; color: #f0f6fc;
-    display: flex; align-items: center; gap: 10px;
-    text-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+    display: flex; align-items: center; gap: 12px;
+    text-shadow: 0 0 24px rgba(0, 212, 170, 0.35);
     white-space: nowrap;
 }
-.title-icon { width: 18px; height: 18px; position: relative; display: inline-block; flex-shrink: 0; }
+.title-icon { width: 24px; height: 24px; position: relative; display: inline-block; flex-shrink: 0; }
 .title-icon::before {
     content: ''; position: absolute; inset: 2px; border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #4dffc3, #00d4aa);
-    box-shadow: 0 0 12px rgba(0, 212, 170, 0.9);
+    box-shadow: 0 0 16px rgba(0, 212, 170, 0.9);
 }
 .title-icon::after {
-    content: ''; position: absolute; inset: -3px;
-    border: 1.5px solid rgba(0, 212, 170, 0.6); border-radius: 50%;
+    content: ''; position: absolute; inset: -4px;
+    border: 2px solid rgba(0, 212, 170, 0.6); border-radius: 50%;
     border-top-color: transparent; border-bottom-color: transparent;
     animation: spin 3s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .help-btn, .music-btn {
-    padding: 5px 12px; border-radius: 6px;
+    padding: 8px 18px; border-radius: 8px;
     border: 1px solid rgba(0, 212, 170, 0.35);
     background: rgba(0, 212, 170, 0.08);
-    color: #4dffc3; font-weight: 700; font-size: 0.68rem;
+    color: #4dffc3; font-weight: 700; font-size: 0.85rem;
     cursor: pointer; transition: all 0.2s;
     font-family: inherit; white-space: nowrap;
 }
@@ -81,23 +82,23 @@ body {
 }
 @keyframes musicPulse {
     0%, 100% { box-shadow: 0 0 8px rgba(255, 159, 67, 0.3); }
-    50% { box-shadow: 0 0 18px rgba(255, 159, 67, 0.6); }
+    50% { box-shadow: 0 0 22px rgba(255, 159, 67, 0.6); }
 }
 .status-badge {
-    display: flex; align-items: center; gap: 8px; font-size: 0.75rem;
-    font-weight: 700; padding: 6px 14px; border-radius: 40px;
+    display: flex; align-items: center; gap: 10px; font-size: 0.95rem;
+    font-weight: 700; padding: 9px 22px; border-radius: 40px;
     background: rgba(0, 212, 170, 0.08); border: 1px solid rgba(0, 212, 170, 0.3);
     color: #4dffc3; white-space: nowrap;
 }
 .status-badge .dot {
-    width: 10px; height: 10px; border-radius: 50%;
+    width: 12px; height: 12px; border-radius: 50%;
     animation: pulse-dot 1.4s ease-in-out infinite;
 }
-.dot.running { background: #00d4aa; box-shadow: 0 0 10px #00d4aa; }
-.dot.warning { background: #ff9f43; box-shadow: 0 0 10px #ff9f43; animation-duration: 0.8s; }
-.dot.danger { background: #ff5c5c; box-shadow: 0 0 10px #ff5c5c; animation-duration: 0.4s; }
-.dot.meltdown { background: #ff1744; box-shadow: 0 0 14px #ff1744; animation-duration: 0.2s; }
-.dot.victory { background: #ffd740; box-shadow: 0 0 10px #ffd740; }
+.dot.running { background: #00d4aa; box-shadow: 0 0 12px #00d4aa; }
+.dot.warning { background: #ff9f43; box-shadow: 0 0 12px #ff9f43; animation-duration: 0.8s; }
+.dot.danger { background: #ff5c5c; box-shadow: 0 0 12px #ff5c5c; animation-duration: 0.4s; }
+.dot.meltdown { background: #ff1744; box-shadow: 0 0 16px #ff1744; animation-duration: 0.2s; }
+.dot.victory { background: #ffd740; box-shadow: 0 0 12px #ffd740; }
 @keyframes pulse-dot {
     0%, 100% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.5); opacity: 0.5; }
@@ -107,32 +108,32 @@ body {
 .dashboard {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 16px;
+    gap: 18px;
+    margin-bottom: 20px;
 }
 .gauge {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.95) 0%, rgba(18, 22, 28, 0.95) 100%);
-    border-radius: 12px;
-    padding: 16px 18px 14px;
+    border-radius: 14px;
+    padding: 22px 24px 20px;
     border: 1px solid rgba(48, 54, 61, 0.8);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     position: relative; overflow: hidden;
 }
 .gauge::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.9;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; opacity: 0.9;
 }
 .gauge:nth-child(1)::before { background: linear-gradient(90deg, transparent, #ff9f43, transparent); }
 .gauge:nth-child(2)::before { background: linear-gradient(90deg, transparent, #00d4aa, transparent); }
 .gauge:nth-child(3)::before { background: linear-gradient(90deg, transparent, #ffd740, transparent); }
 .gauge:nth-child(4)::before { background: linear-gradient(90deg, transparent, #58a6ff, transparent); }
 .gauge .label {
-    font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
-    color: #8b949e; margin-bottom: 8px;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 1.2px;
+    color: #8b949e; margin-bottom: 12px;
 }
 .gauge .value {
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 2.2rem; font-weight: 900; line-height: 1;
-    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    font-size: 2.8rem; font-weight: 900; line-height: 1;
+    text-shadow: 0 0 24px currentColor, 0 0 48px currentColor;
     letter-spacing: 1px;
 }
 .gauge .value.temp { color: #ff9f43; }
@@ -140,12 +141,12 @@ body {
 .gauge .value.money { color: #ffd740; }
 .gauge .value.time { color: #58a6ff; }
 .gauge .unit {
-    font-family: 'Consolas', monospace; font-size: 0.8rem;
-    font-weight: 700; color: #6e7681; margin-top: 4px;
+    font-family: 'Consolas', monospace; font-size: 0.95rem;
+    font-weight: 700; color: #6e7681; margin-top: 6px;
 }
 .gauge .bar-track {
-    width: 100%; height: 5px; background: rgba(0, 0, 0, 0.5);
-    border-radius: 3px; margin-top: 10px; overflow: hidden;
+    width: 100%; height: 7px; background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px; margin-top: 14px; overflow: hidden;
     border: 1px solid rgba(48, 54, 61, 0.5); position: relative;
 }
 .gauge .bar-fill { height: 100%; transition: width 0.4s; position: relative; }
@@ -165,67 +166,67 @@ body {
 .param-panel {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px; margin-bottom: 14px;
+    gap: 8px; margin-bottom: 18px;
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.7) 0%, rgba(18, 22, 28, 0.7) 100%);
-    border-radius: 10px; padding: 12px 14px;
+    border-radius: 12px; padding: 16px 20px;
     border: 1px solid rgba(48, 54, 61, 0.6);
 }
-.param-item { text-align: center; padding: 2px 4px; min-width: 0; }
+.param-item { text-align: center; padding: 4px 6px; min-width: 0; }
 .param-item .p-label {
-    font-size: 0.55rem; font-weight: 700; color: #6e7681;
-    letter-spacing: 0.5px; margin-bottom: 5px;
+    font-size: 0.65rem; font-weight: 700; color: #6e7681;
+    letter-spacing: 0.6px; margin-bottom: 8px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .param-item .p-value {
-    font-family: 'Consolas', monospace; font-size: 0.95rem;
+    font-family: 'Consolas', monospace; font-size: 1.15rem;
     font-weight: 700; color: #d0d7de; transition: color 0.3s;
     white-space: nowrap;
 }
-.param-item .p-value.good { color: #4dffc3; text-shadow: 0 0 8px rgba(77, 255, 195, 0.4); }
-.param-item .p-value.warn { color: #ff9f43; text-shadow: 0 0 8px rgba(255, 159, 67, 0.4); }
-.param-item .p-value.danger { color: #ff5c5c; text-shadow: 0 0 8px rgba(255, 92, 92, 0.5); }
+.param-item .p-value.good { color: #4dffc3; text-shadow: 0 0 10px rgba(77, 255, 195, 0.4); }
+.param-item .p-value.warn { color: #ff9f43; text-shadow: 0 0 10px rgba(255, 159, 67, 0.4); }
+.param-item .p-value.danger { color: #ff5c5c; text-shadow: 0 0 10px rgba(255, 92, 92, 0.5); }
 
 .panel-row {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.9) 0%, rgba(20, 25, 31, 0.9) 100%);
-    border-radius: 10px; padding: 10px 16px; margin-bottom: 10px;
+    border-radius: 12px; padding: 16px 22px; margin-bottom: 14px;
     border: 1px solid rgba(48, 54, 61, 0.7);
-    display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 16px;
 }
 .panel-row .row-label {
-    font-weight: 700; font-size: 0.72rem; color: #8b949e; letter-spacing: 0.5px;
+    font-weight: 700; font-size: 0.9rem; color: #8b949e; letter-spacing: 0.6px;
 }
 .panel-row .row-value {
-    font-family: 'Consolas', monospace; font-size: 0.95rem;
-    color: #ffd740; min-width: 48px; text-align: center;
-    font-weight: 700; text-shadow: 0 0 12px rgba(255, 215, 64, 0.4);
+    font-family: 'Consolas', monospace; font-size: 1.15rem;
+    color: #ffd740; min-width: 60px; text-align: center;
+    font-weight: 700; text-shadow: 0 0 14px rgba(255, 215, 64, 0.4);
 }
 .panel-row input[type="range"] {
-    flex: 1; min-width: 100px; accent-color: #00d4aa; height: 6px; cursor: pointer;
+    flex: 1; min-width: 140px; accent-color: #00d4aa; height: 8px; cursor: pointer;
 }
 .power-select .ps-btn {
-    padding: 6px 20px; border-radius: 6px;
+    padding: 10px 26px; border-radius: 8px;
     border: 1px solid rgba(48, 54, 61, 0.8);
     background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-weight: 700; font-size: 0.72rem;
+    color: #8b949e; font-weight: 700; font-size: 0.9rem;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
 .power-select .ps-btn:hover { background: rgba(48, 54, 61, 0.7); color: #d0d7de; }
 .power-select .ps-btn.active.main {
     background: linear-gradient(180deg, #00d4aa, #00a888);
     border-color: #4dffc3; color: #0d1117;
-    box-shadow: 0 0 16px rgba(0, 212, 170, 0.5);
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
 }
 .power-select .ps-btn.active.backup {
     background: linear-gradient(180deg, #ff9f43, #e0821e);
     border-color: #ffb866; color: #0d1117;
-    box-shadow: 0 0 16px rgba(255, 159, 67, 0.5);
+    box-shadow: 0 0 20px rgba(255, 159, 67, 0.5);
 }
-.power-select .ps-info { font-size: 0.68rem; color: #6e7681; margin-left: auto; }
+.power-select .ps-info { font-size: 0.85rem; color: #6e7681; margin-left: auto; }
 .relief-control .relief-btn {
-    padding: 5px 18px; border-radius: 6px;
+    padding: 8px 22px; border-radius: 8px;
     border: 1px solid rgba(255, 159, 67, 0.5);
     background: rgba(255, 159, 67, 0.12);
-    color: #ff9f43; font-weight: 700; font-size: 0.68rem;
+    color: #ff9f43; font-weight: 700; font-size: 0.85rem;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
 .relief-control .relief-btn:hover:not(:disabled) {
@@ -233,8 +234,8 @@ body {
 }
 .relief-control .relief-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .relief-control .relief-status {
-    font-family: 'Consolas', monospace; font-size: 0.78rem;
-    color: #4dffc3; min-width: 70px; font-weight: 700;
+    font-family: 'Consolas', monospace; font-size: 0.95rem;
+    color: #4dffc3; min-width: 90px; font-weight: 700;
 }
 .relief-control .relief-status.warn { color: #ff9f43; }
 .relief-control .relief-status.danger { color: #ff5c5c; }
@@ -242,24 +243,24 @@ body {
 .meltdown-warning {
     background: linear-gradient(90deg, rgba(220, 38, 38, 0.2), rgba(255, 23, 68, 0.15));
     border: 1px solid #ff1744;
-    border-radius: 10px; padding: 12px 18px; margin-bottom: 12px;
+    border-radius: 12px; padding: 16px 24px; margin-bottom: 14px;
     display: none; justify-content: space-between; align-items: center;
     animation: meltdownPulse 1s ease-in-out infinite;
 }
 .meltdown-warning.active { display: flex; }
 @keyframes meltdownPulse {
     0%, 100% { box-shadow: 0 0 0 rgba(255, 23, 68, 0); }
-    50% { box-shadow: 0 0 30px rgba(255, 23, 68, 0.5); }
+    50% { box-shadow: 0 0 36px rgba(255, 23, 68, 0.5); }
 }
-.meltdown-warning .label { font-weight: 900; color: #ff5c5c; font-size: 0.95rem; letter-spacing: 1.5px; }
+.meltdown-warning .label { font-weight: 900; color: #ff5c5c; font-size: 1.15rem; letter-spacing: 2px; }
 .meltdown-warning .timer {
-    font-family: 'Consolas', monospace; font-size: 2rem; font-weight: 900; color: #ff1744;
-    text-shadow: 0 0 20px rgba(255, 23, 68, 0.8);
+    font-family: 'Consolas', monospace; font-size: 2.4rem; font-weight: 900; color: #ff1744;
+    text-shadow: 0 0 24px rgba(255, 23, 68, 0.8);
 }
 .rod-single .rod-lock {
-    padding: 5px 14px; border-radius: 6px;
+    padding: 8px 18px; border-radius: 8px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-size: 0.68rem; cursor: pointer; transition: all 0.2s;
+    color: #8b949e; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
     font-weight: 700; font-family: inherit;
 }
 .rod-single .rod-lock:hover { background: rgba(48, 54, 61, 0.7); color: #d0d7de; }
@@ -267,37 +268,37 @@ body {
     background: linear-gradient(180deg, #ff5c5c, #d94747);
     border-color: #ff8585; color: #fff;
 }
-.device-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.device-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .device-group {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.9) 0%, rgba(20, 25, 31, 0.9) 100%);
-    border-radius: 10px; padding: 12px 14px; border: 1px solid rgba(48, 54, 61, 0.7);
+    border-radius: 12px; padding: 18px 20px; border: 1px solid rgba(48, 54, 61, 0.7);
     min-width: 0;
 }
 .device-group h4 {
-    font-size: 0.65rem; font-weight: 700; color: #8b949e;
-    margin-bottom: 10px; display: flex; justify-content: space-between;
-    letter-spacing: 0.5px;
+    font-size: 0.85rem; font-weight: 700; color: #8b949e;
+    margin-bottom: 14px; display: flex; justify-content: space-between;
+    letter-spacing: 0.6px;
     border-bottom: 1px solid rgba(48, 54, 61, 0.5);
-    padding-bottom: 8px;
+    padding-bottom: 12px;
 }
 .device-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 5px 0; font-size: 0.65rem; gap: 6px; flex-wrap: wrap;
+    padding: 9px 0; font-size: 0.78rem; gap: 10px; flex-wrap: wrap;
     border-bottom: 1px solid rgba(48, 54, 61, 0.3);
 }
 .device-row:last-child { border-bottom: none; }
 .device-row .dev-led {
-    width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px;
+    width: 11px; height: 11px; border-radius: 50%; display: inline-block; margin-right: 6px;
     transition: all 0.3s;
 }
-.dev-led.on { background: #4dffc3; box-shadow: 0 0 8px #4dffc3; }
+.dev-led.on { background: #4dffc3; box-shadow: 0 0 10px #4dffc3; }
 .dev-led.off { background: #484f58; }
-.dev-led.fault { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; animation: blink 0.5s infinite; }
+.dev-led.fault { background: #ff5c5c; box-shadow: 0 0 10px #ff5c5c; animation: blink 0.5s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .device-row .dev-btn {
-    padding: 3px 9px; border-radius: 4px;
+    padding: 5px 14px; border-radius: 5px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-size: 0.55rem; cursor: pointer; transition: all 0.2s;
+    color: #8b949e; font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
     font-weight: 700; font-family: inherit;
 }
 .device-row .dev-btn:hover:not(:disabled) { background: rgba(48, 54, 61, 0.8); color: #d0d7de; }
@@ -309,21 +310,21 @@ body {
 }
 @keyframes repairGlow {
     0%, 100% { box-shadow: 0 0 0 rgba(77, 255, 195, 0); }
-    50% { box-shadow: 0 0 12px rgba(77, 255, 195, 0.5); }
+    50% { box-shadow: 0 0 14px rgba(77, 255, 195, 0.5); }
 }
-.device-row .power-slider { flex: 1; min-width: 40px; accent-color: #00d4aa; height: 4px; cursor: pointer; }
+.device-row .power-slider { flex: 1; min-width: 70px; accent-color: #00d4aa; height: 6px; cursor: pointer; }
 .device-row .power-label {
-    font-family: 'Consolas', monospace; font-size: 0.6rem;
-    color: #ffd740; min-width: 30px; text-align: center; font-weight: 700;
+    font-family: 'Consolas', monospace; font-size: 0.75rem;
+    color: #ffd740; min-width: 42px; text-align: center; font-weight: 700;
 }
 .device-row .cooldown-label {
-    font-family: 'Consolas', monospace; font-size: 0.6rem;
-    color: #ff5c5c; min-width: 50px; text-align: center; font-weight: 700;
+    font-family: 'Consolas', monospace; font-size: 0.75rem;
+    color: #ff5c5c; min-width: 58px; text-align: center; font-weight: 700;
 }
 .device-row .src-btn {
-    padding: 2px 7px; border-radius: 4px;
+    padding: 4px 12px; border-radius: 5px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-size: 0.55rem; font-weight: 700; cursor: pointer; min-width: 26px;
+    color: #8b949e; font-size: 0.68rem; font-weight: 700; cursor: pointer; min-width: 38px;
     font-family: inherit;
 }
 .device-row .src-btn.main {
@@ -336,48 +337,48 @@ body {
 }
 .terminal {
     background: #010409; border: 1px solid rgba(48, 54, 61, 0.8);
-    border-radius: 10px; margin-bottom: 12px; overflow: hidden;
+    border-radius: 12px; margin-bottom: 16px; overflow: hidden;
 }
 .terminal-header {
-    display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+    display: flex; align-items: center; gap: 8px; padding: 10px 18px;
     background: linear-gradient(180deg, #1c2128, #161b22);
     border-bottom: 1px solid rgba(48, 54, 61, 0.8);
 }
-.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
 .terminal-dot.red { background: #ff5f56; }
 .terminal-dot.yellow { background: #ffbd2e; }
 .terminal-dot.green { background: #27c93f; }
 .terminal-title {
-    font-family: 'Consolas', monospace; font-size: 0.65rem;
-    color: #6e7681; letter-spacing: 1.5px; margin-left: 8px; font-weight: 700;
+    font-family: 'Consolas', monospace; font-size: 0.75rem;
+    color: #6e7681; letter-spacing: 1.8px; margin-left: 10px; font-weight: 700;
 }
 .terminal-body {
-    padding: 10px 14px; height: 110px; overflow-y: auto;
+    padding: 14px 18px; height: 160px; overflow-y: auto;
     font-family: 'Consolas', monospace;
-    font-size: 0.72rem; line-height: 1.6; background: #010409;
+    font-size: 0.85rem; line-height: 1.7; background: #010409;
 }
-.terminal-body::-webkit-scrollbar { width: 6px; }
+.terminal-body::-webkit-scrollbar { width: 8px; }
 .terminal-body::-webkit-scrollbar-track { background: #010409; }
-.terminal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+.terminal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 .terminal-line { white-space: pre-wrap; word-break: break-all; }
 .terminal-line.info { color: #8b949e; }
 .terminal-line.warn { color: #ff9f43; }
 .terminal-line.danger { color: #ff5c5c; }
 .terminal-line.success { color: #4dffc3; }
 .terminal-line.system { color: #58a6ff; font-weight: 700; }
-.controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
+.controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
 .ctrl-btn {
-    padding: 9px 20px; border-radius: 8px; font-weight: 700; font-size: 0.72rem;
+    padding: 12px 30px; border-radius: 10px; font-weight: 700; font-size: 0.85rem;
     border: 1px solid rgba(48, 54, 61, 0.8);
     background: linear-gradient(180deg, rgba(48, 54, 61, 0.6), rgba(30, 36, 44, 0.6));
     color: #d0d7de; cursor: pointer; transition: all 0.2s;
-    text-transform: uppercase; letter-spacing: 0.5px;
+    text-transform: uppercase; letter-spacing: 0.6px;
     font-family: inherit;
 }
 .ctrl-btn:hover:not(:disabled) {
     background: linear-gradient(180deg, rgba(48, 54, 61, 0.9), rgba(30, 36, 44, 0.9));
 }
-.ctrl-btn:active:not(:disabled) { transform: scale(0.96); }
+.ctrl-btn:active:not(:disabled) { transform: scale(0.97); }
 .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .ctrl-btn.primary { border-color: rgba(88, 166, 255, 0.5); color: #58a6ff; background: rgba(88, 166, 255, 0.1); }
 .ctrl-btn.danger { border-color: rgba(255, 92, 92, 0.5); color: #ff8585; background: rgba(255, 92, 92, 0.1); }
@@ -389,16 +390,16 @@ body {
 }
 @keyframes restartPulse {
     0%, 100% { box-shadow: 0 0 0 rgba(77, 255, 195, 0); }
-    50% { box-shadow: 0 0 20px rgba(77, 255, 195, 0.5); }
+    50% { box-shadow: 0 0 22px rgba(77, 255, 195, 0.5); }
 }
 .message-area {
-    margin-top: 8px; padding: 10px 16px;
+    margin-top: 12px; padding: 14px 20px;
     background: linear-gradient(90deg, rgba(88, 166, 255, 0.05), rgba(0, 212, 170, 0.05));
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid rgba(48, 54, 61, 0.6);
-    display: flex; align-items: center; min-height: 38px;
+    display: flex; align-items: center; min-height: 46px;
 }
-.message-area .msg { font-size: 0.78rem; color: #8b949e; flex: 1; font-weight: 600; }
+.message-area .msg { font-size: 0.9rem; color: #8b949e; flex: 1; font-weight: 600; }
 .message-area .msg.warn { color: #ff9f43; }
 .message-area .msg.danger { color: #ff5c5c; }
 .message-area .msg.success { color: #4dffc3; }
@@ -412,47 +413,47 @@ body {
 }
 .modal-overlay.active { display: flex; }
 .modal {
-    max-width: 720px; width: 100%; max-height: 85vh;
+    max-width: 760px; width: 100%; max-height: 85vh;
     background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-    border-radius: 14px; border: 1px solid rgba(48, 54, 61, 0.9);
+    border-radius: 16px; border: 1px solid rgba(48, 54, 61, 0.9);
     display: flex; flex-direction: column; overflow: hidden;
 }
 .modal-header {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 22px;
+    padding: 20px 26px;
     background: linear-gradient(180deg, #1c2128, #161b22);
     border-bottom: 1px solid rgba(48, 54, 61, 0.8);
 }
-.modal-header h2 { font-size: 1.1rem; font-weight: 700; color: #f0f6fc; letter-spacing: 1px; }
+.modal-header h2 { font-size: 1.3rem; font-weight: 700; color: #f0f6fc; letter-spacing: 1.2px; }
 .modal-close {
-    width: 34px; height: 34px; border-radius: 6px;
+    width: 40px; height: 40px; border-radius: 8px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-size: 1rem; cursor: pointer;
+    color: #8b949e; font-size: 1.1rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     font-family: inherit;
 }
 .modal-close:hover { background: #ff5c5c; color: #fff; }
-.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; line-height: 1.7; }
-.modal-body::-webkit-scrollbar { width: 6px; }
-.modal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
-.help-section { margin-bottom: 22px; }
+.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; line-height: 1.8; }
+.modal-body::-webkit-scrollbar { width: 8px; }
+.modal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+.help-section { margin-bottom: 26px; }
 .help-section h3 {
-    font-size: 0.9rem; font-weight: 700; color: #f0f6fc;
-    margin-bottom: 12px; padding-bottom: 8px;
+    font-size: 1.05rem; font-weight: 700; color: #f0f6fc;
+    margin-bottom: 14px; padding-bottom: 10px;
     border-bottom: 1px solid rgba(48, 54, 61, 0.6);
 }
-.help-section p { font-size: 0.85rem; color: #8b949e; margin-bottom: 8px; }
+.help-section p { font-size: 0.95rem; color: #8b949e; margin-bottom: 10px; }
 .help-section ul { list-style: none; padding-left: 4px; }
 .help-section ul li {
-    font-size: 0.85rem; color: #8b949e; padding: 4px 0 4px 18px; position: relative;
+    font-size: 0.95rem; color: #8b949e; padding: 5px 0 5px 20px; position: relative;
 }
 .help-section ul li::before {
-    content: '·'; position: absolute; left: 4px; color: #00d4aa; font-weight: 700; font-size: 1rem;
+    content: '·'; position: absolute; left: 4px; color: #00d4aa; font-weight: 700; font-size: 1.1rem;
 }
 .help-section .key {
-    display: inline-block; padding: 2px 8px;
-    background: #21262d; border: 1px solid #30363d; border-radius: 4px;
-    font-family: 'Consolas', monospace; font-size: 0.75rem; color: #f0f6fc;
+    display: inline-block; padding: 3px 10px;
+    background: #21262d; border: 1px solid #30363d; border-radius: 5px;
+    font-family: 'Consolas', monospace; font-size: 0.85rem; color: #f0f6fc;
 }
 .help-section .highlight { color: #ffd740; font-weight: 700; }
 .help-section .danger-text { color: #ff5c5c; font-weight: 700; }
@@ -460,26 +461,26 @@ body {
 .help-tip {
     background: rgba(77, 255, 195, 0.05);
     border: 1px solid rgba(77, 255, 195, 0.25);
-    border-radius: 6px; padding: 10px 14px; margin: 8px 0;
-    font-size: 0.82rem; color: #8b949e;
+    border-radius: 8px; padding: 12px 16px; margin: 10px 0;
+    font-size: 0.9rem; color: #8b949e;
 }
-.help-tip .tip-icon { color: #4dffc3; font-weight: 700; margin-right: 4px; }
+.help-tip .tip-icon { color: #4dffc3; font-weight: 700; margin-right: 6px; }
 .scram-modal {
-    max-width: 520px; background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
-    border-radius: 14px; border: 2px solid; padding: 36px 32px; text-align: center;
+    max-width: 560px; background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+    border-radius: 16px; border: 2px solid; padding: 44px 40px; text-align: center;
 }
 .scram-modal.success { border-color: #4dffc3; }
 .scram-modal.fail { border-color: #ff5c5c; }
-.scram-modal .scram-icon { font-size: 4rem; line-height: 1; margin-bottom: 12px; display: block; }
+.scram-modal .scram-icon { font-size: 5rem; line-height: 1; margin-bottom: 16px; display: block; }
 .scram-modal.success .scram-icon { color: #4dffc3; }
 .scram-modal.fail .scram-icon { color: #ff5c5c; }
-.scram-modal h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
+.scram-modal h2 { font-size: 2rem; font-weight: 900; margin-bottom: 12px; }
 .scram-modal.success h2 { color: #4dffc3; }
 .scram-modal.fail h2 { color: #ff5c5c; }
-.scram-modal .scram-desc { font-size: 0.95rem; color: #8b949e; margin-bottom: 20px; }
+.scram-modal .scram-desc { font-size: 1.05rem; color: #8b949e; margin-bottom: 24px; }
 .scram-modal .scram-btn {
-    padding: 10px 36px; border-radius: 8px; font-weight: 700;
-    font-size: 0.9rem; cursor: pointer; border: 2px solid;
+    padding: 14px 48px; border-radius: 10px; font-weight: 700;
+    font-size: 1rem; cursor: pointer; border: 2px solid;
     text-transform: uppercase; font-family: inherit;
 }
 .scram-modal.success .scram-btn { border-color: #4dffc3; background: rgba(77,255,195,0.15); color: #4dffc3; }
@@ -489,18 +490,35 @@ body {
    响应式适配
    ============================================ */
 
+/* 中等屏幕 (≤1200px) */
+@media (max-width: 1200px) {
+    .game-container { padding: 22px 20px 26px; }
+    .dashboard { gap: 14px; }
+    .gauge { padding: 18px 18px 16px; }
+    .gauge .value { font-size: 2.3rem; }
+    .gauge .label { font-size: 0.75rem; }
+    .param-panel { padding: 14px 16px; gap: 6px; }
+    .param-item .p-value { font-size: 1rem; }
+    .device-panel { gap: 12px; }
+    .device-group { padding: 14px 16px; }
+}
+
 /* 平板 (≤900px) */
 @media (max-width: 900px) {
-    .game-container { padding: 18px 16px 22px; }
+    body { padding: 14px; }
+    .game-container { padding: 20px 18px 24px; }
     .dashboard { grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .gauge { padding: 14px 14px 12px; }
     .gauge .value { font-size: 1.9rem; }
+    .gauge .label { font-size: 0.7rem; margin-bottom: 8px; }
     .param-panel {
         grid-template-columns: repeat(4, 1fr);
         gap: 8px; padding: 12px;
     }
-    .param-item .p-value { font-size: 0.85rem; }
+    .param-item .p-value { font-size: 0.9rem; }
     .device-panel { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .title { font-size: 1.3rem; }
+    .title-icon { width: 18px; height: 18px; }
 }
 
 /* 手机横屏 / 大手机 (≤600px) */
@@ -509,16 +527,11 @@ body {
     .game-container {
         padding: 14px 12px 18px;
         border-radius: 12px;
+        max-width: 100%;
     }
-    .header {
-        margin-bottom: 12px;
-        gap: 6px;
-    }
+    .header { margin-bottom: 12px; gap: 6px; }
     .title-wrap { gap: 6px; }
-    .title {
-        font-size: 1rem; letter-spacing: 1px;
-        gap: 6px;
-    }
+    .title { font-size: 1rem; letter-spacing: 1px; gap: 6px; }
     .title-icon { width: 14px; height: 14px; }
     .help-btn, .music-btn {
         padding: 4px 9px; font-size: 0.6rem;
@@ -535,21 +548,10 @@ body {
         gap: 10px;
         margin-bottom: 12px;
     }
-    .gauge {
-        padding: 12px 12px 10px;
-        border-radius: 10px;
-    }
-    .gauge .label {
-        font-size: 0.62rem; margin-bottom: 6px;
-        letter-spacing: 0.5px;
-    }
-    .gauge .value {
-        font-size: 1.6rem;
-        letter-spacing: 0;
-    }
-    .gauge .unit {
-        font-size: 0.65rem; margin-top: 3px;
-    }
+    .gauge { padding: 12px 12px 10px; border-radius: 10px; }
+    .gauge .label { font-size: 0.62rem; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .gauge .value { font-size: 1.6rem; letter-spacing: 0; }
+    .gauge .unit { font-size: 0.65rem; margin-top: 3px; }
     .gauge .bar-track { margin-top: 8px; height: 4px; }
 
     .param-panel {
@@ -561,7 +563,6 @@ body {
         padding: 4px 2px;
         border-bottom: 1px dashed rgba(48, 54, 61, 0.4);
     }
-    .param-item:nth-last-child(-n+1) { border-bottom: none; }
     .param-item .p-label { font-size: 0.5rem; margin-bottom: 3px; }
     .param-item .p-value { font-size: 0.8rem; }
 
@@ -571,10 +572,7 @@ body {
         margin-bottom: 8px;
         flex-wrap: wrap;
     }
-    .panel-row .row-label {
-        font-size: 0.65rem;
-        flex-shrink: 0;
-    }
+    .panel-row .row-label { font-size: 0.65rem; flex-shrink: 0; }
     .panel-row .row-value { font-size: 0.85rem; min-width: 42px; }
     .panel-row input[type="range"] { height: 8px; }
 
@@ -588,80 +586,37 @@ body {
         text-align: right;
     }
 
-    .relief-control .relief-btn {
-        padding: 6px 14px; font-size: 0.65rem;
-    }
-    .relief-control .relief-status {
-        font-size: 0.72rem; min-width: 60px;
-    }
-    .relief-control span[style*="font-size:0.6rem"] {
-        display: none;
-    }
+    .relief-control .relief-btn { padding: 6px 14px; font-size: 0.65rem; }
+    .relief-control .relief-status { font-size: 0.72rem; min-width: 60px; }
+    .relief-control span[style*="font-size:0.6rem"] { display: none; }
 
-    .meltdown-warning {
-        padding: 10px 14px;
-    }
+    .meltdown-warning { padding: 10px 14px; }
     .meltdown-warning .label { font-size: 0.8rem; }
     .meltdown-warning .timer { font-size: 1.6rem; }
+    .rod-single .rod-lock { padding: 6px 12px; font-size: 0.65rem; }
 
-    .rod-single .rod-lock {
-        padding: 6px 12px; font-size: 0.65rem;
-    }
-
-    .device-panel {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-    .device-group {
-        padding: 10px 12px;
-        border-radius: 8px;
-    }
+    .device-panel { grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
+    .device-group { padding: 10px 12px; border-radius: 8px; }
     .device-group h4 {
-        font-size: 0.62rem; margin-bottom: 8px;
-        padding-bottom: 6px;
+        font-size: 0.62rem; margin-bottom: 8px; padding-bottom: 6px;
     }
-    .device-row {
-        font-size: 0.62rem;
-        padding: 6px 0;
-        gap: 5px;
-    }
-    .device-row .dev-btn {
-        padding: 4px 10px; font-size: 0.6rem;
-        min-width: 32px;
-    }
-    .device-row .power-slider {
-        min-width: 50px; height: 6px;
-    }
+    .device-row { font-size: 0.62rem; padding: 6px 0; gap: 5px; }
+    .device-row .dev-btn { padding: 4px 10px; font-size: 0.6rem; min-width: 32px; }
+    .device-row .power-slider { min-width: 50px; height: 6px; }
     .device-row .power-label { font-size: 0.62rem; min-width: 34px; }
     .device-row .cooldown-label { font-size: 0.62rem; min-width: 52px; }
-    .device-row .src-btn {
-        padding: 3px 8px; font-size: 0.58rem;
-        min-width: 30px;
-    }
+    .device-row .src-btn { padding: 3px 8px; font-size: 0.58rem; min-width: 30px; }
 
-    .terminal-body {
-        height: 90px; font-size: 0.65rem;
-        padding: 8px 12px;
-    }
+    .terminal-body { height: 90px; font-size: 0.65rem; padding: 8px 12px; }
     .terminal-title { font-size: 0.55rem; letter-spacing: 1px; }
 
-    .controls {
-        gap: 6px;
-        margin: 6px 0;
-    }
+    .controls { gap: 6px; margin: 6px 0; }
     .ctrl-btn {
         padding: 9px 12px; font-size: 0.65rem;
         flex: 1 1 calc(50% - 6px);
-        min-width: 0;
-        border-radius: 6px;
+        min-width: 0; border-radius: 6px;
     }
-
-    .message-area {
-        padding: 8px 12px;
-        min-height: 36px;
-        margin-top: 6px;
-    }
+    .message-area { padding: 8px 12px; min-height: 36px; margin-top: 6px; }
     .message-area .msg { font-size: 0.72rem; }
 
     .modal-body { padding: 16px; }
@@ -669,62 +624,44 @@ body {
     .modal-header h2 { font-size: 0.95rem; }
     .help-section h3 { font-size: 0.82rem; }
     .help-section p, .help-section ul li { font-size: 0.78rem; }
+    .scram-modal { padding: 30px 24px; }
+    .scram-modal h2 { font-size: 1.4rem; }
+    .scram-modal .scram-icon { font-size: 3.5rem; }
 }
 
 /* 小手机 (≤380px) */
 @media (max-width: 380px) {
     body { padding: 6px; }
-    .game-container {
-        padding: 12px 10px 14px;
-        border-radius: 10px;
-    }
+    .game-container { padding: 12px 10px 14px; border-radius: 10px; }
     .title { font-size: 0.9rem; }
     .title-icon { width: 12px; height: 12px; }
     .status-badge { font-size: 0.6rem; padding: 4px 8px; }
     .help-btn, .music-btn { font-size: 0.55rem; padding: 3px 8px; }
-
     .gauge { padding: 10px 10px 8px; }
     .gauge .value { font-size: 1.35rem; }
     .gauge .label { font-size: 0.55rem; }
     .gauge .unit { font-size: 0.58rem; }
-
     .param-item .p-value { font-size: 0.7rem; }
     .param-item .p-label { font-size: 0.45rem; }
-
     .panel-row { padding: 8px 10px; gap: 6px; }
     .panel-row .row-label { font-size: 0.6rem; }
     .panel-row .row-value { font-size: 0.78rem; }
-
     .power-select .ps-btn { padding: 6px 10px; font-size: 0.6rem; }
     .ctrl-btn { font-size: 0.6rem; padding: 8px 8px; }
-
     .device-row .dev-btn { padding: 3px 7px; font-size: 0.55rem; }
     .device-row { font-size: 0.58rem; }
-
     .terminal-body { height: 80px; font-size: 0.6rem; }
 }
 
 /* 触摸设备 - 加大滑块拖动区 */
 @media (hover: none) and (pointer: coarse) {
-    .panel-row input[type="range"] {
-        height: 10px;
-    }
-    .device-row .power-slider {
-        height: 8px;
-    }
-    .ctrl-btn {
-        min-height: 42px;
-    }
-    .ps-btn {
-        min-height: 38px;
-    }
-    .relief-btn {
-        min-height: 38px;
-    }
-    .rod-lock {
-        min-height: 36px;
-    }
-    /* 去掉 hover 效果，避免移动端粘滞 */
+    .panel-row input[type="range"] { height: 12px; }
+    .device-row .power-slider { height: 8px; }
+    .ctrl-btn { min-height: 44px; }
+    .ps-btn { min-height: 40px; }
+    .relief-btn { min-height: 40px; }
+    .rod-lock { min-height: 38px; }
+    .help-btn, .music-btn { min-height: 34px; }
     .help-btn:hover, .music-btn:hover { transform: none; }
     .ctrl-btn:hover:not(:disabled) { transform: none; }
 }
@@ -734,6 +671,33 @@ body {
     .terminal-body { height: 70px; }
     .gauge { padding: 10px 12px; }
     .gauge .value { font-size: 1.4rem; }
+}
+
+/* 超宽屏 (≥1600px) 进一步放大 */
+@media (min-width: 1600px) {
+    .game-container {
+        max-width: min(1700px, 96vw);
+        padding: 32px 40px 36px;
+    }
+    .dashboard { gap: 22px; margin-bottom: 24px; }
+    .gauge { padding: 26px 28px 22px; }
+    .gauge .value { font-size: 3.2rem; }
+    .gauge .label { font-size: 0.95rem; margin-bottom: 14px; }
+    .gauge .unit { font-size: 1.05rem; }
+    .param-panel { padding: 20px 24px; gap: 10px; }
+    .param-item .p-label { font-size: 0.72rem; }
+    .param-item .p-value { font-size: 1.25rem; }
+    .panel-row { padding: 18px 26px; }
+    .panel-row .row-label { font-size: 0.95rem; }
+    .panel-row .row-value { font-size: 1.25rem; }
+    .device-group { padding: 22px 26px; }
+    .device-group h4 { font-size: 0.95rem; }
+    .device-row { font-size: 0.88rem; padding: 11px 0; }
+    .device-row .dev-btn { padding: 6px 16px; font-size: 0.78rem; }
+    .device-row .power-label { font-size: 0.85rem; min-width: 48px; }
+    .device-row .src-btn { padding: 5px 14px; font-size: 0.75rem; min-width: 44px; }
+    .terminal-body { height: 180px; font-size: 0.95rem; }
+    .ctrl-btn { padding: 14px 36px; font-size: 0.95rem; }
 }
 </style>
 </head>
@@ -798,20 +762,20 @@ body {
         <span class="row-label">电网目标负荷</span>
         <input type="range" class="load-slider" id="loadSlider" min="0" max="200" value="50" step="1">
         <span class="row-value" id="loadValue">50</span>
-        <span style="font-size:0.65rem;color:#6e7681;">MW</span>
+        <span style="font-size:0.75rem;color:#6e7681;">MW</span>
     </div>
 
     <div class="panel-row relief-control">
         <span class="row-label">💨 泄压阀</span>
         <button class="relief-btn" id="reliefBtn">立即泄压</button>
         <span class="relief-status" id="reliefStatus">就绪</span>
-        <span style="font-size:0.6rem;color:#6e7681;">降1.5MPa / 降温8°C</span>
+        <span style="font-size:0.7rem;color:#6e7681;">降1.5MPa / 降温8°C</span>
     </div>
 
     <div class="meltdown-warning" id="meltdownWarning">
         <span class="label">☢️ 核融倒计时</span>
         <span class="timer" id="meltdownTimer">60</span>
-        <span style="font-size:0.85rem;color:#ff5c5c;">秒</span>
+        <span style="font-size:1rem;color:#ff5c5c;">秒</span>
     </div>
 
     <div class="panel-row rod-single">
@@ -829,7 +793,7 @@ body {
         <div class="device-group">
             <h4>⚡ 发电机+变压器 <span id="genSummary">0/4 正常</span></h4>
             <div id="genContainer"></div>
-            <div style="margin-top:6px;font-size:0.6rem;color:#6e7681;">
+            <div style="margin-top:8px;font-size:0.75rem;color:#6e7681;">
                 停电: <span id="outageDisplay">无</span> | 水泵供电: <span id="pumpPowerStatus">正常</span>
             </div>
         </div>
@@ -961,7 +925,6 @@ let state = {
 let wasPausedBeforeHelp = false;
 let wasPausedBeforeScramModal = false;
 
-// ===== 音频系统 =====
 let audioCtx = null;
 let musicPlaying = false;
 let musicNodes = null;
@@ -970,48 +933,37 @@ let lastAlarmTime = 0;
 
 function initAudio() {
     if (audioCtx) return true;
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        return true;
-    } catch (e) { return false; }
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return true; } catch (e) { return false; }
 }
-
 function startMusic() {
     if (!initAudio()) return;
     if (audioCtx.state === 'suspended') audioCtx.resume();
     if (musicPlaying) return;
-
     musicMaster = audioCtx.createGain();
     musicMaster.gain.value = 0.0001;
     musicMaster.connect(audioCtx.destination);
-
     const osc1 = audioCtx.createOscillator();
     osc1.type = 'sine'; osc1.frequency.value = 55;
     const gain1 = audioCtx.createGain(); gain1.gain.value = 0.5;
     osc1.connect(gain1); gain1.connect(musicMaster); osc1.start();
-
     const osc2 = audioCtx.createOscillator();
     osc2.type = 'triangle'; osc2.frequency.value = 110;
     const gain2 = audioCtx.createGain(); gain2.gain.value = 0.12;
     osc2.connect(gain2); gain2.connect(musicMaster); osc2.start();
-
     const lfo = audioCtx.createOscillator();
     lfo.type = 'sine'; lfo.frequency.value = 0.18;
     const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.02;
     lfo.connect(lfoGain); lfoGain.connect(musicMaster.gain); lfo.start();
-
     const osc3 = audioCtx.createOscillator();
     osc3.type = 'sine'; osc3.frequency.value = 55.3;
     const gain3 = audioCtx.createGain(); gain3.gain.value = 0.25;
     osc3.connect(gain3); gain3.connect(musicMaster); osc3.start();
-
     musicNodes = { osc1, osc2, osc3, lfo, gain1, gain2, gain3, lfoGain };
     musicPlaying = true;
     musicMaster.gain.cancelScheduledValues(audioCtx.currentTime);
     musicMaster.gain.setValueAtTime(0.0001, audioCtx.currentTime);
     musicMaster.gain.exponentialRampToValueAtTime(0.06, audioCtx.currentTime + 1.5);
 }
-
 function stopMusic() {
     if (!musicPlaying || !musicMaster) return;
     const now = audioCtx.currentTime;
@@ -1019,27 +971,16 @@ function stopMusic() {
     musicMaster.gain.setValueAtTime(musicMaster.gain.value, now);
     musicMaster.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
     const nodes = musicNodes;
-    setTimeout(() => {
-        try { nodes.osc1.stop(); nodes.osc2.stop(); nodes.osc3.stop(); nodes.lfo.stop(); } catch (e) {}
-    }, 600);
-    musicNodes = null;
-    musicPlaying = false;
+    setTimeout(() => { try { nodes.osc1.stop(); nodes.osc2.stop(); nodes.osc3.stop(); nodes.lfo.stop(); } catch (e) {} }, 600);
+    musicNodes = null; musicPlaying = false;
 }
-
 function toggleMusic() {
     if (musicPlaying) {
-        stopMusic();
-        btnMusic.classList.remove('playing');
-        btnMusic.textContent = '🔇 音乐';
-        log('音乐已关闭', 'info');
+        stopMusic(); btnMusic.classList.remove('playing'); btnMusic.textContent = '🔇 音乐'; log('音乐已关闭', 'info');
     } else {
-        startMusic();
-        btnMusic.classList.add('playing');
-        btnMusic.textContent = '🎵 播放中';
-        log('音乐已开启 · 工业环境音', 'info');
+        startMusic(); btnMusic.classList.add('playing'); btnMusic.textContent = '🎵 播放中'; log('音乐已开启 · 工业环境音', 'info');
     }
 }
-
 function updateMusic() {
     if (!musicPlaying || !audioCtx || !musicNodes) return;
     const now = audioCtx.currentTime;
@@ -1050,10 +991,7 @@ function updateMusic() {
     else if (temp > 1200) { targetVolume = 0.10; targetFreq = 66; }
     else if (temp > 900) { targetVolume = 0.085; targetFreq = 60; }
     else if (temp < COLD_SHUTDOWN_TEMP) { targetVolume = 0.035; targetFreq = 48; }
-    else {
-        targetVolume = 0.055 + (temp - 500) / 1500 * 0.02;
-        targetFreq = 55 + (temp - 500) / 1000 * 3;
-    }
+    else { targetVolume = 0.055 + (temp - 500) / 1500 * 0.02; targetFreq = 55 + (temp - 500) / 1000 * 3; }
     try {
         musicMaster.gain.cancelScheduledValues(now);
         musicMaster.gain.linearRampToValueAtTime(targetVolume, now + 0.4);
@@ -1062,15 +1000,13 @@ function updateMusic() {
         musicNodes.osc2.frequency.linearRampToValueAtTime(targetFreq * 2, now + 0.4);
     } catch (e) {}
 }
-
 function playBeep(freq = 880, duration = 0.08, volume = 0.05) {
     if (!audioCtx) return;
     try {
         const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'square';
-        osc.frequency.value = freq;
+        osc.type = 'square'; osc.frequency.value = freq;
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(volume, now + 0.005);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
@@ -1078,7 +1014,6 @@ function playBeep(freq = 880, duration = 0.08, volume = 0.05) {
         osc.start(now); osc.stop(now + duration + 0.02);
     } catch (e) {}
 }
-
 function playAlarm() {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
@@ -1215,8 +1150,7 @@ function closeScramModal() {
 function triggerEmergencyScram() {
     state.scramTriggered = true; state.rodLocked = false; rodLock.classList.remove('active'); rodLock.textContent = '解锁'; rodSlider.disabled = false;
     state.rodTarget = 100; if (!state.rodAnimId) state.rodAnimId = requestAnimationFrame(animateRod);
-    log('温度达到1500°C，紧急停堆启动', 'danger');
-    playAlarm();
+    log('温度达到1500°C，紧急停堆启动', 'danger'); playAlarm();
     const success = Math.random() < SCRAM_SUCCESS_RATE;
     if (success) {
         log('停堆成功，温度回落', 'success'); setMessage('✅ 停堆成功', 'success');
@@ -1258,8 +1192,8 @@ function renderDevices() {
         let statusOrCooldown = '', repairBtn = '';
         if (p.fault) {
             if (p.repairCooldown > 0) { statusOrCooldown = `<span class="cooldown-label">🔧 ${p.repairCooldown.toFixed(1)}s</span>`; repairBtn = `<button class="dev-btn repair" disabled>修复</button>`; }
-            else { statusOrCooldown = `<span style="font-size:0.55rem;color:#ff5c5c;">可修复</span>`; repairBtn = `<button class="dev-btn repair ready" data-pump="${idx}" data-action="repair">修复</button>`; }
-        } else { statusOrCooldown = `<span style="font-size:0.55rem;color:#8b949e;">${p.on?'运行':'停机'}</span>`; repairBtn = `<button class="dev-btn" disabled style="opacity:0.2;">修复</button>`; }
+            else { statusOrCooldown = `<span style="font-size:0.65rem;color:#ff5c5c;">可修复</span>`; repairBtn = `<button class="dev-btn repair ready" data-pump="${idx}" data-action="repair">修复</button>`; }
+        } else { statusOrCooldown = `<span style="font-size:0.65rem;color:#8b949e;">${p.on?'运行':'停机'}</span>`; repairBtn = `<button class="dev-btn" disabled style="opacity:0.2;">修复</button>`; }
         html += `<div class="device-row">
             <span>泵${idx+1} <span class="dev-led ${ledClass}"></span></span>
             ${statusOrCooldown}
@@ -1304,8 +1238,8 @@ function renderDevices() {
         let statusOrCooldown = '', repairBtn = '';
         if (g.damaged) {
             if (g.repairCooldown > 0) { statusOrCooldown = `<span class="cooldown-label">🔧 ${g.repairCooldown.toFixed(1)}s</span>`; repairBtn = `<button class="dev-btn repair" disabled>修复</button>`; }
-            else { statusOrCooldown = `<span style="font-size:0.55rem;color:#ff5c5c;">可修复</span>`; repairBtn = `<button class="dev-btn repair ready" data-gen="${idx}" data-action="repair">修复</button>`; }
-        } else { statusOrCooldown = `<span style="font-size:0.55rem;color:#8b949e;">${g.on?'运行':'停机'}</span>`; repairBtn = `<button class="dev-btn" disabled style="opacity:0.2;">修复</button>`; }
+            else { statusOrCooldown = `<span style="font-size:0.65rem;color:#ff5c5c;">可修复</span>`; repairBtn = `<button class="dev-btn repair ready" data-gen="${idx}" data-action="repair">修复</button>`; }
+        } else { statusOrCooldown = `<span style="font-size:0.65rem;color:#8b949e;">${g.on?'运行':'停机'}</span>`; repairBtn = `<button class="dev-btn" disabled style="opacity:0.2;">修复</button>`; }
         const srcMainClass = g.powerTarget === 'main' ? 'src-btn main' : 'src-btn';
         const srcBackupClass = g.powerTarget === 'backup' ? 'src-btn backup' : 'src-btn';
         const srcBtns = g.damaged ? '' : `<button class="${srcMainClass}" data-gen="${idx}" data-action="srcMain">主</button><button class="${srcBackupClass}" data-gen="${idx}" data-action="srcBackup">备</button>`;
@@ -1377,11 +1311,9 @@ function updatePhysics() {
     state.pumps.forEach(p => { if (p.repairCooldown > 0) p.repairCooldown = Math.max(0, p.repairCooldown - 1); });
     state.generators.forEach(g => { if (g.repairCooldown > 0) g.repairCooldown = Math.max(0, g.repairCooldown - 1); });
     if (state.reliefCooldown > 0) state.reliefCooldown = Math.max(0, state.reliefCooldown - 1);
-
     let coreHeat = BASE_HEAT_RATE * 1.5;
     const rodFactor = 1 - (state.rodDepth / 100) * 0.9;
     coreHeat *= rodFactor; coreHeat = Math.max(coreHeat, 0.1);
-
     let totalPumpPower = 0;
     for (const pump of state.pumps) if (pump.on && !pump.fault) totalPumpPower += pump.power / 100;
     const pumpDemand = totalPumpPower * PUMP_MAX_MW;
@@ -1389,7 +1321,6 @@ function updatePhysics() {
     if (state.powerSelect === 'main') { if (state.mainPowerBus < pumpDemand) pumpPowered = false; }
     else { if (state.backupPower <= 0) pumpPowered = false; }
     if (pumpPowered) coreHeat -= totalPumpPower * MAX_PUMP_POWER;
-
     coreHeat += (state.temperature - 500) * 0.02;
     state.temperature = clamp(state.temperature + coreHeat, TEMP_MIN, TEMP_MAX);
     const pressureBase = 8.0 + (state.temperature - 500) * 0.006;
@@ -1398,7 +1329,6 @@ function updatePhysics() {
     if (state.temperature < COLD_SHUTDOWN_TEMP) state.thermalPower = 0;
     else state.thermalPower = ((state.temperature - COLD_SHUTDOWN_TEMP) / 400) * 150;
     state.thermalPower = clamp(state.thermalPower, 0, 400);
-
     let mainGenMW = 0, backupGenMW = 0, totalGenCapacity = 0;
     for (const gen of state.generators) {
         if (gen.on && !gen.damaged) {
@@ -1409,21 +1339,17 @@ function updatePhysics() {
     state.mainPowerBus = mainGenMW;
     if (state.powerSelect === 'backup' && pumpPowered && pumpDemand > 0) state.backupPower = clamp(state.backupPower - pumpDemand * BACKUP_CHARGE_RATE * 0.05, 0, 100);
     else state.backupPower = clamp(state.backupPower + backupGenMW * BACKUP_CHARGE_RATE * 0.05, 0, 100);
-
     const maxFromHeat = state.thermalPower * HEAT_TO_ELECTRIC;
     state.electricPower = Math.min(maxFromHeat, totalGenCapacity);
     if (state.powerOutage) state.electricPower = 0;
-
     const loadDiff = state.electricPower - state.targetLoad;
     const randomWalk = rand(-GRID_RANDOM_RANGE, GRID_RANDOM_RANGE);
     const selfStabilize = -state.gridDeviation * GRID_SELF_STABILIZE;
     state.gridDeviation += loadDiff * GRID_SENSITIVITY + randomWalk + selfStabilize;
     state.gridDeviation = clamp(state.gridDeviation, -GRID_DEVIATION_LIMIT, GRID_DEVIATION_LIMIT);
-
     const kWhThisSecond = state.electricPower * 1000 / 3600;
     state.totalEnergy += kWhThisSecond; state.money += kWhThisSecond * PRICE_PER_KWH / 1000;
     state.neutronFlux = clamp(20 + (state.temperature / 1500) * 60, 20, 100);
-
     if (state.reactorPressure > 15.0 && Math.random() < 0.03) {
         const avail = state.pumps.filter(p => !p.fault);
         if (avail.length > 0) {
@@ -1519,11 +1445,9 @@ function updateUI() {
     neutronFluxEl.textContent = Math.round(state.neutronFlux) + '%';
     neutronFluxEl.className = 'p-value' + (state.neutronFlux > 80 ? ' danger' : (state.neutronFlux > 60 ? ' warn' : ' good'));
     updateGridDisplay();
-
     let mainMW = 0, backupMW = 0;
     for (const g of state.generators) { if (g.on && !g.damaged) { const mw = (g.power / 100) * GEN_MAX_MW; if (g.powerTarget === 'main') mainMW += mw; else backupMW += mw; } }
     psInfo.textContent = `主 ${mainMW.toFixed(0)}MW / 备 ${backupMW.toFixed(0)}MW`;
-
     const totalPumpPower = state.pumps.filter(p => p.on && !p.fault).reduce((s, p) => s + p.power / 100, 0);
     const pumpDemand = totalPumpPower * PUMP_MAX_MW;
     let pumpPowered = true;
@@ -1532,17 +1456,14 @@ function updateUI() {
     if (pumpPowered) { pumpPowerStatus.textContent = '正常'; pumpPowerStatus.style.color = '#4dffc3'; }
     else { pumpPowerStatus.textContent = '不足 ⚠️'; pumpPowerStatus.style.color = '#ff5c5c'; }
     updateDeviceStatus();
-
     if (state.gameOver) { statusDot.className = 'dot meltdown'; statusText.textContent = '爆炸'; }
     else if (state.meltdownActive) { statusDot.className = 'dot meltdown'; statusText.textContent = '核融'; }
     else if (state.temperature > 1200) { statusDot.className = 'dot danger'; statusText.textContent = '⚠️ 危急'; }
     else if (state.temperature > 900) { statusDot.className = 'dot warning'; statusText.textContent = '⚠️ 高温'; }
     else if (state.temperature < COLD_SHUTDOWN_TEMP) { statusDot.className = 'dot warning'; statusText.textContent = '❄️ 冷停堆'; }
     else { statusDot.className = 'dot running'; statusText.textContent = '运行中'; }
-
     btnPause.disabled = state.gameOver; btnScram.disabled = state.gameOver;
     btnRestart.style.display = (state.temperature < COLD_SHUTDOWN_TEMP && !state.gameOver) ? '' : 'none';
-
     if (state.meltdownActive && !state.gameOver) { meltdownWarning.classList.add('active'); meltdownTimer.textContent = state.meltdownCounter; }
     else meltdownWarning.classList.remove('active');
 }
