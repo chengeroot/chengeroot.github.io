@@ -2,21 +2,23 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1117">
 <title>核电站控制台</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
 body {
     background: #0d1117;
     color: #d0d7de;
-    font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    font-family: 'Segoe UI', 'Microsoft YaHei', -apple-system, sans-serif;
     min-height: 100vh;
-    display: flex; justify-content: center; align-items: center;
-    padding: 16px;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 12px;
     background-image:
         radial-gradient(ellipse at 20% 0%, rgba(0, 212, 170, 0.08) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 100%, rgba(255, 159, 67, 0.06) 0%, transparent 60%),
         linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+    overflow-x: hidden;
 }
 .game-container {
     max-width: 1000px; width: 100%;
@@ -24,9 +26,7 @@ body {
     border-radius: 16px;
     padding: 22px 20px 26px;
     border: 1px solid rgba(48, 54, 61, 0.8);
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     position: relative;
 }
 .game-container::before {
@@ -40,78 +40,70 @@ body {
     display: flex; justify-content: space-between; align-items: center;
     flex-wrap: wrap; gap: 8px 12px; margin-bottom: 14px;
 }
-.title-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.title-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .title {
     font-weight: 900; font-size: 1.25rem;
-    letter-spacing: 2px;
-    color: #f0f6fc;
+    letter-spacing: 2px; color: #f0f6fc;
     display: flex; align-items: center; gap: 10px;
     text-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+    white-space: nowrap;
 }
-.title-icon {
-    width: 18px; height: 18px; position: relative; display: inline-block; flex-shrink: 0;
-}
+.title-icon { width: 18px; height: 18px; position: relative; display: inline-block; flex-shrink: 0; }
 .title-icon::before {
-    content: '';
-    position: absolute; inset: 2px;
-    border-radius: 50%;
+    content: ''; position: absolute; inset: 2px; border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #4dffc3, #00d4aa);
     box-shadow: 0 0 12px rgba(0, 212, 170, 0.9);
 }
 .title-icon::after {
-    content: '';
-    position: absolute; inset: -3px;
-    border: 1.5px solid rgba(0, 212, 170, 0.6);
-    border-radius: 50%;
-    border-top-color: transparent;
-    border-bottom-color: transparent;
+    content: ''; position: absolute; inset: -3px;
+    border: 1.5px solid rgba(0, 212, 170, 0.6); border-radius: 50%;
+    border-top-color: transparent; border-bottom-color: transparent;
     animation: spin 3s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .help-btn, .music-btn {
-    padding: 5px 14px; border-radius: 6px;
+    padding: 5px 12px; border-radius: 6px;
     border: 1px solid rgba(0, 212, 170, 0.35);
     background: rgba(0, 212, 170, 0.08);
-    color: #4dffc3; font-weight: 700; font-size: 0.7rem;
+    color: #4dffc3; font-weight: 700; font-size: 0.68rem;
     cursor: pointer; transition: all 0.2s;
+    font-family: inherit; white-space: nowrap;
 }
 .help-btn:hover, .music-btn:hover {
     background: rgba(0, 212, 170, 0.2);
     border-color: #00d4aa;
-    box-shadow: 0 0 14px rgba(0, 212, 170, 0.3);
-    transform: translateY(-1px);
 }
 .music-btn.playing {
     border-color: #ff9f43;
     color: #ff9f43;
     background: rgba(255, 159, 67, 0.12);
-    box-shadow: 0 0 14px rgba(255, 159, 67, 0.3);
     animation: musicPulse 1.8s ease-in-out infinite;
 }
 @keyframes musicPulse {
-    0%, 100% { box-shadow: 0 0 14px rgba(255, 159, 67, 0.3); }
-    50% { box-shadow: 0 0 22px rgba(255, 159, 67, 0.6); }
+    0%, 100% { box-shadow: 0 0 8px rgba(255, 159, 67, 0.3); }
+    50% { box-shadow: 0 0 18px rgba(255, 159, 67, 0.6); }
 }
 .status-badge {
-    display: flex; align-items: center; gap: 8px; font-size: 0.78rem;
-    font-weight: 700; padding: 6px 16px; border-radius: 40px;
+    display: flex; align-items: center; gap: 8px; font-size: 0.75rem;
+    font-weight: 700; padding: 6px 14px; border-radius: 40px;
     background: rgba(0, 212, 170, 0.08); border: 1px solid rgba(0, 212, 170, 0.3);
-    color: #4dffc3;
+    color: #4dffc3; white-space: nowrap;
 }
 .status-badge .dot {
     width: 10px; height: 10px; border-radius: 50%;
     animation: pulse-dot 1.4s ease-in-out infinite;
 }
-.dot.running { background: #00d4aa; box-shadow: 0 0 10px #00d4aa, 0 0 20px rgba(0,212,170,0.5); }
-.dot.warning { background: #ff9f43; box-shadow: 0 0 10px #ff9f43, 0 0 20px rgba(255,159,67,0.5); animation-duration: 0.8s; }
-.dot.danger { background: #ff5c5c; box-shadow: 0 0 10px #ff5c5c, 0 0 20px rgba(255,92,92,0.6); animation-duration: 0.4s; }
-.dot.meltdown { background: #ff1744; box-shadow: 0 0 14px #ff1744, 0 0 28px rgba(255,23,68,0.8); animation-duration: 0.2s; }
+.dot.running { background: #00d4aa; box-shadow: 0 0 10px #00d4aa; }
+.dot.warning { background: #ff9f43; box-shadow: 0 0 10px #ff9f43; animation-duration: 0.8s; }
+.dot.danger { background: #ff5c5c; box-shadow: 0 0 10px #ff5c5c; animation-duration: 0.4s; }
+.dot.meltdown { background: #ff1744; box-shadow: 0 0 14px #ff1744; animation-duration: 0.2s; }
 .dot.victory { background: #ffd740; box-shadow: 0 0 10px #ffd740; }
 @keyframes pulse-dot {
     0%, 100% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.5); opacity: 0.5; }
 }
 
+/* ===== 4 主仪表盘 ===== */
 .dashboard {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -124,13 +116,10 @@ body {
     padding: 16px 18px 14px;
     border: 1px solid rgba(48, 54, 61, 0.8);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
 }
 .gauge::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    opacity: 0.9;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.9;
 }
 .gauge:nth-child(1)::before { background: linear-gradient(90deg, transparent, #ff9f43, transparent); }
 .gauge:nth-child(2)::before { background: linear-gradient(90deg, transparent, #00d4aa, transparent); }
@@ -151,11 +140,9 @@ body {
 .gauge .value.money { color: #ffd740; }
 .gauge .value.time { color: #58a6ff; }
 .gauge .unit {
-    font-family: 'Consolas', monospace;
-    font-size: 0.8rem; font-weight: 700;
-    color: #6e7681; margin-top: 4px;
+    font-family: 'Consolas', monospace; font-size: 0.8rem;
+    font-weight: 700; color: #6e7681; margin-top: 4px;
 }
-.gauge .sub { font-size: 0.6rem; color: #6e7681; margin-top: 2px; }
 .gauge .bar-track {
     width: 100%; height: 5px; background: rgba(0, 0, 0, 0.5);
     border-radius: 3px; margin-top: 10px; overflow: hidden;
@@ -163,8 +150,7 @@ body {
 }
 .gauge .bar-fill { height: 100%; transition: width 0.4s; position: relative; }
 .gauge .bar-fill::after {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
     animation: shimmer 2s ease-in-out infinite;
 }
@@ -175,6 +161,7 @@ body {
 .bar-fill.temp-bar { background: linear-gradient(90deg, #00d4aa, #ff9f43, #ff5c5c); }
 .bar-fill.power-bar { background: linear-gradient(90deg, #ffd740, #ff9f43); }
 
+/* ===== 参数面板 ===== */
 .param-panel {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -182,16 +169,17 @@ body {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.7) 0%, rgba(18, 22, 28, 0.7) 100%);
     border-radius: 10px; padding: 12px 14px;
     border: 1px solid rgba(48, 54, 61, 0.6);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
 }
-.param-item { text-align: center; padding: 2px 4px; }
+.param-item { text-align: center; padding: 2px 4px; min-width: 0; }
 .param-item .p-label {
     font-size: 0.55rem; font-weight: 700; color: #6e7681;
     letter-spacing: 0.5px; margin-bottom: 5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .param-item .p-value {
     font-family: 'Consolas', monospace; font-size: 0.95rem;
     font-weight: 700; color: #d0d7de; transition: color 0.3s;
+    white-space: nowrap;
 }
 .param-item .p-value.good { color: #4dffc3; text-shadow: 0 0 8px rgba(77, 255, 195, 0.4); }
 .param-item .p-value.warn { color: #ff9f43; text-shadow: 0 0 8px rgba(255, 159, 67, 0.4); }
@@ -201,27 +189,25 @@ body {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.9) 0%, rgba(20, 25, 31, 0.9) 100%);
     border-radius: 10px; padding: 10px 16px; margin-bottom: 10px;
     border: 1px solid rgba(48, 54, 61, 0.7);
-    display: flex; align-items: center; flex-wrap: wrap; gap: 14px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
 }
 .panel-row .row-label {
     font-weight: 700; font-size: 0.72rem; color: #8b949e; letter-spacing: 0.5px;
 }
 .panel-row .row-value {
     font-family: 'Consolas', monospace; font-size: 0.95rem;
-    color: #ffd740; min-width: 50px; text-align: center;
-    font-weight: 700;
-    text-shadow: 0 0 12px rgba(255, 215, 64, 0.4);
+    color: #ffd740; min-width: 48px; text-align: center;
+    font-weight: 700; text-shadow: 0 0 12px rgba(255, 215, 64, 0.4);
 }
 .panel-row input[type="range"] {
-    flex: 1; min-width: 120px; accent-color: #00d4aa; height: 6px; cursor: pointer;
+    flex: 1; min-width: 100px; accent-color: #00d4aa; height: 6px; cursor: pointer;
 }
 .power-select .ps-btn {
     padding: 6px 20px; border-radius: 6px;
     border: 1px solid rgba(48, 54, 61, 0.8);
     background: rgba(48, 54, 61, 0.4);
     color: #8b949e; font-weight: 700; font-size: 0.72rem;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
 .power-select .ps-btn:hover { background: rgba(48, 54, 61, 0.7); color: #d0d7de; }
 .power-select .ps-btn.active.main {
@@ -240,16 +226,15 @@ body {
     border: 1px solid rgba(255, 159, 67, 0.5);
     background: rgba(255, 159, 67, 0.12);
     color: #ff9f43; font-weight: 700; font-size: 0.68rem;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
 }
 .relief-control .relief-btn:hover:not(:disabled) {
     background: rgba(255, 159, 67, 0.25);
-    box-shadow: 0 0 14px rgba(255, 159, 67, 0.4);
 }
 .relief-control .relief-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .relief-control .relief-status {
     font-family: 'Consolas', monospace; font-size: 0.78rem;
-    color: #4dffc3; min-width: 80px; font-weight: 700;
+    color: #4dffc3; min-width: 70px; font-weight: 700;
 }
 .relief-control .relief-status.warn { color: #ff9f43; }
 .relief-control .relief-status.danger { color: #ff5c5c; }
@@ -275,19 +260,18 @@ body {
     padding: 5px 14px; border-radius: 6px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
     color: #8b949e; font-size: 0.68rem; cursor: pointer; transition: all 0.2s;
-    font-weight: 700;
+    font-weight: 700; font-family: inherit;
 }
 .rod-single .rod-lock:hover { background: rgba(48, 54, 61, 0.7); color: #d0d7de; }
 .rod-single .rod-lock.active {
     background: linear-gradient(180deg, #ff5c5c, #d94747);
     border-color: #ff8585; color: #fff;
-    box-shadow: 0 0 14px rgba(255, 92, 92, 0.4);
 }
 .device-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .device-group {
     background: linear-gradient(180deg, rgba(30, 36, 44, 0.9) 0%, rgba(20, 25, 31, 0.9) 100%);
     border-radius: 10px; padding: 12px 14px; border: 1px solid rgba(48, 54, 61, 0.7);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    min-width: 0;
 }
 .device-group h4 {
     font-size: 0.65rem; font-weight: 700; color: #8b949e;
@@ -306,15 +290,15 @@ body {
     width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px;
     transition: all 0.3s;
 }
-.dev-led.on { background: #4dffc3; box-shadow: 0 0 8px #4dffc3, 0 0 16px rgba(77,255,195,0.4); }
+.dev-led.on { background: #4dffc3; box-shadow: 0 0 8px #4dffc3; }
 .dev-led.off { background: #484f58; }
-.dev-led.fault { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c, 0 0 16px rgba(255,92,92,0.6); animation: blink 0.5s infinite; }
+.dev-led.fault { background: #ff5c5c; box-shadow: 0 0 8px #ff5c5c; animation: blink 0.5s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 .device-row .dev-btn {
     padding: 3px 9px; border-radius: 4px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
     color: #8b949e; font-size: 0.55rem; cursor: pointer; transition: all 0.2s;
-    font-weight: 700;
+    font-weight: 700; font-family: inherit;
 }
 .device-row .dev-btn:hover:not(:disabled) { background: rgba(48, 54, 61, 0.8); color: #d0d7de; }
 .device-row .dev-btn:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -339,23 +323,20 @@ body {
 .device-row .src-btn {
     padding: 2px 7px; border-radius: 4px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
-    color: #8b949e; font-size: 0.55rem; font-weight: 700; cursor: pointer; min-width: 28px;
-    transition: all 0.2s;
+    color: #8b949e; font-size: 0.55rem; font-weight: 700; cursor: pointer; min-width: 26px;
+    font-family: inherit;
 }
 .device-row .src-btn.main {
     background: linear-gradient(180deg, #00d4aa, #00a888);
     border-color: #4dffc3; color: #0d1117;
-    box-shadow: 0 0 10px rgba(0, 212, 170, 0.4);
 }
 .device-row .src-btn.backup {
     background: linear-gradient(180deg, #ff9f43, #e0821e);
     border-color: #ffb866; color: #0d1117;
-    box-shadow: 0 0 10px rgba(255, 159, 67, 0.4);
 }
 .terminal {
     background: #010409; border: 1px solid rgba(48, 54, 61, 0.8);
     border-radius: 10px; margin-bottom: 12px; overflow: hidden;
-    box-shadow: inset 0 0 30px rgba(0, 212, 170, 0.05);
 }
 .terminal-header {
     display: flex; align-items: center; gap: 6px; padding: 8px 14px;
@@ -363,16 +344,16 @@ body {
     border-bottom: 1px solid rgba(48, 54, 61, 0.8);
 }
 .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
-.terminal-dot.red { background: #ff5f56; box-shadow: 0 0 6px rgba(255,95,86,0.6); }
-.terminal-dot.yellow { background: #ffbd2e; box-shadow: 0 0 6px rgba(255,189,46,0.6); }
-.terminal-dot.green { background: #27c93f; box-shadow: 0 0 6px rgba(39,201,63,0.6); }
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27c93f; }
 .terminal-title {
     font-family: 'Consolas', monospace; font-size: 0.65rem;
     color: #6e7681; letter-spacing: 1.5px; margin-left: 8px; font-weight: 700;
 }
 .terminal-body {
     padding: 10px 14px; height: 110px; overflow-y: auto;
-    font-family: 'Consolas', 'Courier New', monospace;
+    font-family: 'Consolas', monospace;
     font-size: 0.72rem; line-height: 1.6; background: #010409;
 }
 .terminal-body::-webkit-scrollbar { width: 6px; }
@@ -382,37 +363,29 @@ body {
 .terminal-line.info { color: #8b949e; }
 .terminal-line.warn { color: #ff9f43; }
 .terminal-line.danger { color: #ff5c5c; }
-.terminal-line.success { color: #4dffc3; text-shadow: 0 0 8px rgba(77,255,195,0.4); }
+.terminal-line.success { color: #4dffc3; }
 .terminal-line.system { color: #58a6ff; font-weight: 700; }
 .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
 .ctrl-btn {
-    padding: 8px 22px; border-radius: 8px; font-weight: 700; font-size: 0.75rem;
+    padding: 9px 20px; border-radius: 8px; font-weight: 700; font-size: 0.72rem;
     border: 1px solid rgba(48, 54, 61, 0.8);
     background: linear-gradient(180deg, rgba(48, 54, 61, 0.6), rgba(30, 36, 44, 0.6));
     color: #d0d7de; cursor: pointer; transition: all 0.2s;
     text-transform: uppercase; letter-spacing: 0.5px;
+    font-family: inherit;
 }
 .ctrl-btn:hover:not(:disabled) {
     background: linear-gradient(180deg, rgba(48, 54, 61, 0.9), rgba(30, 36, 44, 0.9));
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
+.ctrl-btn:active:not(:disabled) { transform: scale(0.96); }
 .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .ctrl-btn.primary { border-color: rgba(88, 166, 255, 0.5); color: #58a6ff; background: rgba(88, 166, 255, 0.1); }
-.ctrl-btn.primary:hover:not(:disabled) { background: rgba(88, 166, 255, 0.2); box-shadow: 0 6px 20px rgba(88, 166, 255, 0.3); }
 .ctrl-btn.danger { border-color: rgba(255, 92, 92, 0.5); color: #ff8585; background: rgba(255, 92, 92, 0.1); }
-.ctrl-btn.danger:hover:not(:disabled) { background: rgba(255, 92, 92, 0.2); box-shadow: 0 6px 20px rgba(255, 92, 92, 0.3); }
 .ctrl-btn.warning { border-color: rgba(255, 159, 67, 0.5); color: #ffb866; background: rgba(255, 159, 67, 0.1); }
-.ctrl-btn.warning:hover:not(:disabled) { background: rgba(255, 159, 67, 0.2); box-shadow: 0 6px 20px rgba(255, 159, 67, 0.3); }
 .ctrl-btn.success {
     border-color: #4dffc3; color: #4dffc3;
     background: rgba(77, 255, 195, 0.15);
     animation: restartPulse 1.5s ease-in-out infinite;
-}
-.ctrl-btn.success:hover:not(:disabled) {
-    background: rgba(77, 255, 195, 0.3);
-    box-shadow: 0 0 24px rgba(77, 255, 195, 0.5);
-    transform: translateY(-2px);
 }
 @keyframes restartPulse {
     0%, 100% { box-shadow: 0 0 0 rgba(77, 255, 195, 0); }
@@ -433,7 +406,7 @@ body {
 .modal-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(1, 4, 9, 0.9);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     display: none; justify-content: center; align-items: center;
     z-index: 1000; padding: 16px;
 }
@@ -443,7 +416,6 @@ body {
     background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
     border-radius: 14px; border: 1px solid rgba(48, 54, 61, 0.9);
     display: flex; flex-direction: column; overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
 }
 .modal-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -453,18 +425,17 @@ body {
 }
 .modal-header h2 { font-size: 1.1rem; font-weight: 700; color: #f0f6fc; letter-spacing: 1px; }
 .modal-close {
-    width: 32px; height: 32px; border-radius: 6px;
+    width: 34px; height: 34px; border-radius: 6px;
     border: 1px solid rgba(48, 54, 61, 0.8); background: rgba(48, 54, 61, 0.4);
     color: #8b949e; font-size: 1rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
+    font-family: inherit;
 }
-.modal-close:hover { background: #ff5c5c; border-color: #ff8585; color: #fff; }
+.modal-close:hover { background: #ff5c5c; color: #fff; }
 .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; line-height: 1.7; }
 .modal-body::-webkit-scrollbar { width: 6px; }
-.modal-body::-webkit-scrollbar-track { background: #010409; }
 .modal-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
-.help-section { margin-bottom: 24px; }
+.help-section { margin-bottom: 22px; }
 .help-section h3 {
     font-size: 0.9rem; font-weight: 700; color: #f0f6fc;
     margin-bottom: 12px; padding-bottom: 8px;
@@ -486,7 +457,6 @@ body {
 .help-section .highlight { color: #ffd740; font-weight: 700; }
 .help-section .danger-text { color: #ff5c5c; font-weight: 700; }
 .help-section .good-text { color: #4dffc3; font-weight: 700; }
-.help-section .warn-text { color: #ff9f43; font-weight: 700; }
 .help-tip {
     background: rgba(77, 255, 195, 0.05);
     border: 1px solid rgba(77, 255, 195, 0.25);
@@ -497,43 +467,273 @@ body {
 .scram-modal {
     max-width: 520px; background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
     border-radius: 14px; border: 2px solid; padding: 36px 32px; text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
 }
-.scram-modal.success { border-color: #4dffc3; box-shadow: 0 0 80px rgba(77, 255, 195, 0.4), 0 20px 60px rgba(0, 0, 0, 0.7); }
-.scram-modal.fail { border-color: #ff5c5c; box-shadow: 0 0 80px rgba(255, 92, 92, 0.5), 0 20px 60px rgba(0, 0, 0, 0.7); }
+.scram-modal.success { border-color: #4dffc3; }
+.scram-modal.fail { border-color: #ff5c5c; }
 .scram-modal .scram-icon { font-size: 4rem; line-height: 1; margin-bottom: 12px; display: block; }
-.scram-modal.success .scram-icon { color: #4dffc3; text-shadow: 0 0 30px rgba(77,255,195,0.8); }
-.scram-modal.fail .scram-icon { color: #ff5c5c; text-shadow: 0 0 30px rgba(255,92,92,0.8); }
-.scram-modal h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; letter-spacing: 1px; }
-.scram-modal.success h2 { color: #4dffc3; text-shadow: 0 0 20px rgba(77,255,195,0.5); }
-.scram-modal.fail h2 { color: #ff5c5c; text-shadow: 0 0 20px rgba(255,92,92,0.5); }
-.scram-modal .scram-desc { font-size: 0.95rem; color: #8b949e; margin-bottom: 20px; line-height: 1.6; }
+.scram-modal.success .scram-icon { color: #4dffc3; }
+.scram-modal.fail .scram-icon { color: #ff5c5c; }
+.scram-modal h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
+.scram-modal.success h2 { color: #4dffc3; }
+.scram-modal.fail h2 { color: #ff5c5c; }
+.scram-modal .scram-desc { font-size: 0.95rem; color: #8b949e; margin-bottom: 20px; }
 .scram-modal .scram-btn {
     padding: 10px 36px; border-radius: 8px; font-weight: 700;
     font-size: 0.9rem; cursor: pointer; border: 2px solid;
-    text-transform: uppercase; font-family: inherit; transition: all 0.2s;
+    text-transform: uppercase; font-family: inherit;
 }
 .scram-modal.success .scram-btn { border-color: #4dffc3; background: rgba(77,255,195,0.15); color: #4dffc3; }
-.scram-modal.success .scram-btn:hover { background: rgba(77,255,195,0.3); box-shadow: 0 0 24px rgba(77,255,195,0.5); }
 .scram-modal.fail .scram-btn { border-color: #ff5c5c; background: rgba(255,92,92,0.15); color: #ff5c5c; }
-.scram-modal.fail .scram-btn:hover { background: rgba(255,92,92,0.3); box-shadow: 0 0 24px rgba(255,92,92,0.5); }
 
-@media (max-width: 800px) {
-    .dashboard { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .device-panel { grid-template-columns: 1fr; }
-    .param-panel { grid-template-columns: repeat(4, 1fr); }
+/* ============================================
+   响应式适配
+   ============================================ */
+
+/* 平板 (≤900px) */
+@media (max-width: 900px) {
+    .game-container { padding: 18px 16px 22px; }
+    .dashboard { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .gauge { padding: 14px 14px 12px; }
+    .gauge .value { font-size: 1.9rem; }
+    .param-panel {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px; padding: 12px;
+    }
+    .param-item .p-value { font-size: 0.85rem; }
+    .device-panel { grid-template-columns: 1fr 1fr; gap: 10px; }
 }
-@media (max-width: 500px) {
-    .dashboard { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .gauge { padding: 12px 12px 10px; }
-    .gauge .value { font-size: 1.6rem; }
-    .gauge .label { font-size: 0.6rem; }
-    .param-panel { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+
+/* 手机横屏 / 大手机 (≤600px) */
+@media (max-width: 600px) {
+    body { padding: 8px; }
+    .game-container {
+        padding: 14px 12px 18px;
+        border-radius: 12px;
+    }
+    .header {
+        margin-bottom: 12px;
+        gap: 6px;
+    }
+    .title-wrap { gap: 6px; }
+    .title {
+        font-size: 1rem; letter-spacing: 1px;
+        gap: 6px;
+    }
+    .title-icon { width: 14px; height: 14px; }
+    .help-btn, .music-btn {
+        padding: 4px 9px; font-size: 0.6rem;
+        border-radius: 5px;
+    }
+    .status-badge {
+        padding: 5px 10px; font-size: 0.65rem;
+        border-radius: 30px;
+    }
+    .status-badge .dot { width: 8px; height: 8px; }
+
+    .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+    .gauge {
+        padding: 12px 12px 10px;
+        border-radius: 10px;
+    }
+    .gauge .label {
+        font-size: 0.62rem; margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+    .gauge .value {
+        font-size: 1.6rem;
+        letter-spacing: 0;
+    }
+    .gauge .unit {
+        font-size: 0.65rem; margin-top: 3px;
+    }
+    .gauge .bar-track { margin-top: 8px; height: 4px; }
+
+    .param-panel {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px; padding: 10px;
+        margin-bottom: 12px;
+    }
+    .param-item {
+        padding: 4px 2px;
+        border-bottom: 1px dashed rgba(48, 54, 61, 0.4);
+    }
+    .param-item:nth-last-child(-n+1) { border-bottom: none; }
+    .param-item .p-label { font-size: 0.5rem; margin-bottom: 3px; }
     .param-item .p-value { font-size: 0.8rem; }
-    .param-item .p-label { font-size: 0.5rem; }
+
+    .panel-row {
+        padding: 10px 12px;
+        gap: 8px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+    .panel-row .row-label {
+        font-size: 0.65rem;
+        flex-shrink: 0;
+    }
+    .panel-row .row-value { font-size: 0.85rem; min-width: 42px; }
+    .panel-row input[type="range"] { height: 8px; }
+
+    .power-select .ps-btn {
+        padding: 7px 16px; font-size: 0.68rem;
+        flex: 1; min-width: 0;
+    }
+    .power-select .ps-info {
+        font-size: 0.62rem;
+        width: 100%; margin-left: 0;
+        text-align: right;
+    }
+
+    .relief-control .relief-btn {
+        padding: 6px 14px; font-size: 0.65rem;
+    }
+    .relief-control .relief-status {
+        font-size: 0.72rem; min-width: 60px;
+    }
+    .relief-control span[style*="font-size:0.6rem"] {
+        display: none;
+    }
+
+    .meltdown-warning {
+        padding: 10px 14px;
+    }
+    .meltdown-warning .label { font-size: 0.8rem; }
+    .meltdown-warning .timer { font-size: 1.6rem; }
+
+    .rod-single .rod-lock {
+        padding: 6px 12px; font-size: 0.65rem;
+    }
+
+    .device-panel {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .device-group {
+        padding: 10px 12px;
+        border-radius: 8px;
+    }
+    .device-group h4 {
+        font-size: 0.62rem; margin-bottom: 8px;
+        padding-bottom: 6px;
+    }
+    .device-row {
+        font-size: 0.62rem;
+        padding: 6px 0;
+        gap: 5px;
+    }
+    .device-row .dev-btn {
+        padding: 4px 10px; font-size: 0.6rem;
+        min-width: 32px;
+    }
+    .device-row .power-slider {
+        min-width: 50px; height: 6px;
+    }
+    .device-row .power-label { font-size: 0.62rem; min-width: 34px; }
+    .device-row .cooldown-label { font-size: 0.62rem; min-width: 52px; }
+    .device-row .src-btn {
+        padding: 3px 8px; font-size: 0.58rem;
+        min-width: 30px;
+    }
+
+    .terminal-body {
+        height: 90px; font-size: 0.65rem;
+        padding: 8px 12px;
+    }
+    .terminal-title { font-size: 0.55rem; letter-spacing: 1px; }
+
+    .controls {
+        gap: 6px;
+        margin: 6px 0;
+    }
+    .ctrl-btn {
+        padding: 9px 12px; font-size: 0.65rem;
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
+        border-radius: 6px;
+    }
+
+    .message-area {
+        padding: 8px 12px;
+        min-height: 36px;
+        margin-top: 6px;
+    }
+    .message-area .msg { font-size: 0.72rem; }
+
     .modal-body { padding: 16px; }
     .modal-header { padding: 12px 16px; }
-    .terminal-body { height: 90px; }
+    .modal-header h2 { font-size: 0.95rem; }
+    .help-section h3 { font-size: 0.82rem; }
+    .help-section p, .help-section ul li { font-size: 0.78rem; }
+}
+
+/* 小手机 (≤380px) */
+@media (max-width: 380px) {
+    body { padding: 6px; }
+    .game-container {
+        padding: 12px 10px 14px;
+        border-radius: 10px;
+    }
+    .title { font-size: 0.9rem; }
+    .title-icon { width: 12px; height: 12px; }
+    .status-badge { font-size: 0.6rem; padding: 4px 8px; }
+    .help-btn, .music-btn { font-size: 0.55rem; padding: 3px 8px; }
+
+    .gauge { padding: 10px 10px 8px; }
+    .gauge .value { font-size: 1.35rem; }
+    .gauge .label { font-size: 0.55rem; }
+    .gauge .unit { font-size: 0.58rem; }
+
+    .param-item .p-value { font-size: 0.7rem; }
+    .param-item .p-label { font-size: 0.45rem; }
+
+    .panel-row { padding: 8px 10px; gap: 6px; }
+    .panel-row .row-label { font-size: 0.6rem; }
+    .panel-row .row-value { font-size: 0.78rem; }
+
+    .power-select .ps-btn { padding: 6px 10px; font-size: 0.6rem; }
+    .ctrl-btn { font-size: 0.6rem; padding: 8px 8px; }
+
+    .device-row .dev-btn { padding: 3px 7px; font-size: 0.55rem; }
+    .device-row { font-size: 0.58rem; }
+
+    .terminal-body { height: 80px; font-size: 0.6rem; }
+}
+
+/* 触摸设备 - 加大滑块拖动区 */
+@media (hover: none) and (pointer: coarse) {
+    .panel-row input[type="range"] {
+        height: 10px;
+    }
+    .device-row .power-slider {
+        height: 8px;
+    }
+    .ctrl-btn {
+        min-height: 42px;
+    }
+    .ps-btn {
+        min-height: 38px;
+    }
+    .relief-btn {
+        min-height: 38px;
+    }
+    .rod-lock {
+        min-height: 36px;
+    }
+    /* 去掉 hover 效果，避免移动端粘滞 */
+    .help-btn:hover, .music-btn:hover { transform: none; }
+    .ctrl-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* 横屏小高度适配 */
+@media (max-height: 500px) and (orientation: landscape) {
+    .terminal-body { height: 70px; }
+    .gauge { padding: 10px 12px; }
+    .gauge .value { font-size: 1.4rem; }
 }
 </style>
 </head>
@@ -690,7 +890,11 @@ body {
                 <p>目标负荷与实际发电的差值会累积为电网偏差。偏差接近0最稳定。偏差过大可能会损坏机组。</p>
             </div>
             <div class="help-section">
-                <h3>6. 快捷键</h3>
+                <h3>6. 音乐</h3>
+                <p>点击顶部 <span class="key">🎵 音乐</span> 按钮开启工业环境音，会随温度变化紧张度。快捷键 <span class="key">M</span> 切换。</p>
+            </div>
+            <div class="help-section">
+                <h3>7. 快捷键</h3>
                 <ul>
                     <li><span class="key">空格</span> / <span class="key">P</span> — 暂停/继续</li>
                     <li><span class="key">R</span> — 重置</li>
@@ -769,10 +973,7 @@ function initAudio() {
     try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         return true;
-    } catch (e) {
-        console.warn('音频不可用', e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 function startMusic() {
@@ -780,54 +981,32 @@ function startMusic() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     if (musicPlaying) return;
 
-    // 主输出增益
     musicMaster = audioCtx.createGain();
     musicMaster.gain.value = 0.0001;
     musicMaster.connect(audioCtx.destination);
 
-    // 1) 低频工业嗡鸣 55Hz 正弦波
     const osc1 = audioCtx.createOscillator();
-    osc1.type = 'sine';
-    osc1.frequency.value = 55;
-    const gain1 = audioCtx.createGain();
-    gain1.gain.value = 0.5;
-    osc1.connect(gain1);
-    gain1.connect(musicMaster);
-    osc1.start();
+    osc1.type = 'sine'; osc1.frequency.value = 55;
+    const gain1 = audioCtx.createGain(); gain1.gain.value = 0.5;
+    osc1.connect(gain1); gain1.connect(musicMaster); osc1.start();
 
-    // 2) 二次谐波 110Hz 三角波，音色更硬朗
     const osc2 = audioCtx.createOscillator();
-    osc2.type = 'triangle';
-    osc2.frequency.value = 110;
-    const gain2 = audioCtx.createGain();
-    gain2.gain.value = 0.12;
-    osc2.connect(gain2);
-    gain2.connect(musicMaster);
-    osc2.start();
+    osc2.type = 'triangle'; osc2.frequency.value = 110;
+    const gain2 = audioCtx.createGain(); gain2.gain.value = 0.12;
+    osc2.connect(gain2); gain2.connect(musicMaster); osc2.start();
 
-    // 3) 超低频脉动 0.18Hz 调制主音量，模拟呼吸感
     const lfo = audioCtx.createOscillator();
-    lfo.type = 'sine';
-    lfo.frequency.value = 0.18;
-    const lfoGain = audioCtx.createGain();
-    lfoGain.gain.value = 0.02;
-    lfo.connect(lfoGain);
-    lfoGain.connect(musicMaster.gain);
-    lfo.start();
+    lfo.type = 'sine'; lfo.frequency.value = 0.18;
+    const lfoGain = audioCtx.createGain(); lfoGain.gain.value = 0.02;
+    lfo.connect(lfoGain); lfoGain.connect(musicMaster.gain); lfo.start();
 
-    // 4) 略微失谐的谐波，制造工业机械的"拍频"感
     const osc3 = audioCtx.createOscillator();
-    osc3.type = 'sine';
-    osc3.frequency.value = 55.3;
-    const gain3 = audioCtx.createGain();
-    gain3.gain.value = 0.25;
-    osc3.connect(gain3);
-    gain3.connect(musicMaster);
-    osc3.start();
+    osc3.type = 'sine'; osc3.frequency.value = 55.3;
+    const gain3 = audioCtx.createGain(); gain3.gain.value = 0.25;
+    osc3.connect(gain3); gain3.connect(musicMaster); osc3.start();
 
     musicNodes = { osc1, osc2, osc3, lfo, gain1, gain2, gain3, lfoGain };
     musicPlaying = true;
-    // 淡入
     musicMaster.gain.cancelScheduledValues(audioCtx.currentTime);
     musicMaster.gain.setValueAtTime(0.0001, audioCtx.currentTime);
     musicMaster.gain.exponentialRampToValueAtTime(0.06, audioCtx.currentTime + 1.5);
@@ -841,12 +1020,7 @@ function stopMusic() {
     musicMaster.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
     const nodes = musicNodes;
     setTimeout(() => {
-        try {
-            nodes.osc1.stop();
-            nodes.osc2.stop();
-            nodes.osc3.stop();
-            nodes.lfo.stop();
-        } catch (e) {}
+        try { nodes.osc1.stop(); nodes.osc2.stop(); nodes.osc3.stop(); nodes.lfo.stop(); } catch (e) {}
     }, 600);
     musicNodes = null;
     musicPlaying = false;
@@ -866,31 +1040,17 @@ function toggleMusic() {
     }
 }
 
-// 根据状态调整音乐
 function updateMusic() {
     if (!musicPlaying || !audioCtx || !musicNodes) return;
     const now = audioCtx.currentTime;
     const temp = state.temperature;
-    let targetVolume = 0.06;
-    let targetFreq = 55;
-
-    if (state.gameOver) {
-        targetVolume = 0.03;
-        targetFreq = 40;
-    } else if (state.meltdownActive) {
-        targetVolume = 0.11;
-        targetFreq = 70;
-    } else if (temp > 1200) {
-        targetVolume = 0.10;
-        targetFreq = 66;
-    } else if (temp > 900) {
-        targetVolume = 0.085;
-        targetFreq = 60;
-    } else if (temp < COLD_SHUTDOWN_TEMP) {
-        targetVolume = 0.035;
-        targetFreq = 48;
-    } else {
-        // 温度越高，频率越高，制造紧张感
+    let targetVolume = 0.06, targetFreq = 55;
+    if (state.gameOver) { targetVolume = 0.03; targetFreq = 40; }
+    else if (state.meltdownActive) { targetVolume = 0.11; targetFreq = 70; }
+    else if (temp > 1200) { targetVolume = 0.10; targetFreq = 66; }
+    else if (temp > 900) { targetVolume = 0.085; targetFreq = 60; }
+    else if (temp < COLD_SHUTDOWN_TEMP) { targetVolume = 0.035; targetFreq = 48; }
+    else {
         targetVolume = 0.055 + (temp - 500) / 1500 * 0.02;
         targetFreq = 55 + (temp - 500) / 1000 * 3;
     }
@@ -903,7 +1063,6 @@ function updateMusic() {
     } catch (e) {}
 }
 
-// 短促的电子提示音
 function playBeep(freq = 880, duration = 0.08, volume = 0.05) {
     if (!audioCtx) return;
     try {
@@ -915,18 +1074,15 @@ function playBeep(freq = 880, duration = 0.08, volume = 0.05) {
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(volume, now + 0.005);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + duration + 0.02);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + duration + 0.02);
     } catch (e) {}
 }
 
-// 报警音
 function playAlarm() {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
-    if (now - lastAlarmTime < 1.2) return; // 限流
+    if (now - lastAlarmTime < 1.2) return;
     lastAlarmTime = now;
     try {
         const osc = audioCtx.createOscillator();
@@ -937,10 +1093,8 @@ function playAlarm() {
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.55);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + 0.55);
     } catch (e) {}
 }
 
@@ -1308,7 +1462,6 @@ function updatePhysics() {
     if (state.temperature >= MAX_TEMP && !state.scramTriggered && !state.gameOver) triggerEmergencyScram();
     if (state.meltdownActive) {
         state.meltdownCounter -= 1; meltdownTimer.textContent = state.meltdownCounter;
-        // 核融期间每5秒响一次警报
         if (state.meltdownCounter % 5 === 0) playAlarm();
         if (state.meltdownCounter <= 0) {
             state.gameOver = true; if (state.updateTimer) { clearInterval(state.updateTimer); state.updateTimer = null; }
