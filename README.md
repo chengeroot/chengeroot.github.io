@@ -15,31 +15,41 @@
             -webkit-tap-highlight-color: transparent
         }
 
-        body {
-            background: #0d1117;
-            color: #d0d7de;
-            font-family: 'Segoe UI','Microsoft YaHei',sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
-            background-image: radial-gradient(ellipse at 20% 0%,rgba(0,212,170,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(255,159,67,.06) 0%,transparent 60%),linear-gradient(180deg,#0d1117 0%,#161b22 100%);
-            overflow-x: hidden
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0d1117
         }
 
-        .game-container {
-            max-width: min(1500px,98vw);
-            width: 100%;
+        body {
+            font-family: 'Segoe UI','Microsoft YaHei',sans-serif;
+            color: #d0d7de;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(ellipse at 20% 0%,rgba(0,212,170,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(255,159,67,.06) 0%,transparent 60%),linear-gradient(180deg,#0d1117 0%,#161b22 100%)
+        }
+
+        /* ============ 16:9 舞台 ============ */
+        #stage {
+            position: relative;
+            width: 1600px;
+            height: 900px;
+            flex: 0 0 auto;
             background: linear-gradient(180deg,rgba(22,27,34,.95) 0%,rgba(13,17,23,.98) 100%);
             border-radius: 18px;
-            padding: 28px 32px 32px;
             border: 1px solid rgba(48,54,61,.8);
             box-shadow: 0 20px 60px rgba(0,0,0,.5);
-            position: relative
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+            transform-origin: center center
         }
 
-            .game-container::before {
+            #stage::before {
                 content: '';
                 position: absolute;
                 top: 0;
@@ -51,37 +61,39 @@
                 opacity: .7
             }
 
+        /* ============ 头部 ============ */
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px 14px;
-            margin-bottom: 20px
+            justify-content: space-between;
+            gap: 10px;
+            flex: 0 0 auto;
+            height: 42px
         }
 
         .title-wrap {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap
+            gap: 8px;
+            flex-wrap: nowrap;
+            min-width: 0
         }
 
         .title {
             font-weight: 900;
-            font-size: 1.7rem;
-            letter-spacing: 2px;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
             color: #f0f6fc;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             text-shadow: 0 0 24px rgba(0,212,170,.35);
             white-space: nowrap
         }
 
         .title-icon {
-            width: 24px;
-            height: 24px;
+            width: 16px;
+            height: 16px;
             position: relative;
             display: inline-block;
             flex-shrink: 0
@@ -90,10 +102,10 @@
             .title-icon::before {
                 content: '';
                 position: absolute;
-                inset: 2px;
+                inset: 1px;
                 border-radius: 50%;
                 background: radial-gradient(circle at 35% 35%,#4dffc3,#00d4aa);
-                box-shadow: 0 0 16px rgba(0,212,170,.9)
+                box-shadow: 0 0 14px rgba(0,212,170,.9)
             }
 
             .title-icon::after {
@@ -114,13 +126,13 @@
         }
 
         .help-btn, .music-btn, .install-btn, .save-btn, .load-btn {
-            padding: 8px 18px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 7px;
             border: 1px solid rgba(0,212,170,.35);
             background: rgba(0,212,170,.08);
             color: #4dffc3;
             font-weight: 700;
-            font-size: .85rem;
+            font-size: .72rem;
             cursor: pointer;
             transition: all .2s;
             font-family: inherit;
@@ -172,13 +184,13 @@
         }
 
         .difficulty-select {
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 7px;
             border: 1px solid rgba(88,166,255,.4);
             background: rgba(88,166,255,.08);
             color: #58a6ff;
             font-weight: 700;
-            font-size: .8rem;
+            font-size: .7rem;
             cursor: pointer;
             font-family: inherit;
             outline: none
@@ -192,10 +204,10 @@
         .status-badge {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: .95rem;
+            gap: 8px;
+            font-size: .78rem;
             font-weight: 700;
-            padding: 9px 22px;
+            padding: 6px 16px;
             border-radius: 40px;
             background: rgba(0,212,170,.08);
             border: 1px solid rgba(0,212,170,.3);
@@ -204,8 +216,8 @@
         }
 
             .status-badge .dot {
-                width: 12px;
-                height: 12px;
+                width: 10px;
+                height: 10px;
                 border-radius: 50%;
                 animation: pulse-dot 1.4s ease-in-out infinite
             }
@@ -245,17 +257,35 @@
             }
         }
 
+        /* ============ 主网格 ============ */
+        .main-grid {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 400px minmax(0,1fr) 420px;
+            gap: 12px
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 0;
+            min-width: 0
+        }
+
+        /* ============ 仪表盘 ============ */
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(4,1fr);
-            gap: 18px;
-            margin-bottom: 20px
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            flex: 0 0 auto
         }
 
         .gauge {
             background: linear-gradient(180deg,rgba(30,36,44,.95) 0%,rgba(18,22,28,.95) 100%);
-            border-radius: 14px;
-            padding: 22px 24px 20px;
+            border-radius: 11px;
+            padding: 11px 13px 10px;
             border: 1px solid rgba(48,54,61,.8);
             position: relative;
             overflow: hidden
@@ -267,7 +297,7 @@
                 top: 0;
                 left: 0;
                 right: 0;
-                height: 4px;
+                height: 3px;
                 opacity: .9
             }
 
@@ -288,19 +318,19 @@
             }
 
             .gauge .label {
-                font-size: .85rem;
+                font-size: .58rem;
                 font-weight: 700;
-                letter-spacing: 1.2px;
+                letter-spacing: 1px;
                 color: #8b949e;
-                margin-bottom: 12px
+                margin-bottom: 5px
             }
 
             .gauge .value {
                 font-family: 'Consolas',monospace;
-                font-size: 2.8rem;
+                font-size: 1.7rem;
                 font-weight: 900;
                 line-height: 1;
-                text-shadow: 0 0 24px currentColor,0 0 48px currentColor
+                text-shadow: 0 0 20px currentColor
             }
 
                 .gauge .value.temp {
@@ -321,18 +351,18 @@
 
             .gauge .unit {
                 font-family: 'Consolas',monospace;
-                font-size: .95rem;
+                font-size: .58rem;
                 font-weight: 700;
                 color: #6e7681;
-                margin-top: 6px
+                margin-top: 3px
             }
 
             .gauge .bar-track {
                 width: 100%;
-                height: 7px;
+                height: 5px;
                 background: rgba(0,0,0,.5);
-                border-radius: 4px;
-                margin-top: 14px;
+                border-radius: 3px;
+                margin-top: 8px;
                 overflow: hidden;
                 border: 1px solid rgba(48,54,61,.5)
             }
@@ -350,28 +380,29 @@
             background: linear-gradient(90deg,#ffd740,#ff9f43)
         }
 
+        /* ============ 参数面板 ============ */
         .param-panel {
             display: grid;
-            grid-template-columns: repeat(7,1fr);
-            gap: 8px;
-            margin-bottom: 14px;
+            grid-template-columns: repeat(4,1fr);
+            gap: 5px 4px;
+            padding: 9px 10px;
+            border-radius: 11px;
             background: linear-gradient(180deg,rgba(30,36,44,.7) 0%,rgba(18,22,28,.7) 100%);
-            border-radius: 12px;
-            padding: 16px 20px;
-            border: 1px solid rgba(48,54,61,.6)
+            border: 1px solid rgba(48,54,61,.6);
+            flex: 0 0 auto
         }
 
         .param-item {
             text-align: center;
-            padding: 4px 6px;
+            padding: 2px 3px;
             min-width: 0
         }
 
             .param-item .p-label {
-                font-size: .65rem;
+                font-size: .5rem;
                 font-weight: 700;
                 color: #6e7681;
-                margin-bottom: 8px;
+                margin-bottom: 4px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis
@@ -379,7 +410,7 @@
 
             .param-item .p-value {
                 font-family: 'Consolas',monospace;
-                font-size: 1.15rem;
+                font-size: .78rem;
                 font-weight: 700;
                 color: #d0d7de;
                 white-space: nowrap
@@ -400,32 +431,39 @@
                     text-shadow: 0 0 10px rgba(255,92,92,.5)
                 }
 
+        /* ============ 温度曲线 ============ */
         .chart-panel {
             background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(48,54,61,.7)
+            border-radius: 11px;
+            padding: 10px 13px 12px;
+            border: 1px solid rgba(48,54,61,.7);
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column
         }
 
             .chart-panel .chart-title {
-                font-size: .75rem;
+                font-size: .62rem;
                 color: #8b949e;
                 font-weight: 700;
-                margin-bottom: 8px;
+                margin-bottom: 7px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                letter-spacing: .6px
+                letter-spacing: .4px;
+                flex: 0 0 auto;
+                gap: 8px
             }
 
                 .chart-panel .chart-title .chart-legend {
-                    font-size: .65rem;
-                    color: #6e7681
+                    font-size: .55rem;
+                    color: #6e7681;
+                    white-space: nowrap
                 }
 
             .chart-panel .chart-legend span {
-                margin-left: 12px
+                margin-left: 8px
             }
 
             .chart-panel .chart-legend .legend-danger {
@@ -441,58 +479,65 @@
             }
 
         .chart-canvas {
+            flex: 1 1 auto;
             width: 100%;
-            height: 100px;
+            min-height: 0;
             display: block;
             border-radius: 8px;
             background: rgba(0,0,0,.35)
         }
 
+        /* ============ 控制行 ============ */
         .panel-row {
             background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 12px;
-            padding: 16px 22px;
-            margin-bottom: 14px;
+            border-radius: 10px;
+            padding: 7px 16px;
             border: 1px solid rgba(48,54,61,.7);
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px
+            flex-wrap: nowrap;
+            gap: 12px;
+            flex: 0 0 auto;
+            min-height: 44px
         }
 
             .panel-row .row-label {
                 font-weight: 700;
-                font-size: .9rem;
-                color: #8b949e
+                font-size: .72rem;
+                color: #8b949e;
+                white-space: nowrap;
+                flex-shrink: 0
             }
 
             .panel-row .row-value {
                 font-family: 'Consolas',monospace;
-                font-size: 1.15rem;
+                font-size: .9rem;
                 color: #ffd740;
-                min-width: 60px;
+                min-width: 48px;
                 text-align: center;
-                font-weight: 700
+                font-weight: 700;
+                flex-shrink: 0
             }
 
             .panel-row input[type="range"] {
-                flex: 1;
-                min-width: 140px;
+                flex: 1 1 auto;
+                min-width: 90px;
                 accent-color: #00d4aa;
-                height: 8px;
+                height: 6px;
                 cursor: pointer
             }
 
         .power-select .ps-btn {
-            padding: 10px 26px;
-            border-radius: 8px;
+            padding: 7px 20px;
+            border-radius: 7px;
             border: 1px solid rgba(48,54,61,.8);
             background: rgba(48,54,61,.4);
             color: #8b949e;
             font-weight: 700;
-            font-size: .9rem;
+            font-size: .72rem;
             cursor: pointer;
-            font-family: inherit
+            font-family: inherit;
+            white-space: nowrap
         }
 
             .power-select .ps-btn.active.main {
@@ -508,21 +553,23 @@
             }
 
         .power-select .ps-info {
-            font-size: .85rem;
+            font-size: .68rem;
             color: #6e7681;
-            margin-left: auto
+            margin-left: auto;
+            white-space: nowrap
         }
 
         .relief-control .relief-btn {
-            padding: 8px 22px;
-            border-radius: 8px;
+            padding: 6px 18px;
+            border-radius: 7px;
             border: 1px solid rgba(255,159,67,.5);
             background: rgba(255,159,67,.12);
             color: #ff9f43;
             font-weight: 700;
-            font-size: .85rem;
+            font-size: .72rem;
             cursor: pointer;
-            font-family: inherit
+            font-family: inherit;
+            white-space: nowrap
         }
 
             .relief-control .relief-btn:disabled {
@@ -532,10 +579,11 @@
 
         .relief-control .relief-status {
             font-family: 'Consolas',monospace;
-            font-size: .95rem;
+            font-size: .78rem;
             color: #4dffc3;
-            min-width: 90px;
-            font-weight: 700
+            min-width: 78px;
+            font-weight: 700;
+            white-space: nowrap
         }
 
             .relief-control .relief-status.warn {
@@ -548,32 +596,36 @@
 
         .boric-control {
             background: linear-gradient(180deg,rgba(50,30,30,.5) 0%,rgba(30,20,20,.5) 100%);
-            border-radius: 12px;
-            padding: 16px 22px;
-            margin-bottom: 14px;
+            border-radius: 10px;
+            padding: 7px 16px;
             border: 1px solid rgba(255,92,92,.4);
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px
+            flex-wrap: nowrap;
+            gap: 12px;
+            flex: 0 0 auto;
+            min-height: 44px
         }
 
             .boric-control .row-label {
                 font-weight: 700;
-                font-size: .9rem;
-                color: #ff8585
+                font-size: .72rem;
+                color: #ff8585;
+                white-space: nowrap;
+                flex-shrink: 0
             }
 
             .boric-control .boric-btn {
-                padding: 8px 22px;
-                border-radius: 8px;
+                padding: 6px 18px;
+                border-radius: 7px;
                 border: 1px solid rgba(255,92,92,.6);
                 background: rgba(255,92,92,.15);
                 color: #ff8585;
                 font-weight: 700;
-                font-size: .85rem;
+                font-size: .72rem;
                 cursor: pointer;
-                font-family: inherit
+                font-family: inherit;
+                white-space: nowrap
             }
 
                 .boric-control .boric-btn:disabled {
@@ -597,10 +649,11 @@
 
         .boric-control .boric-status {
             font-family: 'Consolas',monospace;
-            font-size: .95rem;
+            font-size: .78rem;
             color: #4dffc3;
-            min-width: 120px;
-            font-weight: 700
+            min-width: 100px;
+            font-weight: 700;
+            white-space: nowrap
         }
 
             .boric-control .boric-status.warn {
@@ -615,56 +668,17 @@
                 color: #58a6ff
             }
 
-        .meltdown-warning {
-            background: linear-gradient(90deg,rgba(220,38,38,.2),rgba(255,23,68,.15));
-            border: 1px solid #ff1744;
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 14px;
-            display: none;
-            justify-content: space-between;
-            align-items: center
-        }
-
-            .meltdown-warning.active {
-                display: flex;
-                animation: meltdownPulse 1s ease-in-out infinite
-            }
-
-        @keyframes meltdownPulse {
-            0%,100% {
-                box-shadow: 0 0 0 rgba(255,23,68,0)
-            }
-
-            50% {
-                box-shadow: 0 0 36px rgba(255,23,68,.5)
-            }
-        }
-
-        .meltdown-warning .label {
-            font-weight: 900;
-            color: #ff5c5c;
-            font-size: 1.15rem;
-            letter-spacing: 2px
-        }
-
-        .meltdown-warning .timer {
-            font-family: 'Consolas',monospace;
-            font-size: 2.4rem;
-            font-weight: 900;
-            color: #ff1744
-        }
-
         .rod-single .rod-lock {
-            padding: 8px 18px;
-            border-radius: 8px;
+            padding: 6px 14px;
+            border-radius: 7px;
             border: 1px solid rgba(48,54,61,.8);
             background: rgba(48,54,61,.4);
             color: #8b949e;
-            font-size: .85rem;
+            font-size: .72rem;
             cursor: pointer;
             font-weight: 700;
-            font-family: inherit
+            font-family: inherit;
+            white-space: nowrap
         }
 
             .rod-single .rod-lock.active {
@@ -673,125 +687,67 @@
                 color: #fff
             }
 
-        .shop-panel {
-            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 12px;
-            padding: 16px 22px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(255,215,64,.3)
-        }
-
-            .shop-panel h3 {
-                font-size: .9rem;
-                color: #ffd740;
-                margin-bottom: 12px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                letter-spacing: .6px
-            }
-
-                .shop-panel h3 .shop-money {
-                    font-family: 'Consolas',monospace;
-                    font-size: 1rem;
-                    color: #ffd740
-                }
-
-        .shop-items {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 12px
-        }
-
-        .shop-item {
-            background: rgba(0,0,0,.3);
-            border: 1px solid rgba(48,54,61,.6);
-            border-radius: 8px;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px
-        }
-
-            .shop-item .item-name {
-                font-size: .8rem;
-                font-weight: 700;
-                color: #d0d7de
-            }
-
-            .shop-item .item-desc {
-                font-size: .7rem;
-                color: #6e7681;
-                line-height: 1.4
-            }
-
-            .shop-item .item-buy {
-                padding: 7px 14px;
-                border-radius: 6px;
-                border: 1px solid rgba(255,215,64,.4);
-                background: rgba(255,215,64,.08);
-                color: #ffd740;
-                font-weight: 700;
-                font-size: .75rem;
-                cursor: pointer;
-                font-family: inherit
-            }
-
-                .shop-item .item-buy:disabled {
-                    opacity: .35;
-                    cursor: not-allowed;
-                    background: rgba(48,54,61,.3);
-                    border-color: rgba(48,54,61,.5);
-                    color: #6e7681
-                }
-
-        .device-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px
-        }
-
+        /* ============ 设备面板 ============ */
         .device-group {
             background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 12px;
-            padding: 18px 20px;
+            border-radius: 11px;
+            padding: 10px 16px 12px;
             border: 1px solid rgba(48,54,61,.7);
-            min-width: 0
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden
         }
 
             .device-group h4 {
-                font-size: .85rem;
+                font-size: .7rem;
                 font-weight: 700;
                 color: #8b949e;
-                margin-bottom: 14px;
+                margin-bottom: 6px;
                 display: flex;
                 justify-content: space-between;
                 border-bottom: 1px solid rgba(48,54,61,.5);
-                padding-bottom: 12px
+                padding-bottom: 6px;
+                flex: 0 0 auto
             }
+
+        #pumpContainer, #genContainer {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly
+        }
 
         .device-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 9px 0;
-            font-size: .78rem;
+            padding: 4px 0;
+            font-size: .7rem;
             gap: 8px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(48,54,61,.3)
+            flex-wrap: nowrap;
+            border-bottom: 1px solid rgba(48,54,61,.3);
+            flex: 0 0 auto
         }
 
             .device-row:last-child {
                 border-bottom: none
             }
 
+            .device-row > span:first-child {
+                white-space: nowrap;
+                flex-shrink: 0;
+                min-width: 78px
+            }
+
             .device-row .dev-led {
-                width: 11px;
-                height: 11px;
+                width: 10px;
+                height: 10px;
                 border-radius: 50%;
                 display: inline-block;
-                margin-right: 6px
+                margin-right: 4px
             }
 
         .dev-led.on {
@@ -819,13 +775,20 @@
             }
         }
 
+        .device-row .p-status, .device-row .g-status {
+            font-size: .6rem !important;
+            color: #8b949e;
+            min-width: 52px;
+            flex-shrink: 0
+        }
+
         .device-row .dev-btn {
-            padding: 5px 12px;
+            padding: 4px 10px;
             border-radius: 5px;
             border: 1px solid rgba(48,54,61,.8);
             background: rgba(48,54,61,.4);
             color: #8b949e;
-            font-size: .7rem;
+            font-size: .62rem;
             cursor: pointer;
             font-weight: 700;
             font-family: inherit;
@@ -853,42 +816,33 @@
             }
 
         .device-row .power-slider {
-            flex: 1;
+            flex: 1 1 auto;
             min-width: 60px;
             accent-color: #00d4aa;
-            height: 6px;
+            height: 5px;
             cursor: pointer
         }
 
         .device-row .power-label {
             font-family: 'Consolas',monospace;
-            font-size: .75rem;
+            font-size: .68rem;
             color: #ffd740;
-            min-width: 42px;
+            min-width: 38px;
             text-align: center;
             font-weight: 700;
             flex-shrink: 0
         }
 
-        .device-row .cooldown-label {
-            font-family: 'Consolas',monospace;
-            font-size: .75rem;
-            color: #ff5c5c;
-            min-width: 58px;
-            text-align: center;
-            font-weight: 700
-        }
-
         .device-row .src-btn {
-            padding: 3px 10px;
-            border-radius: 5px;
+            padding: 2px 8px;
+            border-radius: 4px;
             border: 1px solid rgba(48,54,61,.8);
             background: rgba(48,54,61,.4);
             color: #8b949e;
-            font-size: .68rem;
+            font-size: .6rem;
             font-weight: 700;
             cursor: pointer;
-            min-width: 34px;
+            min-width: 26px;
             font-family: inherit;
             flex-shrink: 0
         }
@@ -905,15 +859,21 @@
                 color: #0d1117
             }
 
+        .device-row .g-src {
+            display: flex;
+            gap: 3px;
+            flex-shrink: 0
+        }
+
         .device-row .g-temp {
             font-family: 'Consolas',monospace;
-            font-size: .7rem;
+            font-size: .6rem;
             font-weight: 700;
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 4px;
             background: rgba(0,0,0,.4);
             border: 1px solid rgba(48,54,61,.5);
-            margin-left: 4px;
+            margin-left: 3px;
             transition: color .3s,border-color .3s
         }
 
@@ -936,74 +896,105 @@
                 color: #484f58
             }
 
-        .event-banner {
-            background: linear-gradient(90deg,rgba(255,159,67,.15),rgba(255,159,67,.05));
-            border: 1px solid #ff9f43;
-            border-radius: 12px;
-            padding: 12px 20px;
-            margin-bottom: 14px;
-            display: none;
-            align-items: center;
-            gap: 12px
+        /* ============ 商店 ============ */
+        .shop-panel {
+            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
+            border-radius: 11px;
+            padding: 11px 16px 13px;
+            border: 1px solid rgba(255,215,64,.3);
+            flex: 0 0 auto
         }
 
-            .event-banner.active {
+            .shop-panel h3 {
+                font-size: .72rem;
+                color: #ffd740;
+                margin-bottom: 9px;
                 display: flex;
-                animation: eventPulse 1.5s ease-in-out infinite
+                justify-content: space-between;
+                align-items: center;
+                letter-spacing: .4px
             }
 
-        @keyframes eventPulse {
-            0%,100% {
-                box-shadow: 0 0 0 rgba(255,159,67,0)
+                .shop-panel h3 .shop-money {
+                    font-family: 'Consolas',monospace;
+                    font-size: .78rem;
+                    color: #ffd740
+                }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 8px
+        }
+
+        .shop-item {
+            background: rgba(0,0,0,.3);
+            border: 1px solid rgba(48,54,61,.6);
+            border-radius: 8px;
+            padding: 8px 9px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px
+        }
+
+            .shop-item .item-name {
+                font-size: .66rem;
+                font-weight: 700;
+                color: #d0d7de
             }
 
-            50% {
-                box-shadow: 0 0 24px rgba(255,159,67,.4)
+            .shop-item .item-desc {
+                font-size: .56rem;
+                color: #6e7681;
+                line-height: 1.4;
+                flex: 1 1 auto
             }
-        }
 
-        .event-banner .ev-icon {
-            font-size: 1.5rem
-        }
+            .shop-item .item-buy {
+                padding: 5px 8px;
+                border-radius: 6px;
+                border: 1px solid rgba(255,215,64,.4);
+                background: rgba(255,215,64,.08);
+                color: #ffd740;
+                font-weight: 700;
+                font-size: .62rem;
+                cursor: pointer;
+                font-family: inherit
+            }
 
-        .event-banner .ev-text {
-            font-weight: 700;
-            color: #ff9f43;
-            font-size: .9rem;
-            flex: 1
-        }
+                .shop-item .item-buy:disabled {
+                    opacity: .35;
+                    cursor: not-allowed;
+                    background: rgba(48,54,61,.3);
+                    border-color: rgba(48,54,61,.5);
+                    color: #6e7681
+                }
 
-        .event-banner .ev-close {
-            padding: 4px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,159,67,.4);
-            background: transparent;
-            color: #ff9f43;
-            font-size: .75rem;
-            cursor: pointer;
-            font-family: inherit
-        }
-
+        /* ============ 终端 ============ */
         .terminal {
             background: #010409;
             border: 1px solid rgba(48,54,61,.8);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            overflow: hidden
+            border-radius: 11px;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column
         }
 
         .terminal-header {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
+            gap: 6px;
+            padding: 7px 14px;
             background: linear-gradient(180deg,#1c2128,#161b22);
-            border-bottom: 1px solid rgba(48,54,61,.8)
+            border-bottom: 1px solid rgba(48,54,61,.8);
+            flex: 0 0 auto
         }
 
         .terminal-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%
         }
 
@@ -1021,25 +1012,26 @@
 
         .terminal-title {
             font-family: 'Consolas',monospace;
-            font-size: .75rem;
+            font-size: .6rem;
             color: #6e7681;
-            letter-spacing: 1.8px;
-            margin-left: 10px;
+            letter-spacing: 1.5px;
+            margin-left: 8px;
             font-weight: 700
         }
 
         .terminal-body {
-            padding: 14px 18px;
-            height: 160px;
+            padding: 10px 14px;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
             font-family: 'Consolas',monospace;
-            font-size: .85rem;
-            line-height: 1.7;
+            font-size: .7rem;
+            line-height: 1.6;
             background: #010409
         }
 
             .terminal-body::-webkit-scrollbar {
-                width: 8px
+                width: 7px
             }
 
             .terminal-body::-webkit-scrollbar-thumb {
@@ -1073,26 +1065,30 @@
                 font-weight: 700
             }
 
+        /* ============ 底部控制 ============ */
         .controls {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             justify-content: center;
-            flex-wrap: wrap;
-            margin: 12px 0
+            flex-wrap: nowrap;
+            flex: 0 0 auto
         }
 
         .ctrl-btn {
-            padding: 12px 30px;
-            border-radius: 10px;
+            padding: 9px 12px;
+            border-radius: 9px;
             font-weight: 700;
-            font-size: .85rem;
+            font-size: .68rem;
             border: 1px solid rgba(48,54,61,.8);
             background: linear-gradient(180deg,rgba(48,54,61,.6),rgba(30,36,44,.6));
             color: #d0d7de;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: .6px;
-            font-family: inherit
+            letter-spacing: .4px;
+            font-family: inherit;
+            flex: 1 1 0;
+            min-width: 0;
+            white-space: nowrap
         }
 
             .ctrl-btn:disabled {
@@ -1136,18 +1132,18 @@
         }
 
         .message-area {
-            margin-top: 12px;
-            padding: 14px 20px;
+            padding: 9px 16px;
             background: linear-gradient(90deg,rgba(88,166,255,.05),rgba(0,212,170,.05));
             border-radius: 10px;
             border: 1px solid rgba(48,54,61,.6);
             display: flex;
             align-items: center;
-            min-height: 46px
+            min-height: 40px;
+            flex: 0 0 auto
         }
 
             .message-area .msg {
-                font-size: .9rem;
+                font-size: .72rem;
                 color: #8b949e;
                 flex: 1;
                 font-weight: 600
@@ -1169,12 +1165,116 @@
                     color: #58a6ff
                 }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
+        /* ============ 浮动提示 ============ */
+        .meltdown-warning {
+            position: absolute;
+            top: 64px;
             left: 0;
             right: 0;
-            bottom: 0;
+            margin: 0 auto;
+            width: max-content;
+            max-width: 560px;
+            background: linear-gradient(90deg,rgba(220,38,38,.9),rgba(255,23,68,.85));
+            border: 1px solid #ff1744;
+            border-radius: 12px;
+            padding: 10px 22px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            z-index: 60;
+            backdrop-filter: blur(6px)
+        }
+
+            .meltdown-warning.active {
+                display: flex;
+                animation: meltdownPulse 1s ease-in-out infinite
+            }
+
+        @keyframes meltdownPulse {
+            0%,100% {
+                box-shadow: 0 0 0 rgba(255,23,68,0)
+            }
+
+            50% {
+                box-shadow: 0 0 36px rgba(255,23,68,.8)
+            }
+        }
+
+        .meltdown-warning .label {
+            font-weight: 900;
+            color: #fff;
+            font-size: .95rem;
+            letter-spacing: 2px
+        }
+
+        .meltdown-warning .timer {
+            font-family: 'Consolas',monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #fff
+        }
+
+        .event-banner {
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: max-content;
+            max-width: 620px;
+            background: rgba(60,42,20,.94);
+            border: 1px solid #ff9f43;
+            border-radius: 12px;
+            padding: 9px 18px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 55
+        }
+
+            .event-banner.active {
+                display: flex;
+                animation: eventPulse 1.5s ease-in-out infinite
+            }
+
+        @keyframes eventPulse {
+            0%,100% {
+                box-shadow: 0 0 0 rgba(255,159,67,0)
+            }
+
+            50% {
+                box-shadow: 0 0 24px rgba(255,159,67,.4)
+            }
+        }
+
+        .event-banner .ev-icon {
+            font-size: 1.2rem
+        }
+
+        .event-banner .ev-text {
+            font-weight: 700;
+            color: #ff9f43;
+            font-size: .78rem;
+            flex: 1;
+            white-space: nowrap
+        }
+
+        .event-banner .ev-close {
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,159,67,.4);
+            background: transparent;
+            color: #ff9f43;
+            font-size: .68rem;
+            cursor: pointer;
+            font-family: inherit
+        }
+
+        /* ============ 弹窗 ============ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
             background: rgba(1,4,9,.9);
             backdrop-filter: blur(8px);
             display: none;
@@ -1380,10 +1480,7 @@
 
         .hotkey-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background: rgba(1,4,9,.75);
             backdrop-filter: blur(6px);
             display: none;
@@ -1570,336 +1667,52 @@
             margin-top: 6px
         }
 
-        @media(max-width:1200px) {
-            .game-container {
-                padding: 22px 20px 26px
+        /* ===== 手机/竖屏：用原版自适应布局 ===== */
+        @media (max-width: 900px), (orientation: portrait) {
+            html, body {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                display: block;
+                padding: 8px;
             }
-
-            .gauge .value {
-                font-size: 2.3rem
+            #stage {
+                width: 100% !important;
+                height: auto !important;
+                min-height: auto;
+                transform: none !important;
+                border-radius: 12px;
+                padding: 12px;
             }
-
-            .param-item .p-value {
-                font-size: 1rem
+            .main-grid {
+                grid-template-columns: 1fr !important;
             }
-        }
-
-        @media(max-width:900px) {
-            .game-container {
-                padding: 20px 18px 24px
-            }
-
-            .dashboard {
-                gap: 10px
-            }
-
-            .gauge {
-                padding: 14px
-            }
-
-                .gauge .value {
-                    font-size: 1.9rem
-                }
-
-            .param-panel {
-                grid-template-columns: repeat(4,1fr);
-                gap: 8px;
-                padding: 12px
-            }
-
-            .device-panel {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px
-            }
-
-            .title {
-                font-size: 1.3rem
-            }
-
-            .title-icon {
-                width: 18px;
-                height: 18px
-            }
-        }
-
-        @media(max-width:600px) {
-            body {
-                padding: 8px
-            }
-
-            .game-container {
-                padding: 14px 12px 18px;
-                border-radius: 12px
-            }
-
             .header {
-                margin-bottom: 12px;
-                gap: 6px
-            }
-
-            .title-wrap {
-                gap: 6px
-            }
-
-            .title {
-                font-size: 1rem;
-                letter-spacing: 1px;
-                gap: 6px
-            }
-
-            .title-icon {
-                width: 14px;
-                height: 14px
-            }
-
-            .help-btn, .music-btn, .install-btn, .save-btn, .load-btn {
-                padding: 4px 9px;
-                font-size: .6rem;
-                border-radius: 5px
-            }
-
-            .status-badge {
-                padding: 5px 10px;
-                font-size: .65rem
-            }
-
-                .status-badge .dot {
-                    width: 8px;
-                    height: 8px
-                }
-
-            .difficulty-select {
-                padding: 5px 8px;
-                font-size: .65rem
-            }
-
-            .dashboard {
-                grid-template-columns: repeat(2,1fr);
-                gap: 10px;
-                margin-bottom: 12px
-            }
-
-            .gauge {
-                padding: 12px
-            }
-
-                .gauge .label {
-                    font-size: .62rem
-                }
-
-                .gauge .value {
-                    font-size: 1.6rem
-                }
-
-                .gauge .unit {
-                    font-size: .65rem
-                }
-
-            .param-panel {
-                grid-template-columns: repeat(2,1fr);
+                height: auto;
+                flex-wrap: wrap;
                 gap: 6px;
-                padding: 10px
             }
-
-            .param-item {
-                border-bottom: 1px dashed rgba(48,54,61,.4)
-            }
-
-                .param-item .p-label {
-                    font-size: .5rem
-                }
-
-                .param-item .p-value {
-                    font-size: .8rem
-                }
-
-            .panel-row {
-                padding: 10px 12px;
-                gap: 8px;
-                flex-wrap: wrap
-            }
-
-                .panel-row .row-label {
-                    font-size: .65rem
-                }
-
-                .panel-row .row-value {
-                    font-size: .85rem;
-                    min-width: 42px
-                }
-
-            .power-select .ps-btn {
-                padding: 7px 16px;
-                font-size: .68rem;
-                flex: 1;
-                min-width: 0
-            }
-
-            .power-select .ps-info {
-                font-size: .62rem;
-                width: 100%;
-                margin-left: 0;
-                text-align: right
-            }
-
-            .relief-control .relief-btn {
-                padding: 6px 14px;
-                font-size: .65rem
-            }
-
-            .relief-control .relief-status {
-                font-size: .72rem;
-                min-width: 60px
-            }
-
-            .boric-control {
-                padding: 10px 12px;
-                gap: 8px
-            }
-
-                .boric-control .boric-btn {
-                    padding: 6px 14px;
-                    font-size: .65rem
-                }
-
-                .boric-control .boric-status {
-                    font-size: .72rem;
-                    min-width: 90px
-                }
-
-            .device-panel {
-                grid-template-columns: 1fr;
-                gap: 10px
-            }
-
-            .device-group {
-                padding: 10px 12px
-            }
-
-                .device-group h4 {
-                    font-size: .62rem
-                }
-
-            .device-row {
-                font-size: .62rem;
-                padding: 6px 0;
-                gap: 4px
-            }
-
-                .device-row .dev-btn {
-                    padding: 4px 8px;
-                    font-size: .58rem;
-                    min-width: 28px
-                }
-
-                .device-row .g-temp {
-                    font-size: .55rem;
-                    padding: 1px 4px
-                }
-
             .shop-items {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px
+                grid-template-columns: 1fr;
             }
-
-            .shop-item {
-                padding: 8px 10px
-            }
-
-                .shop-item .item-name {
-                    font-size: .68rem
-                }
-
-                .shop-item .item-desc {
-                    font-size: .6rem
-                }
-
-                .shop-item .item-buy {
-                    padding: 5px 10px;
-                    font-size: .65rem
-                }
-
-            .terminal-body {
-                height: 90px;
-                font-size: .65rem;
-                padding: 8px 12px
-            }
-
-            .terminal-title {
-                font-size: .55rem
-            }
-
             .controls {
-                gap: 6px;
-                margin: 6px 0
+                flex-wrap: wrap;
             }
-
             .ctrl-btn {
-                padding: 9px 12px;
-                font-size: .65rem;
                 flex: 1 1 calc(50% - 6px);
-                min-width: 0;
-                border-radius: 6px
             }
-
-            .message-area {
-                padding: 8px 12px;
-                min-height: 36px
-            }
-
-                .message-area .msg {
-                    font-size: .72rem
-                }
-
-            .modal-body {
-                padding: 16px
-            }
-
-            .modal-header {
-                padding: 12px 16px
-            }
-
-                .modal-header h2 {
-                    font-size: .95rem
-                }
-
-            .help-section h3 {
-                font-size: .82rem
-            }
-
-            .help-section p, .help-section ul li {
-                font-size: .78rem
-            }
-
-            .scram-modal {
-                padding: 30px 24px
-            }
-
-                .scram-modal h2 {
-                    font-size: 1.4rem
-                }
-
-                .scram-modal .scram-icon {
-                    font-size: 3.5rem
-                }
-
-            .hotkey-card {
-                padding: 20px 18px
-            }
-
-                .hotkey-card h3 {
-                    font-size: .95rem
-                }
-
-            .chart-canvas {
-                height: 80px
-            }
+            .gauge .value { font-size: 1.6rem; }
+            .gauge .label { font-size: .68rem; }
+            .device-row { font-size: .78rem; flex-wrap: wrap; }
+            .chart-canvas { height: 120px !important; }
+            .panel-row { flex-wrap: wrap; min-height: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="game-container" id="app">
+    <div id="stage">
         <div class="header">
             <div class="title-wrap">
                 <div class="title"><span class="title-icon"></span>Reactor Rising</div>
@@ -1921,33 +1734,136 @@
             </div>
         </div>
 
-        <div class="dashboard">
-            <div class="gauge"><div class="label">核心温度</div><div class="value temp" id="tempDisplay">500</div><div class="unit">°C</div><div class="bar-track"><div class="bar-fill temp-bar" id="tempBar" style="width:33%"></div></div></div>
-            <div class="gauge"><div class="label">电功率</div><div class="value power" id="powerDisplay">0.0</div><div class="unit">MW</div><div class="bar-track"><div class="bar-fill power-bar" id="powerBar" style="width:0%"></div></div></div>
-            <div class="gauge"><div class="label">累计收益</div><div class="value money" id="moneyDisplay">0.00</div><div class="unit">元 · 无上限</div></div>
-            <div class="gauge"><div class="label">运行时间</div><div class="value time" id="timeDisplay">0s</div><div class="unit">实时</div></div>
-        </div>
+        <div class="main-grid">
 
-        <div class="param-panel">
-            <div class="param-item"><div class="p-label">热功率</div><div class="p-value" id="thermalPower">0.0 MW</div></div>
-            <div class="param-item"><div class="p-label">反应堆压力</div><div class="p-value" id="reactorPressure">8.0 MPa</div></div>
-            <div class="param-item"><div class="p-label">主电源</div><div class="p-value" id="mainPower">0.0 MW</div></div>
-            <div class="param-item"><div class="p-label">备用电源</div><div class="p-value" id="backupPower">100%</div></div>
-            <div class="param-item"><div class="p-label">反应堆稳定性</div><div class="p-value" id="reactorStability">100%</div></div>
-            <div class="param-item"><div class="p-label">中子通量</div><div class="p-value" id="neutronFlux">50%</div></div>
-            <div class="param-item"><div class="p-label">电网频率偏差</div><div class="p-value" id="gridDeviation">0.00%</div></div>
-        </div>
+            <!-- 左列 -->
+            <div class="col">
+                <div class="dashboard">
+                    <div class="gauge"><div class="label">核心温度</div><div class="value temp" id="tempDisplay">500</div><div class="unit">°C</div><div class="bar-track"><div class="bar-fill temp-bar" id="tempBar" style="width:33%"></div></div></div>
+                    <div class="gauge"><div class="label">电功率</div><div class="value power" id="powerDisplay">0.0</div><div class="unit">MW</div><div class="bar-track"><div class="bar-fill power-bar" id="powerBar" style="width:0%"></div></div></div>
+                    <div class="gauge"><div class="label">累计收益</div><div class="value money" id="moneyDisplay">0.00</div><div class="unit">元 · 无上限</div></div>
+                    <div class="gauge"><div class="label">运行时间</div><div class="value time" id="timeDisplay">0s</div><div class="unit">实时</div></div>
+                </div>
 
-        <div class="chart-panel">
-            <div class="chart-title">
-                <span>🌡️ 温度趋势（最近 60 秒）</span>
-                <span class="chart-legend">
-                    <span class="legend-danger">■ 危险 ≥1200°C</span>
-                    <span class="legend-warn">■ 高温 900°C</span>
-                    <span class="legend-safe">■ 安全区</span>
-                </span>
+                <div class="param-panel">
+                    <div class="param-item"><div class="p-label">热功率</div><div class="p-value" id="thermalPower">0.0 MW</div></div>
+                    <div class="param-item"><div class="p-label">反应堆压力</div><div class="p-value" id="reactorPressure">8.0 MPa</div></div>
+                    <div class="param-item"><div class="p-label">主电源</div><div class="p-value" id="mainPower">0.0 MW</div></div>
+                    <div class="param-item"><div class="p-label">备用电源</div><div class="p-value" id="backupPower">100%</div></div>
+                    <div class="param-item"><div class="p-label">反应堆稳定性</div><div class="p-value" id="reactorStability">100%</div></div>
+                    <div class="param-item"><div class="p-label">中子通量</div><div class="p-value" id="neutronFlux">50%</div></div>
+                    <div class="param-item"><div class="p-label">电网频率偏差</div><div class="p-value" id="gridDeviation">0.00%</div></div>
+                </div>
+
+                <div class="chart-panel">
+                    <div class="chart-title">
+                        <span>🌡️ 温度趋势（最近 60 秒）</span>
+                        <span class="chart-legend">
+                            <span class="legend-danger">■ ≥1200°C</span>
+                            <span class="legend-warn">■ 900°C</span>
+                            <span class="legend-safe">■ 安全区</span>
+                        </span>
+                    </div>
+                    <canvas class="chart-canvas" id="tempChart"></canvas>
+                </div>
             </div>
-            <canvas class="chart-canvas" id="tempChart"></canvas>
+
+            <!-- 中列 -->
+            <div class="col">
+                <div class="panel-row power-select">
+                    <span class="row-label">供电来源</span>
+                    <button class="ps-btn main active" id="psMain">主电源</button>
+                    <button class="ps-btn backup" id="psBackup">备用电源</button>
+                    <span class="ps-info" id="psInfo">主 0MW / 备 0MW</span>
+                </div>
+
+                <div class="panel-row load-control">
+                    <span class="row-label">电网目标负荷</span>
+                    <input type="range" class="load-slider" id="loadSlider" min="0" max="200" value="50" step="1">
+                    <span class="row-value" id="loadValue">50</span>
+                    <span style="font-size:.68rem;color:#6e7681;">MW</span>
+                    <span id="loadHint" style="font-size:.65rem;color:#4dffc3;font-weight:700;min-width:76px;white-space:nowrap;">建议: 0 MW</span>
+                </div>
+
+                <div class="panel-row relief-control">
+                    <span class="row-label">💨 泄压阀</span>
+                    <button class="relief-btn" id="reliefBtn">立即泄压</button>
+                    <span class="relief-status" id="reliefStatus">就绪</span>
+                    <span style="font-size:.62rem;color:#6e7681;white-space:nowrap;">降1.5MPa / 降温8°C</span>
+                </div>
+
+                <div class="boric-control">
+                    <span class="row-label">☢️ 硼酸注入</span>
+                    <button class="boric-btn" id="boricBtn">注入硼酸</button>
+                    <span class="boric-status" id="boricStatus">就绪</span>
+                    <span style="font-size:.62rem;color:#8b949e;white-space:nowrap;">10秒降温200°C · 30秒发电减半</span>
+                </div>
+
+                <div class="panel-row rod-single">
+                    <span class="row-label">🛑 控制棒 (512根)</span>
+                    <input type="range" class="rod-slider" id="rodSlider" min="0" max="100" value="30">
+                    <span class="row-value" id="rodValue">30%</span>
+                    <button class="rod-lock" id="rodLock">解锁</button>
+                </div>
+
+                <div class="device-group">
+                    <h4>💧 冷却水泵 <span id="pumpSummary">0/4 运行</span></h4>
+                    <div id="pumpContainer"></div>
+                </div>
+
+                <div class="device-group">
+                    <h4>⚡ 发电机+变压器 <span id="genSummary">0/4 正常</span></h4>
+                    <div id="genContainer"></div>
+                    <div style="margin-top:5px;font-size:.62rem;color:#6e7681;flex:0 0 auto;">
+                        停电: <span id="outageDisplay">无</span> | 水泵供电: <span id="pumpPowerStatus">正常</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右列 -->
+            <div class="col">
+                <div class="shop-panel">
+                    <h3>💎 商店 <span class="shop-money" id="shopMoney">余额：0.00 元</span></h3>
+                    <div class="shop-items">
+                        <div class="shop-item">
+                            <div class="item-name">💧 第 5 台水泵</div>
+                            <div class="item-desc">增加一台独立冷却水泵</div>
+                            <button class="item-buy" id="buyPump5" disabled>购买 50 元</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-name">⚡ 冷却效率升级</div>
+                            <div class="item-desc">每级 +5% 冷却 · 当前 Lv.<span id="coolLv">1</span></div>
+                            <button class="item-buy" id="buyCool" disabled>升级 30 元</button>
+                        </div>
+                        <div class="shop-item">
+                            <div class="item-name">🔧 紧急修复</div>
+                            <div class="item-desc">故障设备旁的黄色按钮</div>
+                            <button class="item-buy" disabled>每次 10 元</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title">控制终端 / SYSTEM LOG</span>
+                    </div>
+                    <div class="terminal-body" id="terminalBody"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="ctrl-btn primary" id="btnPause">⏸ 暂停</button>
+                    <button class="ctrl-btn danger" id="btnScram">🛑 紧急停堆</button>
+                    <button class="ctrl-btn success" id="btnRestart" style="display:none;">🚀 启动反应堆</button>
+                    <button class="ctrl-btn warning" id="btnReset">⟲ 重置</button>
+                </div>
+
+                <div class="message-area">
+                    <span class="msg info" id="message">系统就绪 · 按 H 查看快捷键</span>
+                </div>
+            </div>
         </div>
 
         <div class="event-banner" id="eventBanner">
@@ -1956,105 +1872,14 @@
             <button class="ev-close" id="evClose">知道了</button>
         </div>
 
-        <div class="shop-panel">
-            <h3>💎 商店 <span class="shop-money" id="shopMoney">余额：0.00 元</span></h3>
-            <div class="shop-items">
-                <div class="shop-item">
-                    <div class="item-name">💧 第 5 台水泵</div>
-                    <div class="item-desc">增加一台独立冷却水泵</div>
-                    <button class="item-buy" id="buyPump5" disabled>购买 50 元</button>
-                </div>
-                <div class="shop-item">
-                    <div class="item-name">⚡ 冷却效率升级</div>
-                    <div class="item-desc">每级 +5% 冷却 · 当前 Lv.<span id="coolLv">1</span></div>
-                    <button class="item-buy" id="buyCool" disabled>升级 30 元</button>
-                </div>
-                <div class="shop-item">
-                    <div class="item-name">🔧 紧急修复</div>
-                    <div class="item-desc">故障设备旁的黄色按钮</div>
-                    <button class="item-buy" disabled>每次 10 元</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel-row power-select">
-            <span class="row-label">供电来源</span>
-            <button class="ps-btn main active" id="psMain">主电源</button>
-            <button class="ps-btn backup" id="psBackup">备用电源</button>
-            <span class="ps-info" id="psInfo">主 0MW / 备 0MW</span>
-        </div>
-
-        <div class="panel-row load-control">
-            <span class="row-label">电网目标负荷</span>
-            <input type="range" class="load-slider" id="loadSlider" min="0" max="200" value="50" step="1">
-            <span class="row-value" id="loadValue">50</span>
-            <span style="font-size:.75rem;color:#6e7681;">MW</span>
-            <span id="loadHint" style="font-size:.7rem;color:#4dffc3;font-weight:700;min-width:80px;">建议: 0 MW</span>
-        </div>
-
-        <div class="panel-row relief-control">
-            <span class="row-label">💨 泄压阀</span>
-            <button class="relief-btn" id="reliefBtn">立即泄压</button>
-            <span class="relief-status" id="reliefStatus">就绪</span>
-            <span style="font-size:.7rem;color:#6e7681;">降1.5MPa / 降温8°C</span>
-        </div>
-
-        <div class="boric-control">
-            <span class="row-label">☢️ 硼酸注入</span>
-            <button class="boric-btn" id="boricBtn">注入硼酸</button>
-            <span class="boric-status" id="boricStatus">就绪</span>
-            <span style="font-size:.7rem;color:#8b949e;">10秒内降温200°C · 30秒发电减半</span>
-        </div>
-
         <div class="meltdown-warning" id="meltdownWarning">
             <span class="label">☢️ 核融倒计时</span>
             <span class="timer" id="meltdownTimer">60</span>
-            <span style="font-size:1rem;color:#ff5c5c;">秒</span>
-        </div>
-
-        <div class="panel-row rod-single">
-            <span class="row-label">🛑 控制棒 (512根)</span>
-            <input type="range" class="rod-slider" id="rodSlider" min="0" max="100" value="30">
-            <span class="row-value" id="rodValue">30%</span>
-            <button class="rod-lock" id="rodLock">解锁</button>
-        </div>
-
-        <div class="device-panel">
-            <div class="device-group">
-                <h4>💧 冷却水泵 <span id="pumpSummary">0/4 运行</span></h4>
-                <div id="pumpContainer"></div>
-            </div>
-            <div class="device-group">
-                <h4>⚡ 发电机+变压器 <span id="genSummary">0/4 正常</span></h4>
-                <div id="genContainer"></div>
-                <div style="margin-top:8px;font-size:.75rem;color:#6e7681;">
-                    停电: <span id="outageDisplay">无</span> | 水泵供电: <span id="pumpPowerStatus">正常</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="terminal">
-            <div class="terminal-header">
-                <span class="terminal-dot red"></span>
-                <span class="terminal-dot yellow"></span>
-                <span class="terminal-dot green"></span>
-                <span class="terminal-title">控制终端 / SYSTEM LOG</span>
-            </div>
-            <div class="terminal-body" id="terminalBody"></div>
-        </div>
-
-        <div class="controls">
-            <button class="ctrl-btn primary" id="btnPause">⏸ 暂停</button>
-            <button class="ctrl-btn danger" id="btnScram">🛑 紧急停堆</button>
-            <button class="ctrl-btn success" id="btnRestart" style="display:none;">🚀 启动反应堆</button>
-            <button class="ctrl-btn warning" id="btnReset">⟲ 重置</button>
-        </div>
-
-        <div class="message-area">
-            <span class="msg info" id="message">系统就绪 · 按 H 查看快捷键</span>
+            <span style="font-size:.85rem;color:#fff;">秒</span>
         </div>
     </div>
 
+    <!-- ============ 弹窗（置于舞台外，不受缩放影响） ============ -->
     <div class="hotkey-overlay" id="hotkeyOverlay">
         <div class="hotkey-card">
             <h3>⌨️ 快捷键</h3>
@@ -2083,7 +1908,7 @@
                 <div class="help-section"><h3>3. 温度曲线图</h3><p>红线是 1200°C（危险区），橙线是 900°C（提醒线）。曲线快速上扬时马上插深控制棒。</p></div>
                 <div class="help-section"><h3>4. 紧急降温</h3><ul><li><strong>💨 泄压阀</strong>：降 8°C、降 1.5MPa，3 秒冷却</li><li><strong>☢️ 硼酸注入</strong>：10 秒内降 200°C，之后 30 秒发电减半，60 秒冷却</li></ul></div>
                 <div class="help-section"><h3>5. 水泵和发电机组</h3><ul><li>水泵负责降温，每台可单独调功率</li><li>发电机组负责发电，也是每台单独调</li><li>设备坏了要等 12 秒修，或花 10 元紧急修复</li></ul></div>
-                <div class="help-section"><h3>6. ⚡ 机组温度（新增）</h3><p>每台发电机组旁边有个温度显示（默认 25°C）：</p><ul><li>功率拉得越高、反应堆越热、压力越大 → 机组越热</li><li>水泵越强 → 机组凉得越快</li></ul><p>颜色含义：</p><ul><li><span class="good-text">绿色</span>（&lt; 80°C）：正常</li><li><span class="warn-text">橙色</span>（80~100°C）：发电效率下降</li><li><span class="danger-text">红色闪烁</span>（&gt; 100°C）：每秒有概率过热损坏</li></ul><p>想让机组满功率发电，保证水泵够强、温度别太高、压力别太大。</p></div>
+                <div class="help-section"><h3>6. ⚡ 机组温度</h3><p>每台发电机组旁边有个温度显示（默认 25°C）：</p><ul><li>功率拉得越高、反应堆越热、压力越大 → 机组越热</li><li>水泵越强 → 机组凉得越快</li></ul><p>颜色含义：</p><ul><li><span class="good-text">绿色</span>（&lt; 80°C）：正常</li><li><span class="warn-text">橙色</span>（80~100°C）：发电效率下降</li><li><span class="danger-text">红色闪烁</span>（&gt; 100°C）：每秒有概率过热损坏</li></ul><p>想让机组满功率发电，保证水泵够强、温度别太高、压力别太大。</p></div>
                 <div class="help-section"><h3>7. 电网调频</h3><p>滑块旁的"建议：XX MW"提示：绿=差&lt;5，橙=差5~15，红=差&gt;15。开局前 60 秒保护，不会因电网损坏设备。</p></div>
                 <div class="help-section"><h3>8. 商店</h3><ul><li><strong>第 5 台水泵（50 元）</strong>：多一台降温，对机组冷却也有帮助</li><li><strong>冷却效率升级（30 元/级）</strong>：每级 +5% 冷却</li><li><strong>紧急修复（10 元/次）</strong>：设备坏了后的黄色按钮</li></ul></div>
                 <div class="help-section"><h3>9. 随机事件</h3><ul><li>⚡ 电网需求突变</li><li>💧 冷却水泄漏（温度+20~40°C）</li><li>🌊 地震（2~3 台水泵同时故障）</li></ul></div>
@@ -2217,6 +2042,28 @@
         const btnInstall=$('btnInstall'),btnSave=$('btnSave'),btnLoad=$('btnLoad');
         const saveNameModal=$('saveNameModal'),saveNameInput=$('saveNameInput');
         const btnCloseSaveName=$('btnCloseSaveName'),btnCancelSaveName=$('btnCancelSaveName'),btnConfirmSaveName=$('btnConfirmSaveName');
+        const stage=$('stage');
+
+        /* ====== 16:9 自适应缩放 ====== */
+        const BASE_W=1600,BASE_H=900;
+        let stageScale=1;
+
+        function fitStage(){
+        const vw = window.innerWidth, vh = window.innerHeight;
+        // 手机或竖屏：不缩放，用原版自适应
+        const isMobile = vw < 900 || vw / vh < 1;
+        if(isMobile){
+            stageScale = 1;
+            stage.style.transform = 'none';
+        }else{
+            // 电脑横屏：16:9 缩放
+            stageScale = Math.min(vw / BASE_W, vh / BASE_H);
+            stage.style.transform = 'scale(' + stageScale + ')';
+        }
+        drawTempChart();
+        }
+        window.addEventListener('resize',fitStage);
+        window.addEventListener('orientationchange',()=>setTimeout(fitStage,120));
 
         function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
         function rand(a,b){return Math.random()*(b-a)+a}
@@ -2226,10 +2073,13 @@
         function showEvent(icon,text){if(!diff().showPopup){log('[事件] '+text,'warn');return}evIcon.textContent=icon;evText.textContent=text;eventBanner.classList.add('active');setTimeout(()=>eventBanner.classList.remove('active'),6000)}
         function updateGridDisplay(){const d=state.gridDeviation;let arrow='';if(d>0.15)arrow=' ↑';else if(d<-0.15)arrow=' ↓';else arrow=' ·';gridDeviationEl.textContent=d.toFixed(2)+'%'+arrow;const abs=Math.abs(d);if(abs<1)gridDeviationEl.className='p-value good';else if(abs<3)gridDeviationEl.className='p-value warn';else gridDeviationEl.className='p-value danger'}
         function updateShop(){shopMoney.textContent='余额：'+state.money.toFixed(2)+' 元';coolLv.textContent=state.coolLevel;buyPump5.disabled=state.money<PRICE_PUMP5||state.pumpCount>=5;if(state.pumpCount>=5){buyPump5.textContent='已拥有'}else{buyPump5.textContent=`购买 ${PRICE_PUMP5} 元`}buyCool.disabled=state.money<PRICE_COOL;buyCool.textContent=`升级 ${PRICE_COOL} 元`}
+
         function drawTempChart(){
-        const ctx=tempChart.getContext('2d');const dpr=window.devicePixelRatio||1;
+        const ctx=tempChart.getContext('2d');
+        const dpr=Math.min(2.5,Math.max(1,(window.devicePixelRatio||1)*stageScale));
         const w=tempChart.clientWidth,h=tempChart.clientHeight;
-        if(tempChart.width!==w*dpr||tempChart.height!==h*dpr){tempChart.width=w*dpr;tempChart.height=h*dpr}
+        if(w<=0||h<=0)return;
+        if(tempChart.width!==Math.round(w*dpr)||tempChart.height!==Math.round(h*dpr)){tempChart.width=Math.round(w*dpr);tempChart.height=Math.round(h*dpr)}
         ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
         ctx.strokeStyle='rgba(48,54,61,0.5)';ctx.lineWidth=1;
         for(let i=0;i<=4;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
@@ -2346,7 +2196,7 @@
         const row=document.createElement('div');row.className='device-row';
         row.innerHTML=`
         <span>泵${idx+1} <span class="dev-led off"></span></span>
-        <span class="p-status" style="font-size:.65rem;color:#8b949e;">运行</span>
+        <span class="p-status" style="font-size:.6rem;color:#8b949e;">运行</span>
         <input type="range" class="power-slider" min="0" max="100" value="${p.power}">
         <span class="power-label">${p.power}%</span>
         <div>
@@ -2378,7 +2228,7 @@
         const row=document.createElement('div');row.className='device-row';
         row.innerHTML=`
         <span>机组${idx+1} <span class="dev-led off"></span> <span class="g-temp normal">${GEN_TEMP_INIT}°C</span></span>
-        <span class="g-status" style="font-size:.65rem;color:#8b949e;">运行</span>
+        <span class="g-status" style="font-size:.6rem;color:#8b949e;">运行</span>
         <span class="g-src"></span>
         <input type="range" class="power-slider" min="0" max="100" value="${g.power}">
         <span class="power-label">${g.power}%</span>
@@ -2461,7 +2311,6 @@
         if(state.powerSelect==='main'){if(state.mainPowerBus<pumpDemand)pumpPowered=false}
         else{if(state.backupPower<=0)pumpPowered=false}
 
-        // 机组温度
         const envHeat=Math.max(0,(state.temperature-GEN_TEMP_ENV_BASE)/GEN_TEMP_ENV_SPAN)*GEN_TEMP_ENV_GAIN;
         const pressureHeat=Math.max(0,(state.reactorPressure-GEN_TEMP_PRESSURE_BASE)/GEN_TEMP_PRESSURE_SPAN)*GEN_TEMP_PRESSURE_GAIN;
         const pumpCoolFactor=(pumpPowered?totalPumpPower:0)/4;
@@ -2723,7 +2572,7 @@
         function closeHelp(){helpModal.classList.remove('active');if(!wasPausedBeforeHelp&&!state.gameOver){state.paused=false;btnPause.textContent='⏸ 暂停';if(!state.rodAnimId&&Math.abs(state.rodTarget-state.rodDepth)>0.3&&!state.rodLocked)state.rodAnimId=requestAnimationFrame(animateRod)}}
 
         function setupPWA(){
-        const manifest={name:'Reactor Rising',short_name:'Reactor Rising',description:'实时核反应堆模拟游戏',start_url:'.',display:'standalone',background_color:'#0d1117',theme_color:'#00d4aa',orientation:'portrait',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d1117'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%2300d4aa' stroke-width='16'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300d4aa'/%3E%3Ccircle cx='256' cy='256' r='20' fill='%23fff'/%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+        const manifest={name:'Reactor Rising',short_name:'Reactor Rising',description:'实时核反应堆模拟游戏',start_url:'.',display:'standalone',background_color:'#0d1117',theme_color:'#00d4aa',orientation:'landscape',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%230d1117'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%2300d4aa' stroke-width='16'/%3E%3Ccircle cx='256' cy='256' r='60' fill='%2300d4aa'/%3E%3Ccircle cx='256' cy='256' r='20' fill='%23fff'/%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
         const manifestUrl='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(manifest));
         let link=document.querySelector('link[rel="manifest"]');if(!link){link=document.createElement('link');link.rel='manifest';document.head.appendChild(link)}link.href=manifestUrl;
         let deferredPrompt=null;
@@ -2777,12 +2626,12 @@
         window.addEventListener('focus',onFocus);document.body.appendChild(input);input.click()
         });
 
-        window.addEventListener('resize',()=>drawTempChart());
         document.addEventListener('keydown',handleKeydown);
         setupPWA();
+        fitStage();
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL);
-        drawTempChart();
-        console.log('[系统] Reactor Rising 已启动')
+        requestAnimationFrame(()=>{drawTempChart();fitStage()});
+        console.log('[系统] Reactor Rising 已启动 · 16:9 自适应')
         }
         init();
         })();
