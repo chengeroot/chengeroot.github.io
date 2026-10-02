@@ -33,9 +33,12 @@
 
         /* ============ 16:9 舞台 ============ */
         #stage {
-            position: relative;
+            position: absolute;
+            top: 50%;
+            left: 50%;
             width: 1600px;
             height: 900px;
+            transform: translate(-50%, -50%);
             flex: 0 0 auto;
             background: linear-gradient(180deg,rgba(22,27,34,.95) 0%,rgba(13,17,23,.98) 100%);
             border-radius: 18px;
@@ -1666,49 +1669,8 @@
             justify-content: flex-end;
             margin-top: 6px
         }
-
-        /* ===== 手机/竖屏：用原版自适应布局 ===== */
-        @media (max-width: 900px), (orientation: portrait) {
-            html, body {
-                height: auto;
-                min-height: 100vh;
-                overflow-y: auto;
-                overflow-x: hidden;
-                display: block;
-                padding: 8px;
-            }
-            #stage {
-                width: 100% !important;
-                height: auto !important;
-                min-height: auto;
-                transform: none !important;
-                border-radius: 12px;
-                padding: 12px;
-            }
-            .main-grid {
-                grid-template-columns: 1fr !important;
-            }
-            .header {
-                height: auto;
-                flex-wrap: wrap;
-                gap: 6px;
-            }
-            .shop-items {
-                grid-template-columns: 1fr;
-            }
-            .controls {
-                flex-wrap: wrap;
-            }
-            .ctrl-btn {
-                flex: 1 1 calc(50% - 6px);
-            }
-            .gauge .value { font-size: 1.6rem; }
-            .gauge .label { font-size: .68rem; }
-            .device-row { font-size: .78rem; flex-wrap: wrap; }
-            .chart-canvas { height: 120px !important; }
-            .panel-row { flex-wrap: wrap; min-height: auto; }
-        }
     </style>
+    <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
 </head>
 <body>
 
@@ -2044,22 +2006,14 @@
         const btnCloseSaveName=$('btnCloseSaveName'),btnCancelSaveName=$('btnCancelSaveName'),btnConfirmSaveName=$('btnConfirmSaveName');
         const stage=$('stage');
 
-        /* ====== 16:9 自适应缩放 ====== */
+        /* ====== 16:9 自适应缩放（始终居中） ====== */
         const BASE_W=1600,BASE_H=900;
         let stageScale=1;
 
         function fitStage(){
         const vw = window.innerWidth, vh = window.innerHeight;
-        // 手机或竖屏：不缩放，用原版自适应
-        const isMobile = vw < 900 || vw / vh < 1;
-        if(isMobile){
-            stageScale = 1;
-            stage.style.transform = 'none';
-        }else{
-            // 电脑横屏：16:9 缩放
-            stageScale = Math.min(vw / BASE_W, vh / BASE_H);
-            stage.style.transform = 'scale(' + stageScale + ')';
-        }
+        stageScale = Math.min(vw / BASE_W, vh / BASE_H);
+        stage.style.transform = 'translate(-50%, -50%) scale(' + stageScale + ')';
         drawTempChart();
         }
         window.addEventListener('resize',fitStage);
@@ -2153,6 +2107,7 @@
         state.rodLocked=false;rodLock.classList.remove('active');rodLock.textContent='解锁';rodSlider.disabled=false;
         state.coldShutdownLogged=false;state.scramTriggered=false;
         log('反应堆启动','success');setMessage('反应堆已启动','success');statusDot.className='dot running';statusText.textContent='运行中';
+        if(window.PokiSDK) PokiSDK.gameplayStart();
         renderDevices();updateUI()
         }
         function showScramResult(success){if(success){scramModalContent.className='scram-modal success';scramIcon.textContent='✅';scramTitle.textContent='停堆成功';scramDesc.textContent='反应堆已安全关闭，温度回落至500°C。'}else{scramModalContent.className='scram-modal fail';scramIcon.textContent='❌';scramTitle.textContent='停堆失败';scramDesc.textContent='控制棒卡死！核融倒计时60秒。'}wasPausedBeforeScramModal=state.paused;if(!state.paused&&!state.gameOver){state.paused=true;btnPause.textContent='▶ 继续'}scramModal.classList.add('active')}
@@ -2397,7 +2352,12 @@
         state.gameOver=true;if(state.updateTimer){clearInterval(state.updateTimer);state.updateTimer=null}
         setMessage('💥 核融爆炸','danger');log('核融爆炸，游戏结束','danger');
         statusDot.className='dot meltdown';statusText.textContent='爆炸';meltdownWarning.classList.remove('active');playAlarm();
-        showScoreCard(false)
+        if(window.PokiSDK){
+            PokiSDK.gameplayStop();
+            PokiSDK.commercialBreak().then(()=>showScoreCard(false)).catch(()=>showScoreCard(false));
+        }else{
+            showScoreCard(false);
+        }
         }
         }
         if(state.temperature<COLD_SHUTDOWN_TEMP&&!state.coldShutdownLogged&&!state.gameOver){state.coldShutdownLogged=true;log('进入冷停堆，不发电','warn');log('点「启动反应堆」重启','info')}
@@ -2422,6 +2382,7 @@
         renderDevices();updateUI();updateReliefUI();updateShop();setMessage('已重置 · 按 H 查看快捷键','info');
         statusDot.className='dot running';statusText.textContent='运行中';log('系统重启完成','system');
         playBeep(1200,0.1,0.05);
+        if(window.PokiSDK) PokiSDK.gameplayStart();
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL)
         }
         function updateUI(){
@@ -2631,7 +2592,18 @@
         fitStage();
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL);
         requestAnimationFrame(()=>{drawTempChart();fitStage()});
-        console.log('[系统] Reactor Rising 已启动 · 16:9 自适应')
+
+        // Poki SDK 初始化
+        if(window.PokiSDK){
+            PokiSDK.init().then(()=>{
+                console.log('[Poki] 初始化完成');
+                PokiSDK.gameLoadingFinished();
+            }).catch(e=>console.warn('[Poki] 初始化失败',e));
+        }else{
+            console.log('[Poki] 未检测到 SDK（本地测试正常）');
+        }
+
+        console.log('[系统] Reactor Rising 已启动 · 16:9 居中自适应')
         }
         init();
         })();
