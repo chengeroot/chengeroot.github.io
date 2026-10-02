@@ -33,12 +33,9 @@
 
         /* ============ 16:9 舞台 ============ */
         #stage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: relative;
             width: 1600px;
             height: 900px;
-            transform: translate(-50%, -50%);
             flex: 0 0 auto;
             background: linear-gradient(180deg,rgba(22,27,34,.95) 0%,rgba(13,17,23,.98) 100%);
             border-radius: 18px;
@@ -1681,9 +1678,6 @@
                 padding: 8px;
             }
             #stage {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
                 width: 100% !important;
                 height: auto !important;
                 min-height: auto;
@@ -2056,21 +2050,15 @@
 
         function fitStage(){
         const vw = window.innerWidth, vh = window.innerHeight;
+        // 手机或竖屏：不缩放，用原版自适应
         const isMobile = vw < 900 || vw / vh < 1;
         if(isMobile){
-            // 手机/竖屏：取消居中定位，还原到文档流
             stageScale = 1;
-            stage.style.position = 'relative';
-            stage.style.top = 'auto';
-            stage.style.left = 'auto';
             stage.style.transform = 'none';
         }else{
-            // 电脑横屏：绝对定位 + 居中 + 缩放
+            // 电脑横屏：16:9 缩放
             stageScale = Math.min(vw / BASE_W, vh / BASE_H);
-            stage.style.position = 'absolute';
-            stage.style.top = '50%';
-            stage.style.left = '50%';
-            stage.style.transform = 'translate(-50%, -50%) scale(' + stageScale + ')';
+            stage.style.transform = 'scale(' + stageScale + ')';
         }
         drawTempChart();
         }
