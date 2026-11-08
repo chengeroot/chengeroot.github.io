@@ -3526,8 +3526,321 @@
 
         console.log('[系统] Reactor Rising 已启动 · 16:9 居中自适应')
         }
-        init();
+        window.__RR_START__ = init;
         })();
+    </script>
+
+    <!-- ============ 访问密码锁 ============ -->
+    <div id="lockScreen">
+        <div class="lock-card">
+            <div class="lock-icon">🔒</div>
+            <h2>RESTRICTED ACCESS</h2>
+            <p class="lock-sub">请输入访问密码以启动反应堆</p>
+            <div class="lock-input-wrap">
+                <input type="password" id="lockInput" placeholder="密码" autocomplete="off"
+                       spellcheck="false" maxlength="64">
+                <button id="lockBtn">解锁</button>
+            </div>
+            <div id="lockMsg" class="lock-msg"></div>
+            <div class="lock-footer">Reactor Rising · 受保护版本</div>
+        </div>
+    </div>
+
+    <style>
+        #lockScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background:
+                radial-gradient(ellipse at 50% 40%, rgba(0,255,65,.06) 0%, transparent 60%),
+                #050a0e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Consolas','Courier New',monospace;
+        }
+        #lockScreen.hidden { display: none; }
+
+        .lock-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 44px 38px 30px;
+            background: linear-gradient(180deg, #0e1419 0%, #070c10 100%);
+            border: 1px solid rgba(0,255,65,.35);
+            border-radius: 14px;
+            box-shadow: 0 0 60px rgba(0,255,65,.10), inset 0 0 40px rgba(0,255,65,.03);
+            text-align: center;
+        }
+        .lock-icon {
+            font-size: 44px;
+            line-height: 1;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 0 14px rgba(0,255,65,.6));
+            animation: lockPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes lockPulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50%     { opacity: .65; transform: scale(1.06); }
+        }
+        .lock-card h2 {
+            font-size: 17px;
+            letter-spacing: 4px;
+            color: #00ff41;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 0 14px rgba(0,255,65,.5);
+        }
+        .lock-sub {
+            font-size: 12.5px;
+            color: #5a7a63;
+            margin-bottom: 26px;
+            letter-spacing: .5px;
+        }
+        .lock-input-wrap {
+            display: flex;
+            gap: 8px;
+        }
+        #lockInput {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 12px 14px;
+            background: #050a0e;
+            border: 1px solid rgba(0,255,65,.28);
+            border-radius: 7px;
+            color: #00ff41;
+            font-family: inherit;
+            font-size: 15px;
+            letter-spacing: 2px;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        #lockInput:focus {
+            border-color: #00ff41;
+            box-shadow: 0 0 0 3px rgba(0,255,65,.12);
+        }
+        #lockInput::placeholder { color: #2d4a36; letter-spacing: 0; }
+        #lockBtn {
+            padding: 12px 22px;
+            background: rgba(0,255,65,.1);
+            border: 1px solid rgba(0,255,65,.5);
+            border-radius: 7px;
+            color: #00ff41;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        #lockBtn:hover:not(:disabled) { background: rgba(0,255,65,.22); }
+        #lockBtn:disabled { opacity: .4; cursor: not-allowed; }
+
+        .lock-msg {
+            min-height: 20px;
+            margin-top: 14px;
+            font-size: 12.5px;
+            letter-spacing: .5px;
+            color: #ff1744;
+        }
+        .lock-msg.ok { color: #00ff41; }
+
+        .lock-footer {
+            margin-top: 26px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,255,65,.10);
+            font-size: 10.5px;
+            color: #2d4a36;
+            letter-spacing: 1px;
+        }
+
+        /* 解锁时的闪烁抖动 */
+        .lock-shake { animation: lockShake .38s; }
+        @keyframes lockShake {
+            0%,100% { transform: translateX(0); }
+            20%     { transform: translateX(-9px); }
+            40%     { transform: translateX(9px); }
+            60%     { transform: translateX(-6px); }
+            80%     { transform: translateX(6px); }
+        }
+
+        #lockScreen.fade-out {
+            animation: lockFade .45s forwards;
+        }
+        @keyframes lockFade {
+            to { opacity: 0; visibility: hidden; }
+        }
+    </style>
+
+    <script>
+    (function () {
+        'use strict';
+
+        // 密码以 SHA-256(base64) 存储，源码中不出现明文
+        var PASS_HASH = 'yFfQnbI+aCLjYAvAatjVj5LtYryO/YHHU/dwSGYsuX0=';
+        var unlocked  = false;
+
+        var screen = document.getElementById('lockScreen');
+        var input  = document.getElementById('lockInput');
+        var btn    = document.getElementById('lockBtn');
+        var msg    = document.getElementById('lockMsg');
+        var card   = document.querySelector('.lock-card');
+
+        // 纯 JS SHA-256（不依赖 crypto.subtle，file:// 下也可用）
+        function sha256b64(str) {
+            var K = [
+                0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+                0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+                0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+                0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+                0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+                0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+                0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+                0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+            ];
+            var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+
+            // UTF-8 编码
+            var bytes = [];
+            for (var i = 0; i < str.length; i++) {
+                var c = str.charCodeAt(i);
+                if (c < 0x80) bytes.push(c);
+                else if (c < 0x800) {
+                    bytes.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));
+                } else if (c >= 0xd800 && c <= 0xdbff && i + 1 < str.length) {
+                    var c2 = str.charCodeAt(++i);
+                    var cp = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
+                    bytes.push(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3f),
+                               0x80 | ((cp >> 6) & 0x3f), 0x80 | (cp & 0x3f));
+                } else {
+                    bytes.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
+                }
+            }
+
+            var bitLen = bytes.length * 8;
+            bytes.push(0x80);
+            while (bytes.length % 64 !== 56) bytes.push(0);
+            // 64 位长度（高位补 0）
+            var hi = Math.floor(bitLen / 0x100000000);
+            bytes.push((hi >>> 24) & 255, (hi >>> 16) & 255, (hi >>> 8) & 255, hi & 255);
+            bytes.push((bitLen >>> 24) & 255, (bitLen >>> 16) & 255, (bitLen >>> 8) & 255, bitLen & 255);
+
+            function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+            for (var off = 0; off < bytes.length; off += 64) {
+                var w = new Array(64);
+                for (i = 0; i < 16; i++) {
+                    w[i] = (bytes[off + i*4] << 24) | (bytes[off + i*4 + 1] << 16)
+                         | (bytes[off + i*4 + 2] << 8) | bytes[off + i*4 + 3];
+                }
+                for (i = 16; i < 64; i++) {
+                    var s0 = rotr(w[i-15],7) ^ rotr(w[i-15],18) ^ (w[i-15] >>> 3);
+                    var s1 = rotr(w[i-2],17) ^ rotr(w[i-2],19) ^ (w[i-2] >>> 10);
+                    w[i] = (w[i-16] + s0 + w[i-7] + s1) | 0;
+                }
+
+                var a = H[0], b = H[1], c = H[2], d = H[3],
+                    e = H[4], f = H[5], g = H[6], h = H[7];
+
+                for (i = 0; i < 64; i++) {
+                    var S1 = rotr(e,6) ^ rotr(e,11) ^ rotr(e,25);
+                    var ch = (e & f) ^ (~e & g);
+                    var t1 = (h + S1 + ch + K[i] + w[i]) | 0;
+                    var S0 = rotr(a,2) ^ rotr(a,13) ^ rotr(a,22);
+                    var maj = (a & b) ^ (a & c) ^ (b & c);
+                    var t2 = (S0 + maj) | 0;
+                    h = g; g = f; f = e; e = (d + t1) | 0;
+                    d = c; c = b; b = a; a = (t1 + t2) | 0;
+                }
+
+                H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0;
+                H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+                H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0;
+                H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+            }
+
+            var out = [];
+            for (i = 0; i < 8; i++) {
+                out.push((H[i] >>> 24) & 255, (H[i] >>> 16) & 255,
+                         (H[i] >>> 8) & 255, H[i] & 255);
+            }
+            return btoa(String.fromCharCode.apply(null, out));
+        }
+
+        function showMsg(text, ok) {
+            msg.textContent = text;
+            msg.className = 'lock-msg' + (ok ? ' ok' : '');
+        }
+
+        function tryUnlock() {
+            if (unlocked) return;
+            var val = input.value;
+            if (!val) {
+                showMsg('请输入密码');
+                return;
+            }
+
+            btn.disabled = true;
+            showMsg('校验中…');
+
+            try {
+                var hash = sha256b64(val);
+                if (hash === PASS_HASH) {
+                    unlocked = true;
+                    showMsg('✓ 访问授权通过，正在启动…', true);
+                    input.disabled = true;
+                    screen.classList.add('fade-out');
+
+                    setTimeout(function () {
+                        screen.classList.add('hidden');
+                        // 启动游戏
+                        if (typeof window.__RR_START__ === 'function') {
+                            window.__RR_START__();
+                        }
+                    }, 420);
+                } else {
+                    showMsg('✗ 密码错误，访问被拒绝');
+                    card.classList.remove('lock-shake');
+                    void card.offsetWidth;
+                    card.classList.add('lock-shake');
+                    input.value = '';
+                    input.focus();
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                showMsg('校验失败，请刷新页面重试');
+                btn.disabled = false;
+            }
+        }
+
+        btn.addEventListener('click', tryUnlock);
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); }
+        });
+
+        // 启动时焦点放进输入框
+        window.addEventListener('load', function () {
+            setTimeout(function () { input.focus(); }, 120);
+        });
+        setTimeout(function () { try { input.focus(); } catch (e) {} }, 200);
+
+        // 防绕过：未解锁前屏蔽快捷键（F12 / Ctrl+Shift+I 等）
+        document.addEventListener('keydown', function (e) {
+            if (unlocked) return;
+            var k = e.key;
+            if (k === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (k === 'I' || k === 'i' || k === 'J' || k === 'j' || k === 'C' || k === 'c'))) {
+                e.preventDefault();
+            }
+        }, true);
+
+        // 防绕过：未解锁时不允许直接调用启动函数
+        var realStart = window.__RR_START__;
+        Object.defineProperty(window, '__RR_START__', {
+            configurable: false,
+            get: function () { return unlocked ? realStart : undefined; }
+        });
+    })();
     </script>
 </body>
 </html>
