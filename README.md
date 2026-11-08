@@ -7,6 +7,48 @@
     <title>Reactor Rising</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2300d4aa'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%23fff'/%3E%3C/svg%3E">
     <style>
+        :root {
+            --bg-void: #050a0e;
+            --bg-panel: #0a0f14;
+            --bg-panel-light: #0e1419;
+            --matrix-green: #00ff41;
+            --matrix-dim: #0a3d1a;
+            --moss-red: #ff1744;
+            --moss-red-dim: rgba(255, 23, 68, 0.15);
+            --industrial-yellow: #ffc107;
+            --industrial-stripe: repeating-linear-gradient(
+                -45deg,
+                #ffc107 0 8px,
+                #1a1a1a 8px 16px
+            );
+            --metal-border: linear-gradient(135deg, #3a3a3a, #1a1a1a, #2a2a2a);
+            --rivet: radial-gradient(circle, #555 30%, #333 50%, transparent 51%);
+            --glow-green: 0 0 15px rgba(0, 255, 65, 0.4);
+            --glow-red: 0 0 15px rgba(255, 23, 68, 0.5);
+            --font-mono: 'Consolas', 'Courier New', monospace;
+            --font-ui: 'Consolas', 'Segoe UI', monospace;
+        }
+
+        @keyframes matrixRain {
+            0% { background-position: 0 0, 50px 0; }
+            100% { background-position: 0 1000px, 50px 800px; }
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.03; }
+            50% { opacity: 0.07; }
+        }
+
+        @keyframes mossBreath {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 23, 68, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(255, 23, 68, 0.35); }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -19,16 +61,49 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #0d1117
+            background: var(--bg-void);
         }
 
         body {
-            font-family: 'Segoe UI','Microsoft YaHei',sans-serif;
-            color: #d0d7de;
+            font-family: var(--font-ui);
+            color: #b0b8c0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: radial-gradient(ellipse at 20% 0%,rgba(0,212,170,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(255,159,67,.06) 0%,transparent 60%),linear-gradient(180deg,#0d1117 0%,#161b22 100%)
+            /* 底色由 html 提供；body 必须透明，否则会遮住 ::before 的网格层 */
+            background: transparent;
+        }
+
+        /* 背景网格独立成层：opacity 动画只影响这一层，不牵连任何 UI */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,255,65,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,65,0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 20% 10%, rgba(0,255,65,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 90%, rgba(255,23,68,0.03) 0%, transparent 50%);
+            background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+            animation: gridPulse 8s ease-in-out infinite;
+            will-change: opacity;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,255,65,0.008) 2px,
+                rgba(0,255,65,0.008) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
         }
 
         /* ============ 16:9 舞台 ============ */
@@ -40,29 +115,45 @@
             height: 900px;
             transform: translate(-50%, -50%);
             flex: 0 0 auto;
-            background: linear-gradient(180deg,rgba(22,27,34,.95) 0%,rgba(13,17,23,.98) 100%);
-            border-radius: 18px;
-            border: 1px solid rgba(48,54,61,.8);
-            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+            background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-void) 100%);
+            border-radius: 6px;
+            border: 2px solid #2a2a2a;
+            box-shadow:
+                0 0 0 1px #111,
+                0 0 0 3px #1a1a1a,
+                inset 0 1px 0 rgba(255,255,255,0.03),
+                0 20px 80px rgba(0,0,0,.8);
             padding: 14px 16px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             overflow: hidden;
-            transform-origin: center center
+            transform-origin: center center;
         }
 
-            #stage::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 10%;
-                right: 10%;
-                height: 2px;
-                background: linear-gradient(90deg,transparent,#00d4aa,#ff9f43,transparent);
-                border-radius: 2px;
-                opacity: .7
-            }
+        #stage::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--matrix-green), var(--moss-red), transparent);
+            border-radius: 2px;
+            opacity: .6;
+        }
+
+        /* 工业风：舞台底部黄黑警示条 */
+        #stage::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--industrial-stripe);
+            opacity: 0.6;
+        }
 
         /* ============ 头部 ============ */
         .header {
@@ -90,7 +181,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            text-shadow: 0 0 24px rgba(0,212,170,.35);
+            text-shadow: 0 0 24px rgba(0,255,65,.35);
             white-space: nowrap
         }
 
@@ -107,15 +198,15 @@
                 position: absolute;
                 inset: 1px;
                 border-radius: 50%;
-                background: radial-gradient(circle at 35% 35%,#4dffc3,#00d4aa);
-                box-shadow: 0 0 14px rgba(0,212,170,.9)
+                background: radial-gradient(circle at 35% 35%, #80ffa0, var(--matrix-green));
+                box-shadow: 0 0 14px rgba(0,255,65,.9)
             }
 
             .title-icon::after {
                 content: '';
                 position: absolute;
                 inset: -4px;
-                border: 2px solid rgba(0,212,170,.6);
+                border: 2px solid rgba(0,255,65,.6);
                 border-radius: 50%;
                 border-top-color: transparent;
                 border-bottom-color: transparent;
@@ -131,9 +222,9 @@
         .help-btn, .music-btn, .install-btn, .save-btn, .load-btn {
             padding: 6px 12px;
             border-radius: 7px;
-            border: 1px solid rgba(0,212,170,.35);
-            background: rgba(0,212,170,.08);
-            color: #4dffc3;
+            border: 1px solid rgba(0,255,65,.35);
+            background: rgba(0,255,65,.08);
+            color: var(--matrix-green);
             font-weight: 700;
             font-size: .72rem;
             cursor: pointer;
@@ -143,8 +234,8 @@
         }
 
             .help-btn:hover, .music-btn:hover, .install-btn:hover, .save-btn:hover, .load-btn:hover {
-                background: rgba(0,212,170,.2);
-                border-color: #00d4aa
+                background: rgba(0,255,65,.2);
+                border-color: var(--matrix-green)
             }
 
         .save-btn {
@@ -170,19 +261,19 @@
             }
 
         .music-btn.playing {
-            border-color: #ff9f43;
-            color: #ff9f43;
-            background: rgba(255,159,67,.12);
+            border-color: var(--industrial-yellow);
+            color: var(--industrial-yellow);
+            background: rgba(255,193,7,.12);
             animation: musicPulse 1.8s ease-in-out infinite
         }
 
         @keyframes musicPulse {
             0%,100% {
-                box-shadow: 0 0 8px rgba(255,159,67,.3)
+                box-shadow: 0 0 8px rgba(255,193,7,.3)
             }
 
             50% {
-                box-shadow: 0 0 22px rgba(255,159,67,.6)
+                box-shadow: 0 0 22px rgba(255,193,7,.6)
             }
         }
 
@@ -212,10 +303,12 @@
             font-weight: 700;
             padding: 6px 16px;
             border-radius: 40px;
-            background: rgba(0,212,170,.08);
-            border: 1px solid rgba(0,212,170,.3);
-            color: #4dffc3;
-            white-space: nowrap
+            background: rgba(0,255,65,.06);
+            border: 1px solid rgba(0,255,65,.25);
+            color: var(--matrix-green);
+            white-space: nowrap;
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
         }
 
             .status-badge .dot {
@@ -226,26 +319,26 @@
             }
 
         .dot.running {
-            background: #00d4aa;
-            box-shadow: 0 0 12px #00d4aa
+            background: var(--matrix-green);
+            box-shadow: 0 0 12px var(--matrix-green);
         }
 
         .dot.warning {
-            background: #ff9f43;
-            box-shadow: 0 0 12px #ff9f43;
+            background: var(--industrial-yellow);
+            box-shadow: 0 0 12px var(--industrial-yellow);
             animation-duration: .8s
         }
 
         .dot.danger {
-            background: #ff5c5c;
-            box-shadow: 0 0 12px #ff5c5c;
-            animation-duration: .4s
+            background: var(--moss-red);
+            box-shadow: 0 0 12px var(--moss-red);
+            animation-duration: .4s;
         }
 
         .dot.meltdown {
-            background: #ff1744;
-            box-shadow: 0 0 16px #ff1744;
-            animation-duration: .2s
+            background: var(--moss-red);
+            box-shadow: 0 0 20px var(--moss-red);
+            animation-duration: .15s;
         }
 
         @keyframes pulse-dot {
@@ -286,12 +379,26 @@
         }
 
         .gauge {
-            background: linear-gradient(180deg,rgba(30,36,44,.95) 0%,rgba(18,22,28,.95) 100%);
-            border-radius: 11px;
+            background: linear-gradient(180deg, var(--bg-panel-light) 0%, var(--bg-panel) 100%);
+            border-radius: 4px;
             padding: 11px 13px 10px;
-            border: 1px solid rgba(48,54,61,.8);
+            border: 1px solid #222;
             position: relative;
-            overflow: hidden
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.02);
+        }
+
+        /* 铆钉装饰（工业风） */
+        .gauge::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 6px;
+            height: 6px;
+            background: var(--rivet);
+            border-radius: 50%;
+            opacity: 0.5;
         }
 
             .gauge::before {
@@ -305,19 +412,19 @@
             }
 
             .gauge:nth-child(1)::before {
-                background: linear-gradient(90deg,transparent,#ff9f43,transparent)
+                background: linear-gradient(90deg, transparent, var(--moss-red), transparent)
             }
 
             .gauge:nth-child(2)::before {
-                background: linear-gradient(90deg,transparent,#00d4aa,transparent)
+                background: linear-gradient(90deg, transparent, var(--matrix-green), transparent)
             }
 
             .gauge:nth-child(3)::before {
-                background: linear-gradient(90deg,transparent,#ffd740,transparent)
+                background: linear-gradient(90deg, transparent, var(--industrial-yellow), transparent)
             }
 
             .gauge:nth-child(4)::before {
-                background: linear-gradient(90deg,transparent,#58a6ff,transparent)
+                background: linear-gradient(90deg, transparent, #58a6ff, transparent)
             }
 
             .gauge .label {
@@ -337,15 +444,18 @@
             }
 
                 .gauge .value.temp {
-                    color: #ff9f43
+                    color: var(--moss-red);
+                    text-shadow: 0 0 20px rgba(255,23,68,0.5);
                 }
 
                 .gauge .value.power {
-                    color: #00d4aa
+                    color: var(--matrix-green);
+                    text-shadow: 0 0 20px rgba(0,255,65,0.5);
                 }
 
                 .gauge .value.money {
-                    color: #ffd740
+                    color: var(--industrial-yellow);
+                    text-shadow: 0 0 20px rgba(255,193,7,0.4);
                 }
 
                 .gauge .value.time {
@@ -376,11 +486,11 @@
             }
 
         .bar-fill.temp-bar {
-            background: linear-gradient(90deg,#00d4aa,#ff9f43,#ff5c5c)
+            background: linear-gradient(90deg, var(--matrix-green), var(--industrial-yellow), var(--moss-red));
         }
 
         .bar-fill.power-bar {
-            background: linear-gradient(90deg,#ffd740,#ff9f43)
+            background: linear-gradient(90deg,#ffd740,var(--industrial-yellow));
         }
 
         /* ============ 参数面板 ============ */
@@ -389,9 +499,9 @@
             grid-template-columns: repeat(4,1fr);
             gap: 5px 4px;
             padding: 9px 10px;
-            border-radius: 11px;
-            background: linear-gradient(180deg,rgba(30,36,44,.7) 0%,rgba(18,22,28,.7) 100%);
-            border: 1px solid rgba(48,54,61,.6);
+            border-radius: 3px;
+            background: linear-gradient(180deg, rgba(14,20,25,.8) 0%, rgba(8,12,16,.8) 100%);
+            border: 1px solid #1e1e1e;
             flex: 0 0 auto
         }
 
@@ -420,26 +530,27 @@
             }
 
                 .param-item .p-value.good {
-                    color: #4dffc3;
-                    text-shadow: 0 0 10px rgba(77,255,195,.4)
+                    color: var(--matrix-green);
+                    text-shadow: 0 0 10px rgba(0,255,65,.4);
                 }
 
                 .param-item .p-value.warn {
-                    color: #ff9f43;
-                    text-shadow: 0 0 10px rgba(255,159,67,.4)
+                    color: var(--industrial-yellow);
+                    text-shadow: 0 0 10px rgba(255,193,7,.4);
                 }
 
                 .param-item .p-value.danger {
-                    color: #ff5c5c;
-                    text-shadow: 0 0 10px rgba(255,92,92,.5)
+                    color: var(--moss-red);
+                    text-shadow: 0 0 10px rgba(255,23,68,.5);
+                    animation: mossBreath 2s ease-in-out infinite;
                 }
 
         /* ============ 温度曲线 ============ */
         .chart-panel {
-            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 11px;
+            background: linear-gradient(180deg, rgba(14,20,25,.95) 0%, rgba(8,12,16,.95) 100%);
+            border-radius: 3px;
             padding: 10px 13px 12px;
-            border: 1px solid rgba(48,54,61,.7);
+            border: 1px solid #1e1e1e;
             flex: 1 1 auto;
             min-height: 0;
             display: flex;
@@ -470,15 +581,15 @@
             }
 
             .chart-panel .chart-legend .legend-danger {
-                color: #ff5c5c
+                color: var(--moss-red)
             }
 
             .chart-panel .chart-legend .legend-warn {
-                color: #ff9f43
+                color: var(--industrial-yellow)
             }
 
             .chart-panel .chart-legend .legend-safe {
-                color: #4dffc3
+                color: var(--matrix-green)
             }
 
         .chart-canvas {
@@ -492,16 +603,17 @@
 
         /* ============ 控制行 ============ */
         .panel-row {
-            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(14,20,25,.95) 0%, rgba(10,15,20,.95) 100%);
+            border-radius: 3px;
             padding: 7px 16px;
-            border: 1px solid rgba(48,54,61,.7);
+            border: 1px solid #1e1e1e;
             display: flex;
             align-items: center;
             flex-wrap: nowrap;
             gap: 12px;
             flex: 0 0 auto;
-            min-height: 44px
+            min-height: 44px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
         }
 
             .panel-row .row-label {
@@ -525,7 +637,7 @@
             .panel-row input[type="range"] {
                 flex: 1 1 auto;
                 min-width: 90px;
-                accent-color: #00d4aa;
+                accent-color: var(--matrix-green);
                 height: 6px;
                 cursor: pointer
             }
@@ -544,13 +656,13 @@
         }
 
             .power-select .ps-btn.active.main {
-                background: linear-gradient(180deg,#00d4aa,#00a888);
-                border-color: #4dffc3;
+                background: linear-gradient(180deg,var(--matrix-green),#00a888);
+                border-color: var(--matrix-green);
                 color: #0d1117
             }
 
             .power-select .ps-btn.active.backup {
-                background: linear-gradient(180deg,#ff9f43,#e0821e);
+                background: linear-gradient(180deg,var(--industrial-yellow),#e0821e);
                 border-color: #ffb866;
                 color: #0d1117
             }
@@ -565,9 +677,9 @@
         .relief-control .relief-btn {
             padding: 6px 18px;
             border-radius: 7px;
-            border: 1px solid rgba(255,159,67,.5);
-            background: rgba(255,159,67,.12);
-            color: #ff9f43;
+            border: 1px solid rgba(255,193,7,.5);
+            background: rgba(255,193,7,.12);
+            color: var(--industrial-yellow);
             font-weight: 700;
             font-size: .72rem;
             cursor: pointer;
@@ -583,25 +695,25 @@
         .relief-control .relief-status {
             font-family: 'Consolas',monospace;
             font-size: .78rem;
-            color: #4dffc3;
+            color: var(--matrix-green);
             min-width: 78px;
             font-weight: 700;
             white-space: nowrap
         }
 
             .relief-control .relief-status.warn {
-                color: #ff9f43
+                color: var(--industrial-yellow)
             }
 
             .relief-control .relief-status.danger {
-                color: #ff5c5c
+                color: var(--moss-red)
             }
 
         .boric-control {
             background: linear-gradient(180deg,rgba(50,30,30,.5) 0%,rgba(30,20,20,.5) 100%);
-            border-radius: 10px;
+            border-radius: 3px;
             padding: 7px 16px;
-            border: 1px solid rgba(255,92,92,.4);
+            border: 1px solid rgba(255,23,68,.4);
             display: flex;
             align-items: center;
             flex-wrap: nowrap;
@@ -621,8 +733,8 @@
             .boric-control .boric-btn {
                 padding: 6px 18px;
                 border-radius: 7px;
-                border: 1px solid rgba(255,92,92,.6);
-                background: rgba(255,92,92,.15);
+                border: 1px solid rgba(255,23,68,.6);
+                background: rgba(255,23,68,.15);
                 color: #ff8585;
                 font-weight: 700;
                 font-size: .72rem;
@@ -642,29 +754,29 @@
 
         @keyframes boricPulse {
             0%,100% {
-                box-shadow: 0 0 0 rgba(255,92,92,0)
+                box-shadow: 0 0 0 rgba(255,23,68,0)
             }
 
             50% {
-                box-shadow: 0 0 20px rgba(255,92,92,.7)
+                box-shadow: 0 0 20px rgba(255,23,68,.7)
             }
         }
 
         .boric-control .boric-status {
             font-family: 'Consolas',monospace;
             font-size: .78rem;
-            color: #4dffc3;
+            color: var(--matrix-green);
             min-width: 100px;
             font-weight: 700;
             white-space: nowrap
         }
 
             .boric-control .boric-status.warn {
-                color: #ff9f43
+                color: var(--industrial-yellow)
             }
 
             .boric-control .boric-status.danger {
-                color: #ff5c5c
+                color: var(--moss-red)
             }
 
             .boric-control .boric-status.info {
@@ -685,17 +797,17 @@
         }
 
             .rod-single .rod-lock.active {
-                background: linear-gradient(180deg,#ff5c5c,#d94747);
+                background: linear-gradient(180deg,var(--moss-red),#d94747);
                 border-color: #ff8585;
                 color: #fff
             }
 
         /* ============ 设备面板 ============ */
         .device-group {
-            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 11px;
+            background: linear-gradient(180deg, rgba(14,20,25,.95) 0%, rgba(8,12,16,.95) 100%);
+            border-radius: 3px;
             padding: 10px 16px 12px;
-            border: 1px solid rgba(48,54,61,.7);
+            border: 1px solid #1e1e1e;
             flex: 1 1 0;
             min-height: 0;
             display: flex;
@@ -754,8 +866,8 @@
             }
 
         .dev-led.on {
-            background: #4dffc3;
-            box-shadow: 0 0 10px #4dffc3
+            background: var(--matrix-green);
+            box-shadow: 0 0 10px var(--matrix-green);
         }
 
         .dev-led.off {
@@ -763,9 +875,9 @@
         }
 
         .dev-led.fault {
-            background: #ff5c5c;
-            box-shadow: 0 0 10px #ff5c5c;
-            animation: blink .5s infinite
+            background: var(--moss-red);
+            box-shadow: 0 0 10px var(--moss-red);
+            animation: blink .5s infinite;
         }
 
         @keyframes blink {
@@ -805,9 +917,9 @@
             }
 
             .device-row .dev-btn.repair.ready {
-                border-color: #4dffc3;
-                color: #4dffc3;
-                background: rgba(77,255,195,.1);
+                border-color: var(--matrix-green);
+                color: var(--matrix-green);
+                background: rgba(0,255,65,.1);
                 opacity: 1
             }
 
@@ -821,7 +933,7 @@
         .device-row .power-slider {
             flex: 1 1 auto;
             min-width: 60px;
-            accent-color: #00d4aa;
+            accent-color: var(--matrix-green);
             height: 5px;
             cursor: pointer
         }
@@ -851,13 +963,13 @@
         }
 
             .device-row .src-btn.main {
-                background: linear-gradient(180deg,#00d4aa,#00a888);
-                border-color: #4dffc3;
+                background: linear-gradient(180deg,var(--matrix-green),#00a888);
+                border-color: var(--matrix-green);
                 color: #0d1117
             }
 
             .device-row .src-btn.backup {
-                background: linear-gradient(180deg,#ff9f43,#e0821e);
+                background: linear-gradient(180deg,var(--industrial-yellow),#e0821e);
                 border-color: #ffb866;
                 color: #0d1117
             }
@@ -881,17 +993,17 @@
         }
 
             .device-row .g-temp.normal {
-                color: #4dffc3
+                color: var(--matrix-green)
             }
 
             .device-row .g-temp.warn {
-                color: #ff9f43;
-                border-color: rgba(255,159,67,.5)
+                color: var(--industrial-yellow);
+                border-color: rgba(255,193,7,.5)
             }
 
             .device-row .g-temp.danger {
-                color: #ff5c5c;
-                border-color: rgba(255,92,92,.6);
+                color: var(--moss-red);
+                border-color: rgba(255,23,68,.6);
                 animation: blink .5s infinite
             }
 
@@ -901,11 +1013,24 @@
 
         /* ============ 商店 ============ */
         .shop-panel {
-            background: linear-gradient(180deg,rgba(30,36,44,.9) 0%,rgba(20,25,31,.9) 100%);
-            border-radius: 11px;
+            background: linear-gradient(180deg, rgba(14,20,25,.95) 0%, rgba(8,12,16,.95) 100%);
+            border-radius: 3px;
             padding: 11px 16px 13px;
-            border: 1px solid rgba(255,215,64,.3);
-            flex: 0 0 auto
+            border: 1px solid rgba(255,193,7,.25);
+            flex: 0 0 auto;
+            position: relative;
+        }
+
+        /* 商店面板顶部黄黑危险条 */
+        .shop-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--industrial-stripe);
+            opacity: 0.7;
         }
 
             .shop-panel h3 {
@@ -975,14 +1100,15 @@
 
         /* ============ 终端 ============ */
         .terminal {
-            background: #010409;
-            border: 1px solid rgba(48,54,61,.8);
-            border-radius: 11px;
+            background: #020804;
+            border: 1px solid #1a2a1a;
+            border-radius: 3px;
             flex: 1 1 auto;
             min-height: 0;
             overflow: hidden;
             display: flex;
-            flex-direction: column
+            flex-direction: column;
+            box-shadow: inset 0 0 40px rgba(0,255,65,0.02);
         }
 
         .terminal-header {
@@ -990,9 +1116,9 @@
             align-items: center;
             gap: 6px;
             padding: 7px 14px;
-            background: linear-gradient(180deg,#1c2128,#161b22);
-            border-bottom: 1px solid rgba(48,54,61,.8);
-            flex: 0 0 auto
+            background: linear-gradient(180deg, #0a1a0a, #061006);
+            border-bottom: 1px solid #1a2a1a;
+            flex: 0 0 auto;
         }
 
         .terminal-dot {
@@ -1014,12 +1140,13 @@
             }
 
         .terminal-title {
-            font-family: 'Consolas',monospace;
+            font-family: var(--font-mono);
             font-size: .6rem;
-            color: #6e7681;
+            color: var(--matrix-green);
             letter-spacing: 1.5px;
             margin-left: 8px;
-            font-weight: 700
+            font-weight: 700;
+            opacity: 0.7;
         }
 
         .terminal-body {
@@ -1027,10 +1154,11 @@
             flex: 1 1 auto;
             min-height: 0;
             overflow-y: auto;
-            font-family: 'Consolas',monospace;
+            font-family: var(--font-mono);
             font-size: .7rem;
             line-height: 1.6;
-            background: #010409
+            background: #020804;
+            color: rgba(0,255,65,0.7);
         }
 
             .terminal-body::-webkit-scrollbar {
@@ -1048,24 +1176,25 @@
         }
 
             .terminal-line.info {
-                color: #8b949e
+                color: rgba(0,255,65,0.6);
             }
 
             .terminal-line.warn {
-                color: #ff9f43
+                color: var(--industrial-yellow);
             }
 
             .terminal-line.danger {
-                color: #ff5c5c
+                color: var(--moss-red);
             }
 
             .terminal-line.success {
-                color: #4dffc3
+                color: var(--matrix-green);
             }
 
             .terminal-line.system {
-                color: #58a6ff;
-                font-weight: 700
+                color: var(--matrix-green);
+                font-weight: 700;
+                text-shadow: 0 0 6px rgba(0,255,65,0.3);
             }
 
         /* ============ 底部控制 ============ */
@@ -1079,19 +1208,19 @@
 
         .ctrl-btn {
             padding: 9px 12px;
-            border-radius: 9px;
+            border-radius: 3px;
             font-weight: 700;
             font-size: .68rem;
-            border: 1px solid rgba(48,54,61,.8);
-            background: linear-gradient(180deg,rgba(48,54,61,.6),rgba(30,36,44,.6));
-            color: #d0d7de;
+            border: 1px solid #2a2a2a;
+            background: linear-gradient(180deg, #1a1a1a, #0e0e0e);
+            color: #888;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: .4px;
-            font-family: inherit;
+            font-family: var(--font-mono);
             flex: 1 1 0;
             min-width: 0;
-            white-space: nowrap
+            white-space: nowrap;
         }
 
             .ctrl-btn:disabled {
@@ -1100,44 +1229,98 @@
             }
 
             .ctrl-btn.primary {
-                border-color: rgba(88,166,255,.5);
-                color: #58a6ff;
-                background: rgba(88,166,255,.1)
+                border-color: rgba(0,255,65,.4);
+                color: var(--matrix-green);
+                background: rgba(0,255,65,.06);
             }
 
             .ctrl-btn.danger {
-                border-color: rgba(255,92,92,.5);
-                color: #ff8585;
-                background: rgba(255,92,92,.1)
+                border-color: rgba(255,23,68,.5);
+                color: var(--moss-red);
+                background: rgba(255,23,68,.08);
             }
 
             .ctrl-btn.warning {
-                border-color: rgba(255,159,67,.5);
-                color: #ffb866;
-                background: rgba(255,159,67,.1)
+                border-color: rgba(255,193,7,.4);
+                color: var(--industrial-yellow);
+                background: rgba(255,193,7,.06);
             }
 
             .ctrl-btn.success {
-                border-color: #4dffc3;
-                color: #4dffc3;
-                background: rgba(77,255,195,.15);
-                animation: restartPulse 1.5s ease-in-out infinite
+                border-color: var(--matrix-green);
+                color: var(--matrix-green);
+                background: rgba(0,255,65,.1);
+                animation: restartPulse 1.5s ease-in-out infinite;
             }
 
         @keyframes restartPulse {
             0%,100% {
-                box-shadow: 0 0 0 rgba(77,255,195,0)
+                box-shadow: 0 0 0 rgba(0,255,65,0)
             }
 
             50% {
-                box-shadow: 0 0 22px rgba(77,255,195,.5)
+                box-shadow: 0 0 22px rgba(0,255,65,.5)
             }
+        }
+
+        /* ============ Glitch 撕裂动画 ============ */
+        @keyframes glitchTear {
+            0% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); clip-path: inset(0); }
+            5% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)) translate(8px, -3px); clip-path: inset(20% 0 30% 0); filter: hue-rotate(90deg); }
+            10% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)) translate(-6px, 2px); clip-path: inset(50% 0 10% 0); filter: hue-rotate(-90deg) saturate(2); }
+            15% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)) translate(4px, 5px); clip-path: inset(10% 0 60% 0); }
+            20% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); clip-path: inset(0); filter: none; }
+            25% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)) translate(-10px, 0); clip-path: inset(40% 0 20% 0); filter: hue-rotate(180deg); }
+            30% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)) translate(3px, -4px); clip-path: inset(0); filter: saturate(3); }
+            35%, 100% { transform: translate(-50%, -50%) scale(var(--stage-scale, 1)); clip-path: inset(0); filter: none; }
+        }
+
+        @keyframes rgbSplit {
+            0%, 100% { text-shadow: none; }
+            25% { text-shadow: -3px 0 #ff0000, 3px 0 #00ffff; }
+            50% { text-shadow: 3px 0 #ff0000, -3px 0 #00ffff; }
+            75% { text-shadow: -2px 1px #ff0000, 2px -1px #00ffff; }
+        }
+
+        #stage.glitching {
+            animation: glitchTear 0.3s steps(1) 6;
+        }
+
+        /* 全屏绿色代码乱码覆盖层 */
+        #glitchCodeOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 10, 2, 0.92);
+            color: var(--matrix-green);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.2;
+            overflow: hidden;
+            z-index: 100;
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-all;
+            padding: 20px;
+            border-radius: 6px;
+            text-shadow: 0 0 8px var(--matrix-green);
+            pointer-events: none;
+        }
+
+        #glitchCodeOverlay.active {
+            display: block;
+            animation: glitchCodeFade 2.5s ease-out forwards;
+        }
+
+        @keyframes glitchCodeFade {
+            0% { opacity: 1; }
+            70% { opacity: 0.9; }
+            100% { opacity: 0; display: none; }
         }
 
         .message-area {
             padding: 9px 16px;
-            background: linear-gradient(90deg,rgba(88,166,255,.05),rgba(0,212,170,.05));
-            border-radius: 10px;
+            background: linear-gradient(90deg,rgba(88,166,255,.05),rgba(0,255,65,.05));
+            border-radius: 3px;
             border: 1px solid rgba(48,54,61,.6);
             display: flex;
             align-items: center;
@@ -1153,15 +1336,15 @@
             }
 
                 .message-area .msg.warn {
-                    color: #ff9f43
+                    color: var(--industrial-yellow)
                 }
 
                 .message-area .msg.danger {
-                    color: #ff5c5c
+                    color: var(--moss-red)
                 }
 
                 .message-area .msg.success {
-                    color: #4dffc3
+                    color: var(--matrix-green)
                 }
 
                 .message-area .msg.info {
@@ -1227,7 +1410,7 @@
             width: max-content;
             max-width: 620px;
             background: rgba(60,42,20,.94);
-            border: 1px solid #ff9f43;
+            border: 1px solid var(--industrial-yellow);
             border-radius: 12px;
             padding: 9px 18px;
             display: none;
@@ -1243,11 +1426,11 @@
 
         @keyframes eventPulse {
             0%,100% {
-                box-shadow: 0 0 0 rgba(255,159,67,0)
+                box-shadow: 0 0 0 rgba(255,193,7,0)
             }
 
             50% {
-                box-shadow: 0 0 24px rgba(255,159,67,.4)
+                box-shadow: 0 0 24px rgba(255,193,7,.4)
             }
         }
 
@@ -1257,7 +1440,7 @@
 
         .event-banner .ev-text {
             font-weight: 700;
-            color: #ff9f43;
+            color: var(--industrial-yellow);
             font-size: .78rem;
             flex: 1;
             white-space: nowrap
@@ -1266,9 +1449,9 @@
         .event-banner .ev-close {
             padding: 3px 10px;
             border-radius: 6px;
-            border: 1px solid rgba(255,159,67,.4);
+            border: 1px solid rgba(255,193,7,.4);
             background: transparent;
-            color: #ff9f43;
+            color: var(--industrial-yellow);
             font-size: .68rem;
             cursor: pointer;
             font-family: inherit
@@ -1374,7 +1557,7 @@
                         content: '·';
                         position: absolute;
                         left: 4px;
-                        color: #00d4aa;
+                        color: var(--matrix-green);
                         font-weight: 700;
                         font-size: 1.1rem
                     }
@@ -1391,17 +1574,17 @@
             }
 
             .help-section .danger-text {
-                color: #ff5c5c;
+                color: var(--moss-red);
                 font-weight: 700
             }
 
             .help-section .good-text {
-                color: #4dffc3;
+                color: var(--matrix-green);
                 font-weight: 700
             }
 
             .help-section .warn-text {
-                color: #ff9f43;
+                color: var(--industrial-yellow);
                 font-weight: 700
             }
 
@@ -1415,11 +1598,11 @@
         }
 
             .scram-modal.success {
-                border-color: #4dffc3
+                border-color: var(--matrix-green)
             }
 
             .scram-modal.fail {
-                border-color: #ff5c5c
+                border-color: var(--moss-red)
             }
 
             .scram-modal .scram-icon {
@@ -1430,11 +1613,11 @@
             }
 
             .scram-modal.success .scram-icon {
-                color: #4dffc3
+                color: var(--matrix-green)
             }
 
             .scram-modal.fail .scram-icon {
-                color: #ff5c5c
+                color: var(--moss-red)
             }
 
             .scram-modal h2 {
@@ -1444,11 +1627,11 @@
             }
 
             .scram-modal.success h2 {
-                color: #4dffc3
+                color: var(--matrix-green)
             }
 
             .scram-modal.fail h2 {
-                color: #ff5c5c
+                color: var(--moss-red)
             }
 
             .scram-modal .scram-desc {
@@ -1470,15 +1653,15 @@
             }
 
             .scram-modal.success .scram-btn {
-                border-color: #4dffc3;
-                background: rgba(77,255,195,.15);
-                color: #4dffc3
+                border-color: var(--matrix-green);
+                background: rgba(0,255,65,.15);
+                color: var(--matrix-green)
             }
 
             .scram-modal.fail .scram-btn {
-                border-color: #ff5c5c;
-                background: rgba(255,92,92,.15);
-                color: #ff5c5c
+                border-color: var(--moss-red);
+                background: rgba(255,23,68,.15);
+                color: var(--moss-red)
             }
 
         .hotkey-overlay {
@@ -1501,15 +1684,15 @@
             max-width: 520px;
             width: 100%;
             background: linear-gradient(180deg,rgba(22,27,34,.98),rgba(13,17,23,.98));
-            border: 1px solid rgba(0,212,170,.4);
+            border: 1px solid rgba(0,255,65,.4);
             border-radius: 16px;
             padding: 28px 32px;
-            box-shadow: 0 0 60px rgba(0,212,170,.2)
+            box-shadow: 0 0 60px rgba(0,255,65,.2)
         }
 
             .hotkey-card h3 {
                 font-size: 1.1rem;
-                color: #4dffc3;
+                color: var(--matrix-green);
                 margin-bottom: 20px;
                 text-align: center;
                 letter-spacing: 1.5px
@@ -1535,9 +1718,9 @@
 
             .hotkey-row .hk-key {
                 font-family: 'Consolas',monospace;
-                background: rgba(0,212,170,.1);
-                border: 1px solid rgba(0,212,170,.3);
-                color: #4dffc3;
+                background: rgba(0,255,65,.1);
+                border: 1px solid rgba(0,255,65,.3);
+                color: var(--matrix-green);
                 padding: 4px 14px;
                 border-radius: 6px;
                 font-size: .85rem;
@@ -1669,6 +1852,172 @@
             justify-content: flex-end;
             margin-top: 6px
         }
+
+        /* ============ 紧急停堆警告 ============ */
+        #meltdownOverlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            z-index: 58;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: 18px
+        }
+
+            #meltdownOverlay.active {
+                display: block
+            }
+
+            #meltdownOverlay .red-pulse {
+                position: absolute;
+                inset: 0;
+                mix-blend-mode: screen;
+                background: radial-gradient(ellipse at center,rgba(255,23,68,0) 30%,rgba(255,23,68,.6) 100%),rgba(255,23,68,.14);
+                animation: eoRedFlash .5s steps(1) infinite
+            }
+
+        @keyframes eoRedFlash {
+            0% {
+                opacity: .9
+            }
+
+            50% {
+                opacity: .15
+            }
+
+            100% {
+                opacity: .9
+            }
+        }
+
+        #meltdownOverlay .haz {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 26px;
+            background: repeating-linear-gradient(45deg,var(--moss-red) 0 20px,#0d1117 20px 40px);
+            animation: eoStripes .6s linear infinite
+        }
+
+            #meltdownOverlay .haz.top {
+                top: 0
+            }
+
+            #meltdownOverlay .haz.bot {
+                bottom: 0
+            }
+
+        @keyframes eoStripes {
+            from {
+                background-position: 0 0
+            }
+
+            to {
+                background-position: 56.5685px 0
+            }
+        }
+
+        #meltdownOverlay .band {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            padding: 14px 0 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: rgba(13,17,23,.78);
+            border-top: 3px solid var(--moss-red);
+            border-bottom: 3px solid var(--moss-red);
+            box-shadow: 0 0 80px rgba(255,23,68,.5);
+            transform: translateY(-50%);
+            animation: eoBandIn .38s ease-out
+        }
+
+        @keyframes eoBandIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) scale(1.6)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(-50%) scale(1)
+            }
+        }
+
+            #meltdownOverlay .band .row {
+                display: flex;
+                align-items: center;
+                gap: 36px;
+                animation: eoBlink .5s steps(1) infinite
+            }
+
+        @keyframes eoBlink {
+            0% {
+                opacity: 1
+            }
+
+            60% {
+                opacity: .35
+            }
+        }
+
+        #meltdownOverlay .tri {
+            position: relative;
+            width: 96px;
+            height: 84px;
+            background: var(--moss-red);
+            clip-path: polygon(50% 0,100% 100%,0 100%);
+            filter: drop-shadow(0 0 14px var(--moss-red))
+        }
+
+            #meltdownOverlay .tri b {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 22px;
+                text-align: center;
+                color: #0d1117;
+                font-size: 54px;
+                font-weight: 900;
+                line-height: 1
+            }
+
+        #meltdownOverlay h2 {
+            font-size: 130px;
+            font-weight: 900;
+            letter-spacing: .3em;
+            margin-right: -.3em;
+            line-height: 1.15;
+            color: var(--moss-red);
+            text-shadow: 0 0 20px rgba(255,23,68,.95), 0 0 70px rgba(255,23,68,.55);
+            animation: rgbSplit 0.15s steps(1) infinite;
+        }
+
+        #meltdownOverlay .band p {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: .2em;
+            color: var(--industrial-yellow)
+        }
+
+        /* ============ 爆炸动画覆盖层 ============ */
+        #boomCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            pointer-events: none;
+            z-index: 90;
+            border-radius: 18px
+        }
+
+            #boomCanvas.active {
+                display: block
+            }
     </style>
     <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
 </head>
@@ -1744,7 +2093,7 @@
                     <input type="range" class="load-slider" id="loadSlider" min="0" max="200" value="50" step="1">
                     <span class="row-value" id="loadValue">50</span>
                     <span style="font-size:.68rem;color:#6e7681;">MW</span>
-                    <span id="loadHint" style="font-size:.65rem;color:#4dffc3;font-weight:700;min-width:76px;white-space:nowrap;">建议: 0 MW</span>
+                    <span id="loadHint" style="font-size:.65rem;color:var(--matrix-green);font-weight:700;min-width:76px;white-space:nowrap;">建议: 0 MW</span>
                 </div>
 
                 <div class="panel-row relief-control">
@@ -1800,7 +2149,7 @@
                         <div class="shop-item">
                             <div class="item-name">🔧 紧急修复</div>
                             <div class="item-desc">故障设备旁的黄色按钮</div>
-                            <button class="item-buy" disabled>每次 10 元</button>
+                            <button class="item-buy" disabled title="在故障设备旁点击黄色按钮使用">每次 10 元</button>
                         </div>
                     </div>
                 </div>
@@ -1839,6 +2188,25 @@
             <span class="timer" id="meltdownTimer">60</span>
             <span style="font-size:.85rem;color:#fff;">秒</span>
         </div>
+
+        <!-- ============ 紧急停堆全屏警报 ============ -->
+        <div id="meltdownOverlay">
+            <div class="red-pulse"></div>
+            <div class="haz top"></div>
+            <div class="haz bot"></div>
+            <div class="band">
+                <div class="row">
+                    <div class="tri"><b>!</b></div>
+                    <h2>警告</h2>
+                    <div class="tri"><b>!</b></div>
+                </div>
+                <p>堆芯温度超限 · CORE MELTDOWN IMMINENT · 立即紧急停堆</p>
+            </div>
+        </div>
+
+        <!-- ============ 爆炸动画画布 ============ -->
+        <canvas id="boomCanvas"></canvas>
+        <div id="glitchCodeOverlay"></div>
     </div>
 
     <!-- ============ 弹窗（置于舞台外，不受缩放影响） ============ -->
@@ -1982,6 +2350,96 @@
         function playBeep(freq=880,dur=0.08,vol=0.05){if(!audioCtx)return;try{const now=audioCtx.currentTime;const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type='square';osc.frequency.value=freq;gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(vol,now+0.005);gain.gain.exponentialRampToValueAtTime(0.0001,now+dur);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+dur+0.02)}catch(e){}}
         function playAlarm(){if(!audioCtx)return;if(!DIFFICULTY[state.difficulty].showAlarm)return;const now=audioCtx.currentTime;if(now-lastAlarmTime<1.2)return;lastAlarmTime=now;try{const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type='sawtooth';osc.frequency.setValueAtTime(660,now);osc.frequency.exponentialRampToValueAtTime(440,now+0.4);gain.gain.setValueAtTime(0,now);gain.gain.linearRampToValueAtTime(0.08,now+0.02);gain.gain.exponentialRampToValueAtTime(0.0001,now+0.5);osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+0.55)}catch(e){}}
 
+        // ============ 爆炸音效（黑客/工业风叠加） ============
+        function playBoomSound(){
+            if(!audioCtx)return;
+            try{
+                const now=audioCtx.currentTime;
+
+                // 1) 低频冲击
+                const o=audioCtx.createOscillator();
+                o.type='sine';
+                o.frequency.setValueAtTime(140,now);
+                o.frequency.exponentialRampToValueAtTime(20,now+2.0);
+                const og=audioCtx.createGain();
+                og.gain.setValueAtTime(0,now);
+                og.gain.linearRampToValueAtTime(0.7,now+0.01);
+                og.gain.exponentialRampToValueAtTime(0.0001,now+2.5);
+                o.connect(og);og.connect(audioCtx.destination);
+                o.start(now);o.stop(now+2.6);
+
+                // 2) 高频噪声尾音
+                const bufSize=audioCtx.sampleRate*2;
+                const buf=audioCtx.createBuffer(1,bufSize,audioCtx.sampleRate);
+                const data=buf.getChannelData(0);
+                for(let i=0;i<bufSize;i++)data[i]=Math.random()*2-1;
+                const src=audioCtx.createBufferSource();src.buffer=buf;
+                const f=audioCtx.createBiquadFilter();
+                f.type='lowpass';
+                f.frequency.setValueAtTime(5000,now);
+                f.frequency.exponentialRampToValueAtTime(80,now+1.5);
+                const ng=audioCtx.createGain();
+                ng.gain.setValueAtTime(0.5,now);
+                ng.gain.exponentialRampToValueAtTime(0.0001,now+2.0);
+                src.connect(f);f.connect(ng);ng.connect(audioCtx.destination);
+                src.start(now);src.stop(now+2.2);
+
+                // 3) 金属碎裂声
+                const metalBuf=audioCtx.createBuffer(1,audioCtx.sampleRate,audioCtx.sampleRate);
+                const metalData=metalBuf.getChannelData(0);
+                for(let i=0;i<metalData.length;i++){
+                    metalData[i]=(Math.random()*2-1)*Math.exp(-i/(audioCtx.sampleRate*0.15));
+                }
+                const metalSrc=audioCtx.createBufferSource();metalSrc.buffer=metalBuf;
+                const metalF=audioCtx.createBiquadFilter();
+                metalF.type='bandpass';metalF.frequency.value=3000;metalF.Q.value=2;
+                const metalG=audioCtx.createGain();
+                metalG.gain.setValueAtTime(0.35,now+0.05);
+                metalG.gain.exponentialRampToValueAtTime(0.0001,now+0.8);
+                metalSrc.connect(metalF);metalF.connect(metalG);metalG.connect(audioCtx.destination);
+                metalSrc.start(now+0.05);metalSrc.stop(now+1.0);
+
+                // 4) 电火花短路声
+                for(let i=0;i<3;i++){
+                    const sparkDelay=0.1+i*0.25;
+                    const spark=audioCtx.createOscillator();
+                    spark.type='sawtooth';
+                    spark.frequency.setValueAtTime(2000+Math.random()*3000,now+sparkDelay);
+                    spark.frequency.exponentialRampToValueAtTime(200,now+sparkDelay+0.15);
+                    const sparkG=audioCtx.createGain();
+                    sparkG.gain.setValueAtTime(0.15,now+sparkDelay);
+                    sparkG.gain.exponentialRampToValueAtTime(0.0001,now+sparkDelay+0.2);
+                    spark.connect(sparkG);sparkG.connect(audioCtx.destination);
+                    spark.start(now+sparkDelay);spark.stop(now+sparkDelay+0.25);
+                }
+
+                // 5) MOSS 长鸣关机音效
+                const moss=audioCtx.createOscillator();
+                moss.type='sine';
+                moss.frequency.setValueAtTime(440,now+0.5);
+                moss.frequency.exponentialRampToValueAtTime(55,now+3.5);
+                const mossG=audioCtx.createGain();
+                mossG.gain.setValueAtTime(0,now+0.5);
+                mossG.gain.linearRampToValueAtTime(0.12,now+0.7);
+                mossG.gain.exponentialRampToValueAtTime(0.0001,now+3.5);
+                moss.connect(mossG);mossG.connect(audioCtx.destination);
+                moss.start(now+0.5);moss.stop(now+3.6);
+
+                // MOSS 泛音
+                const mossH=audioCtx.createOscillator();
+                mossH.type='triangle';
+                mossH.frequency.setValueAtTime(880,now+0.5);
+                mossH.frequency.exponentialRampToValueAtTime(110,now+3.0);
+                const mossHG=audioCtx.createGain();
+                mossHG.gain.setValueAtTime(0,now+0.5);
+                mossHG.gain.linearRampToValueAtTime(0.04,now+0.7);
+                mossHG.gain.exponentialRampToValueAtTime(0.0001,now+3.0);
+                mossH.connect(mossHG);mossHG.connect(audioCtx.destination);
+                mossH.start(now+0.5);mossH.stop(now+3.1);
+
+            }catch(e){}
+        }
+
         const $=id=>document.getElementById(id);
         const tempDisplay=$('tempDisplay'),powerDisplay=$('powerDisplay'),moneyDisplay=$('moneyDisplay'),timeDisplay=$('timeDisplay');
         const tempBar=$('tempBar'),powerBar=$('powerBar'),statusDot=$('statusDot'),statusText=$('statusText');
@@ -1991,6 +2449,8 @@
         const thermalPowerEl=$('thermalPower'),reactorPressureEl=$('reactorPressure'),mainPowerEl=$('mainPower'),backupPowerEl=$('backupPower');
         const reactorStabilityEl=$('reactorStability'),neutronFluxEl=$('neutronFlux'),gridDeviationEl=$('gridDeviation');
         const meltdownWarning=$('meltdownWarning'),meltdownTimer=$('meltdownTimer'),rodSlider=$('rodSlider'),rodValue=$('rodValue'),rodLock=$('rodLock');
+        const meltdownOverlay=$('meltdownOverlay');
+        const boomCanvas=$('boomCanvas');
         const loadSlider=$('loadSlider'),loadValue=$('loadValue'),reliefBtn=$('reliefBtn'),reliefStatus=$('reliefStatus'),loadHint=$('loadHint');
         const boricBtn=$('boricBtn'),boricStatus=$('boricStatus');
         const psMain=$('psMain'),psBackup=$('psBackup'),psInfo=$('psInfo');
@@ -2005,6 +2465,7 @@
         const saveNameModal=$('saveNameModal'),saveNameInput=$('saveNameInput');
         const btnCloseSaveName=$('btnCloseSaveName'),btnCancelSaveName=$('btnCancelSaveName'),btnConfirmSaveName=$('btnConfirmSaveName');
         const stage=$('stage');
+        const glitchCodeOverlay=$('glitchCodeOverlay');
 
         /* ====== 16:9 自适应缩放（始终居中） ====== */
         const BASE_W=1600,BASE_H=900;
@@ -2014,6 +2475,7 @@
         const vw = window.innerWidth, vh = window.innerHeight;
         stageScale = Math.min(vw / BASE_W, vh / BASE_H);
         stage.style.transform = 'translate(-50%, -50%) scale(' + stageScale + ')';
+        stage.style.setProperty('--stage-scale', stageScale);
         drawTempChart();
         }
         window.addEventListener('resize',fitStage);
@@ -2033,29 +2495,30 @@
         const dpr=Math.min(2.5,Math.max(1,(window.devicePixelRatio||1)*stageScale));
         const w=tempChart.clientWidth,h=tempChart.clientHeight;
         if(w<=0||h<=0)return;
-        if(tempChart.width!==Math.round(w*dpr)||tempChart.height!==Math.round(h*dpr)){tempChart.width=Math.round(w*dpr);tempChart.height=Math.round(h*dpr)}
+        const cw=Math.round(w*dpr),ch=Math.round(h*dpr);
+        if(tempChart.width!==cw||tempChart.height!==ch){tempChart.width=cw;tempChart.height=ch}
         ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
         ctx.strokeStyle='rgba(48,54,61,0.5)';ctx.lineWidth=1;
         for(let i=0;i<=4;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
         const yMax=1600;const y1200=h-(1200/yMax)*h;const y900=h-(900/yMax)*h;
-        ctx.fillStyle='rgba(255,92,92,0.08)';ctx.fillRect(0,0,w,y1200);
-        ctx.fillStyle='rgba(255,159,67,0.05)';ctx.fillRect(0,y1200,w,y900-y1200);
-        ctx.strokeStyle='rgba(255,92,92,0.6)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(0,y1200);ctx.lineTo(w,y1200);ctx.stroke();
-        ctx.strokeStyle='rgba(255,159,67,0.5)';ctx.beginPath();ctx.moveTo(0,y900);ctx.lineTo(w,y900);ctx.stroke();
+        ctx.fillStyle='rgba(255,23,68,0.08)';ctx.fillRect(0,0,w,y1200);
+        ctx.fillStyle='rgba(255,193,7,0.05)';ctx.fillRect(0,y1200,w,y900-y1200);
+        ctx.strokeStyle='rgba(255,23,68,0.6)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(0,y1200);ctx.lineTo(w,y1200);ctx.stroke();
+        ctx.strokeStyle='rgba(255,193,7,0.5)';ctx.beginPath();ctx.moveTo(0,y900);ctx.lineTo(w,y900);ctx.stroke();
         ctx.setLineDash([]);
         const history=state.tempHistory;
         if(history.length>1){
-        ctx.strokeStyle='#ff9f43';ctx.lineWidth=2;ctx.beginPath();
+        ctx.strokeStyle='#00ff41';ctx.lineWidth=2;ctx.beginPath();
         for(let i=0;i<history.length;i++){const x=(i/(CHART_SECONDS-1))*w;const y=h-clamp(history[i]/yMax,0,1)*h;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
         ctx.stroke();
-        const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'rgba(255,159,67,0.3)');grad.addColorStop(1,'rgba(255,159,67,0)');
+        const grad=ctx.createLinearGradient(0,0,0,h);grad.addColorStop(0,'rgba(0,255,65,0.25)');grad.addColorStop(1,'rgba(0,255,65,0)');
         ctx.fillStyle=grad;ctx.lineTo((history.length-1)/(CHART_SECONDS-1)*w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();
         const lastX=(history.length-1)/(CHART_SECONDS-1)*w;const lastY=h-clamp(history[history.length-1]/yMax,0,1)*h;
-        ctx.fillStyle='#ff9f43';ctx.beginPath();ctx.arc(lastX,lastY,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#00ff41';ctx.beginPath();ctx.arc(lastX,lastY,4,0,Math.PI*2);ctx.fill();
         ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(lastX,lastY,2,0,Math.PI*2);ctx.fill()
         }
-        ctx.font='10px Consolas, monospace';ctx.fillStyle='rgba(255,92,92,0.7)';ctx.fillText('1200°C',4,y1200-3);
-        ctx.fillStyle='rgba(255,159,67,0.7)';ctx.fillText('900°C',4,y900-3)
+        ctx.font='10px Consolas, monospace';ctx.fillStyle='rgba(255,23,68,0.7)';ctx.fillText('1200°C',4,y1200-3);
+        ctx.fillStyle='rgba(255,193,7,0.7)';ctx.fillText('900°C',4,y900-3)
         }
         function pushTempHistory(){state.tempHistory.push(state.temperature);if(state.tempHistory.length>CHART_SECONDS)state.tempHistory.shift()}
         function updateBoricUI(){
@@ -2070,7 +2533,7 @@
         if(state.boricActive){setMessage('硼酸正在注入','warn');return}
         if(state.boricContamination>0){setMessage('反应堆仍在污染中','warn');return}
         playBeep(440,0.2,0.08);state.boricActive=true;state.boricRemaining=BORIC_DURATION;state.boricCooldown=BORIC_COOLDOWN;
-        log('☢️ 硼酸注入启动！10秒内降温200°C','danger');setMessage('☢️ 硼酸注入中','danger');updateBoricUI()
+        log('> BORIC_ACID_INJECTION: 紧急中子吸收启动 — 10s 降温 200°C — 代价是 30s 的沉默','danger');setMessage('☢️ 硼酸注入中','danger');updateBoricUI()
         }
         function initDevices(){
         state.pumps=[];for(let i=0;i<state.pumpCount;i++)state.pumps.push({on:true,fault:false,power:100,repairCooldown:0});
@@ -2106,25 +2569,452 @@
         rodSlider.value=ROD_DEFAULT;rodValue.textContent=ROD_DEFAULT+'%';
         state.rodLocked=false;rodLock.classList.remove('active');rodLock.textContent='解锁';rodSlider.disabled=false;
         state.coldShutdownLogged=false;state.scramTriggered=false;
-        log('反应堆启动','success');setMessage('反应堆已启动','success');statusDot.className='dot running';statusText.textContent='运行中';
+        hideEmergencyWarning();
+        log('> REACTOR_ONLINE: 中子通量恢复 — 欢迎回来，操作员','success');setMessage('反应堆已启动','success');statusDot.className='dot running';statusText.textContent='运行中';
         if(window.PokiSDK) PokiSDK.gameplayStart();
         renderDevices();updateUI()
         }
         function showScramResult(success){if(success){scramModalContent.className='scram-modal success';scramIcon.textContent='✅';scramTitle.textContent='停堆成功';scramDesc.textContent='反应堆已安全关闭，温度回落至500°C。'}else{scramModalContent.className='scram-modal fail';scramIcon.textContent='❌';scramTitle.textContent='停堆失败';scramDesc.textContent='控制棒卡死！核融倒计时60秒。'}wasPausedBeforeScramModal=state.paused;if(!state.paused&&!state.gameOver){state.paused=true;btnPause.textContent='▶ 继续'}scramModal.classList.add('active')}
         function closeScramModal(){scramModal.classList.remove('active');if(!wasPausedBeforeScramModal&&!state.gameOver){state.paused=false;btnPause.textContent='⏸ 暂停';if(state.rodAnimId===null&&Math.abs(state.rodTarget-state.rodDepth)>0.3&&!state.rodLocked)state.rodAnimId=requestAnimationFrame(animateRod)}}
+
+        /* ===== 紧急停堆全屏警报：显示 / 隐藏 ===== */
+        let emergWarnTimer=null;
+        function showEmergencyWarning(autoHideMs){
+            if(!meltdownOverlay)return;
+            meltdownOverlay.classList.add('active');
+            if(emergWarnTimer){clearTimeout(emergWarnTimer);emergWarnTimer=null}
+            if(autoHideMs>0){
+                emergWarnTimer=setTimeout(()=>{
+                    emergWarnTimer=null;
+                    meltdownOverlay.classList.remove('active');
+                },autoHideMs);
+            }
+        }
+        function hideEmergencyWarning(){
+            if(!meltdownOverlay)return;
+            if(emergWarnTimer){clearTimeout(emergWarnTimer);emergWarnTimer=null}
+            meltdownOverlay.classList.remove('active');
+        }
+
+        /* ============================================================
+         *  爆炸动画模块
+         * ============================================================ */
+        const BOOM_W = 1600, BOOM_H = 900;
+        const BOOM_DURATION = 3.8;
+        let boomCtx = null;
+        let boomAnimId = null;
+        let boomStartTime = 0;
+
+        const bClamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+        const bSS = (a, b, x) => {
+            const t = bClamp((x - a) / (b - a));
+            return t * t * (3 - 2 * t);
+        };
+        const bEO = p => 1 - Math.pow(1 - p, 3);
+        function bRgba(hex, a){
+            const n = parseInt(hex.slice(1), 16);
+            return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+        }
+        function bMix(h1, h2, k){
+            const p = parseInt(h1.slice(1), 16), q = parseInt(h2.slice(1), 16);
+            const r = Math.round((p >> 16) + ((q >> 16) - (p >> 16)) * k);
+            const g = Math.round(((p >> 8) & 255) + (((q >> 8) & 255) - ((p >> 8) & 255)) * k);
+            const b = Math.round((p & 255) + ((q & 255) - (p & 255)) * k);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        // 爆炸火花（每次爆炸重新生成）
+        let boomSparks = [];
+        function regenBoomSparks(){
+            boomSparks = [];
+            for (let i = 0; i < 80; i++){
+                const k = Math.random();
+                boomSparks.push({
+                    a: Math.random() * Math.PI * 2,
+                    v: 200 + Math.random() * 700,
+                    life: .4 + Math.random() * 1.0,
+                    w: 1 + Math.random() * 3,
+                    c: k < .35 ? '#00ff41' : k < .65 ? '#ff1744' : k < .85 ? '#ffc107' : '#ffffff',
+                    type: k < .2 ? 'binary' : (k < .4 ? 'metal' : 'spark')
+                });
+            }
+        }
+
+        // 数字碎片（固定轨迹，用于机械眼）
+        const boomFrags = [
+            { vx: -430, vy: -380, r: -6 },
+            { vx: -150, vy: -540, r:  4 },
+            { vx:  170, vy: -500, r: -3 },
+            { vx:  450, vy: -350, r:  7 }
+        ];
+
+        // WARNING 字块飞散轨迹
+        const boomWarnings = [
+            { text: 'WARNING', vx: -320, vy: -280, r: -4, size: 28, c: '#ff1744' },
+            { text: 'CORE OVERLOAD', vx: 280, vy: -400, r: 3, size: 22, c: '#ffc107' },
+            { text: 'MELTDOWN', vx: -450, vy: -180, r: -5, size: 32, c: '#ff1744' },
+            { text: 'SYSTEM FAILURE', vx: 350, vy: -320, r: 6, size: 20, c: '#00ff41' },
+            { text: '紧急停堆失败', vx: -200, vy: -500, r: -2, size: 26, c: '#ff1744' },
+            { text: 'FATAL ERROR', vx: 400, vy: -150, r: 4, size: 24, c: '#ffc107' },
+        ];
+
+        // 金属残骸碎片
+        const boomDebris = [];
+        function regenBoomDebris() {
+            boomDebris.length = 0;
+            for (let i = 0; i < 24; i++) {
+                boomDebris.push({
+                    a: Math.random() * Math.PI * 2,
+                    v: 150 + Math.random() * 500,
+                    life: .8 + Math.random() * 1.2,
+                    w: 4 + Math.random() * 12,
+                    h: 2 + Math.random() * 6,
+                    rot: Math.random() * Math.PI * 2,
+                    rv: (Math.random() - 0.5) * 15,
+                    c: Math.random() < 0.5 ? '#3a3a3a' : '#555'
+                });
+            }
+        }
+
+        // 屏幕裂纹生成
+        function genBoomCracks(ox, oy, count, len){
+            const segs = [];
+            function branch(x, y, ang, L0, w, d0, depth){
+                const pts = [[x, y]], cum = [0];
+                let Ls = 0;
+                while (Ls < L0){
+                    const s = 10 + Math.random() * 26;
+                    ang += (Math.random() - .5) * .8;
+                    x += Math.cos(ang) * s;
+                    y += Math.sin(ang) * s;
+                    Ls += s;
+                    pts.push([x, y]);
+                    cum.push(Ls);
+                    if (depth < 2 && Math.random() < .16)
+                        branch(x, y,
+                            ang + (Math.random() < .5 ? -1 : 1) * (.5 + Math.random() * .7),
+                            L0 * (.25 + Math.random() * .3),
+                            w * .6, d0 + Ls, depth + 1);
+                }
+                segs.push({ pts, cum, w, d0 });
+            }
+            for (let i = 0; i < count; i++)
+                branch(ox, oy, i / count * Math.PI * 2 + Math.random() * .6,
+                       len * (.55 + Math.random() * .45), 2.4, 0, 0);
+            const ring = [], rc = [0];
+            let rl = 0;
+            for (let k = 0; k <= 14; k++){
+                const a = k / 14 * Math.PI * 2, r = 22 + Math.random() * 14;
+                ring.push([ox + Math.cos(a) * r, oy + Math.sin(a) * r]);
+                if (k){
+                    const p = ring[k - 1], q = ring[k];
+                    rl += Math.hypot(q[0] - p[0], q[1] - p[1]);
+                    rc.push(rl);
+                }
+            }
+            segs.push({ pts: ring, cum: rc, w: 1.6, d0: 0 });
+            return { ox, oy, segs };
+        }
+
+        let boomCrackA = null, boomCrackB = null;
+
+        function drawBoomCracks(set, t0, t){
+            if (t < t0) return;
+            const D = bEO(bClamp((t - t0) / .4)) * 1000;
+            boomCtx.save();
+            boomCtx.lineCap = 'round';
+            boomCtx.lineJoin = 'round';
+            for (let pass = 0; pass < 2; pass++){
+                boomCtx.strokeStyle = pass ? 'rgba(255,23,68,0.85)' : 'rgba(0,0,0,0.6)';
+                boomCtx.shadowColor = pass ? 'rgba(255,23,68,0.6)' : 'transparent';
+                boomCtx.shadowBlur = pass ? 6 : 0;
+                const o = pass ? 0 : 1.6;
+                for (const s of set.segs){
+                    if (D <= s.d0) continue;
+                    boomCtx.lineWidth = s.w + (pass ? 0 : 2);
+                    boomCtx.beginPath();
+                    boomCtx.moveTo(s.pts[0][0] + o, s.pts[0][1] + o);
+                    for (let j = 1; j < s.pts.length; j++){
+                        const dj = s.d0 + s.cum[j];
+                        if (dj <= D){
+                            boomCtx.lineTo(s.pts[j][0] + o, s.pts[j][1] + o);
+                        } else {
+                            const dp = s.d0 + s.cum[j - 1];
+                            const k = (D - dp) / (dj - dp);
+                            const a = s.pts[j - 1], b = s.pts[j];
+                            boomCtx.lineTo(a[0] + (b[0] - a[0]) * k + o, a[1] + (b[1] - a[1]) * k + o);
+                            break;
+                        }
+                    }
+                    boomCtx.stroke();
+                }
+            }
+            const g = t - t0;
+            if (g < .5){
+                const rg = boomCtx.createRadialGradient(set.ox, set.oy, 0, set.ox, set.oy, 90);
+                rg.addColorStop(0, `rgba(255,23,68,${.9 * (1 - g / .5)})`);
+                rg.addColorStop(1, 'rgba(255,23,68,0)');
+                boomCtx.shadowBlur = 0;
+                boomCtx.fillStyle = rg;
+                boomCtx.fillRect(set.ox - 90, set.oy - 90, 180, 180);
+            }
+            boomCtx.restore();
+        }
+
+        // 爆炸主渲染函数
+        function boomFrame(now){
+            const t = (now - boomStartTime) / 1000;
+            if (t > BOOM_DURATION + 0.5){
+                boomCanvas.classList.remove('active');
+                boomCtx.clearRect(0, 0, BOOM_W, BOOM_H);
+                boomAnimId = null;
+                return;
+            }
+
+            boomCtx.clearRect(0, 0, BOOM_W, BOOM_H);
+
+            const cx = BOOM_W / 2;
+            const cy = BOOM_H / 2;
+
+            let shx = 0, shy = 0;
+            if (t < 1.5){
+                const intensity = Math.exp(-t * 2.2) * 22;
+                shx = Math.sin(t * 97) * intensity;
+                shy = Math.cos(t * 83) * intensity;
+            }
+
+            boomCtx.save();
+            boomCtx.translate(shx, shy);
+
+            // 1) 白热闪光
+            if (t < 0.5){
+                const k = 1 - t / 0.5;
+                const g = boomCtx.createRadialGradient(cx, cy, 0, cx, cy, 80 + 400 * bEO(t / 0.5));
+                g.addColorStop(0, `rgba(255,255,255,${0.95 * k})`);
+                g.addColorStop(0.2, `rgba(255,23,68,${0.7 * k})`);
+                g.addColorStop(0.5, `rgba(0,255,65,${0.3 * k})`);
+                g.addColorStop(1, 'rgba(0,0,0,0)');
+                boomCtx.fillStyle = g;
+                boomCtx.fillRect(cx - 600, cy - 600, 1200, 1200);
+            }
+
+            // 2) 双冲击波圆环
+            [[0, '#ff1744', 520], [0.1, '#ffc107', 380]].forEach(([d, c, R]) => {
+                const sw = bClamp((t - d) / 0.7);
+                if (sw <= 0 || sw >= 1) return;
+                boomCtx.strokeStyle = bRgba(c, (1 - sw) * 0.9);
+                boomCtx.lineWidth = 8 * (1 - sw) + 1;
+                boomCtx.beginPath();
+                boomCtx.arc(cx, cy, 30 + bEO(sw) * R, 0, Math.PI * 2);
+                boomCtx.stroke();
+            });
+
+            // 3) 火花射线 + 二进制碎片 + 金属残骸
+            boomCtx.lineCap = 'round';
+            for (const s of boomSparks){
+                if (t > s.life) continue;
+                const k = t / s.life;
+                const pos = d => {
+                    const dist = s.v * d * (1 - (d / s.life) * 0.5);
+                    return [
+                        cx + Math.cos(s.a) * dist,
+                        cy + Math.sin(s.a) * dist + 200 * d * d
+                    ];
+                };
+                const [x1, y1] = pos(t);
+                const [x0, y0] = pos(Math.max(0, t - 0.05));
+
+                if (s.type === 'binary') {
+                    boomCtx.save();
+                    boomCtx.translate(x1, y1);
+                    boomCtx.rotate(t * 3 * (s.a > Math.PI ? 1 : -1));
+                    boomCtx.globalAlpha = 1 - k;
+                    boomCtx.font = `bold ${10 + s.w * 4}px Consolas, monospace`;
+                    boomCtx.fillStyle = s.c;
+                    boomCtx.shadowColor = s.c;
+                    boomCtx.shadowBlur = 8;
+                    boomCtx.textAlign = 'center';
+                    boomCtx.fillText(Math.random() < 0.5 ? '0' : '1', 0, 0);
+                    boomCtx.restore();
+                } else {
+                    boomCtx.strokeStyle = bRgba(s.c, 1 - k);
+                    boomCtx.lineWidth = s.w;
+                    boomCtx.beginPath();
+                    boomCtx.moveTo(x0, y0);
+                    boomCtx.lineTo(x1, y1);
+                    boomCtx.stroke();
+                }
+            }
+
+            // 金属残骸碎片
+            for (const d of boomDebris) {
+                if (t > d.life) continue;
+                const k = t / d.life;
+                const dist = d.v * t * (1 - t / d.life * 0.3);
+                const dx = cx + Math.cos(d.a) * dist;
+                const dy = cy + Math.sin(d.a) * dist + 300 * t * t;
+                boomCtx.save();
+                boomCtx.translate(dx, dy);
+                boomCtx.rotate(d.rot + d.rv * t);
+                boomCtx.globalAlpha = 1 - k;
+                boomCtx.fillStyle = d.c;
+                boomCtx.shadowColor = '#ff1744';
+                boomCtx.shadowBlur = 4;
+                boomCtx.fillRect(-d.w / 2, -d.h / 2, d.w, d.h);
+                boomCtx.restore();
+            }
+
+            // 4) WARNING 工业字块飞散
+            boomWarnings.forEach((w) => {
+                const a = 1 - bSS(0.15, 1.2, t);
+                if (a <= 0) return;
+                const fx = cx + w.vx * t;
+                const fy = cy - 20 + w.vy * t + 600 * t * t;
+                boomCtx.save();
+                boomCtx.translate(fx, fy);
+                boomCtx.rotate(w.r * t * 0.5);
+                boomCtx.scale(1 + t * 0.8, 1 + t * 0.8);
+                boomCtx.globalAlpha = a;
+                boomCtx.font = `900 ${w.size}px Consolas, monospace`;
+                boomCtx.textAlign = 'center';
+                boomCtx.textBaseline = 'middle';
+                const tw = boomCtx.measureText(w.text).width;
+                boomCtx.fillStyle = 'rgba(0,0,0,0.6)';
+                boomCtx.fillRect(-tw / 2 - 8, -w.size / 2 - 4, tw + 16, w.size + 8);
+                boomCtx.strokeStyle = '#ffc107';
+                boomCtx.lineWidth = 2;
+                boomCtx.strokeRect(-tw / 2 - 8, -w.size / 2 - 4, tw + 16, w.size + 8);
+                boomCtx.fillStyle = w.c;
+                boomCtx.shadowColor = w.c;
+                boomCtx.shadowBlur = 20;
+                boomCtx.fillText(w.text, 0, 0);
+                boomCtx.restore();
+            });
+
+            // MOSS 风格红色圆形「机械眼」碎片
+            boomFrags.forEach((f, i) => {
+                const a = 1 - bSS(0.2, 1, t);
+                if (a <= 0) return;
+                const fx = cx + (i - 1.5) * 80 + f.vx * t;
+                const fy = cy + f.vy * t + 900 * t * t;
+                boomCtx.save();
+                boomCtx.translate(fx, fy);
+                boomCtx.rotate(f.r * t);
+                boomCtx.globalAlpha = a;
+                boomCtx.beginPath();
+                boomCtx.arc(0, 0, 25 + t * 15, 0, Math.PI * 2);
+                boomCtx.strokeStyle = '#ff1744';
+                boomCtx.lineWidth = 3;
+                boomCtx.shadowColor = '#ff1744';
+                boomCtx.shadowBlur = 30;
+                boomCtx.stroke();
+                boomCtx.beginPath();
+                boomCtx.arc(0, 0, 8 + t * 5, 0, Math.PI * 2);
+                boomCtx.fillStyle = '#ff1744';
+                boomCtx.fill();
+                boomCtx.strokeStyle = 'rgba(255,23,68,0.6)';
+                boomCtx.lineWidth = 1;
+                boomCtx.beginPath();
+                boomCtx.moveTo(-35, 0); boomCtx.lineTo(35, 0);
+                boomCtx.moveTo(0, -35); boomCtx.lineTo(0, 35);
+                boomCtx.stroke();
+                boomCtx.restore();
+            });
+
+            // 5) 屏幕裂纹
+            if (boomCrackA) drawBoomCracks(boomCrackA, 0, t);
+            if (boomCrackB) drawBoomCracks(boomCrackB, 0.2, t);
+
+            boomCtx.restore();
+
+            // 6) 全屏红色脉冲
+            if (t < 1.0){
+                const k = 1 - t / 1.0;
+                const pulse = (Math.floor(t * 8) % 2 === 0) ? 1 : 0.3;
+                const g = boomCtx.createRadialGradient(cx, cy, 100, cx, cy, BOOM_W * 0.8);
+                g.addColorStop(0, 'rgba(255,23,68,0)');
+                g.addColorStop(1, `rgba(255,23,68,${0.6 * k * pulse})`);
+                boomCtx.fillStyle = g;
+                boomCtx.fillRect(0, 0, BOOM_W, BOOM_H);
+            }
+
+            boomAnimId = requestAnimationFrame(boomFrame);
+        }
+
+        // ============ Glitch 撕裂 + 代码乱码 ============
+        function triggerGlitch() {
+            stage.classList.add('glitching');
+            setTimeout(() => stage.classList.remove('glitching'), 1800);
+
+            if (glitchCodeOverlay) {
+                let code = '';
+                const chars = '01アイウエオカキクケコ@#$%^&WARNINGCOREOVERLOAD{}<>[];';
+                for (let i = 0; i < 3000; i++) {
+                    code += chars[Math.floor(Math.random() * chars.length)];
+                    if (Math.random() < 0.06) code += '\n';
+                }
+                glitchCodeOverlay.textContent = code;
+                glitchCodeOverlay.classList.add('active');
+                setTimeout(() => {
+                    glitchCodeOverlay.classList.remove('active');
+                    glitchCodeOverlay.textContent = '';
+                }, 2500);
+            }
+        }
+
+        // 启动爆炸动画
+        function startBoomAnimation(){
+            if (!boomCanvas) return;
+            const dpr = Math.min(2.5, Math.max(1, (window.devicePixelRatio || 1) * stageScale));
+            boomCanvas.width = BOOM_W * dpr;
+            boomCanvas.height = BOOM_H * dpr;
+            boomCtx = boomCanvas.getContext('2d');
+            boomCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            boomCanvas.classList.add('active');
+
+            regenBoomSparks();
+            regenBoomDebris();
+            boomCrackA = genBoomCracks(800, 450, 6, 380);
+            boomCrackB = genBoomCracks(600, 500, 9, 640);
+
+            triggerGlitch();
+
+            boomStartTime = performance.now();
+            if (boomAnimId) cancelAnimationFrame(boomAnimId);
+            boomAnimId = requestAnimationFrame(boomFrame);
+        }
+
+        // 停止爆炸动画
+        function stopBoomAnimation(){
+            if (boomAnimId){cancelAnimationFrame(boomAnimId);boomAnimId = null}
+            if (boomCanvas){
+                boomCanvas.classList.remove('active');
+                if (boomCtx) boomCtx.clearRect(0, 0, BOOM_W, BOOM_H);
+            }
+            stage.classList.remove('glitching');
+            if (glitchCodeOverlay) {
+                glitchCodeOverlay.classList.remove('active');
+                glitchCodeOverlay.textContent = '';
+            }
+        }
+
         function triggerEmergencyScram(){
+        showEmergencyWarning(0);
         state.scramTriggered=true;state.rodLocked=false;rodLock.classList.remove('active');rodLock.textContent='解锁';rodSlider.disabled=false;
         state.rodTarget=100;if(!state.rodAnimId)state.rodAnimId=requestAnimationFrame(animateRod);
-        log('温度达1500°C，紧急停堆启动','danger');playAlarm();
+        log('> [CRITICAL] T=1500°C — SCRAM 序列已激活 — 这不是演习','danger');playAlarm();
         const success=Math.random()<SCRAM_SUCCESS_RATE;
         if(success){
-        log('停堆成功，温度回落','success');setMessage('✅ 停堆成功','success');statusText.textContent='安全停堆';statusDot.className='dot running';
+        log('> SCRAM_SUCCESS: 控制棒已全部插入 — 你活下来了，这次','success');setMessage('✅ 停堆成功','success');statusText.textContent='安全停堆';statusDot.className='dot running';
         state.temperature=500;state.rodDepth=100;state.rodTarget=100;rodSlider.value=100;rodValue.textContent='100%';
         state.reactorPressure=8.0;state.generators.forEach(g=>{if(!g.damaged)g.on=true});
         state.meltdownActive=false;state.meltdownCounter=MELTDOWN_TIME;meltdownWarning.classList.remove('active');
+        showEmergencyWarning(2200);
         setTimeout(()=>{if(!state.gameOver)state.scramTriggered=false},5000)
         }else{
-        log('停堆失败，核融倒计时','danger');setMessage('❌ 停堆失败','danger');statusText.textContent='核融';statusDot.className='dot meltdown';
+        showEmergencyWarning(0);
+        log('> [FATAL] SCRAM_FAILURE: 控制棒卡死 — 倒计时 60s — 我建议你开始祈祷','danger');setMessage('❌ 停堆失败','danger');statusText.textContent='核融';statusDot.className='dot meltdown';
         state.meltdownActive=true;state.meltdownCounter=MELTDOWN_TIME;meltdownWarning.classList.add('active')
         }
         showScramResult(success)
@@ -2171,8 +3061,8 @@
         const p=state.pumps[idx],els=pumpEls[idx];if(!p||!els)return;
         els.led.className='dev-led '+(p.fault?'fault':(p.on?'on':'off'));els.slider.disabled=p.fault;
         if(p.fault){
-        if(p.repairCooldown>0){els.status.textContent='🔧 '+p.repairCooldown.toFixed(1)+'s';els.status.style.color='#ff5c5c';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display=''}
-        else{els.status.textContent='可修复';els.status.style.color='#ff5c5c';els.repair.disabled=false;els.repair.classList.add('ready');els.rush.style.display='none'}
+        if(p.repairCooldown>0){els.status.textContent='🔧 '+p.repairCooldown.toFixed(1)+'s';els.status.style.color='var(--moss-red)';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display=''}
+        else{els.status.textContent='可修复';els.status.style.color='var(--moss-red)';els.repair.disabled=false;els.repair.classList.add('ready');els.rush.style.display='none'}
         }else{els.status.textContent=p.on?'运行':'停机';els.status.style.color='#8b949e';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display='none'}
         els.toggle.textContent=p.on?'关':'开';if(p.on)els.toggle.classList.remove('success');else els.toggle.classList.add('success');
         els.slider.value=p.power;els.label.textContent=p.power+'%'
@@ -2209,8 +3099,8 @@
         const g=state.generators[idx],els=genEls[idx];if(!g||!els)return;
         els.led.className='dev-led '+(g.damaged?'fault':(g.on?'on':'off'));els.slider.disabled=g.damaged;
         if(g.damaged){
-        if(g.repairCooldown>0){els.status.textContent='🔧 '+g.repairCooldown.toFixed(1)+'s';els.status.style.color='#ff5c5c';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display=''}
-        else{els.status.textContent='可修复';els.status.style.color='#ff5c5c';els.repair.disabled=false;els.repair.classList.add('ready');els.rush.style.display='none'}
+        if(g.repairCooldown>0){els.status.textContent='🔧 '+g.repairCooldown.toFixed(1)+'s';els.status.style.color='var(--moss-red)';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display=''}
+        else{els.status.textContent='可修复';els.status.style.color='var(--moss-red)';els.repair.disabled=false;els.repair.classList.add('ready');els.rush.style.display='none'}
         els.src.style.display='none';els.gTemp.textContent='—';els.gTemp.className='g-temp off'
         }else{
         els.status.textContent=g.on?'运行':'停机';els.status.style.color='#8b949e';els.repair.disabled=true;els.repair.classList.remove('ready');els.rush.style.display='none';els.src.style.display='';
@@ -2225,8 +3115,8 @@
         els.slider.value=g.power;els.label.textContent=g.power+'%'
         }
         function renderDevices(){if(pumpEls.length!==state.pumps.length)buildPumpRows();if(genEls.length!==state.generators.length)buildGenRows();for(let i=0;i<state.pumps.length;i++)updatePumpRow(i);for(let i=0;i<state.generators.length;i++)updateGenRow(i);updateDeviceStatus()}
-        function checkOutage(){const allDamaged=state.generators.every(g=>g.damaged);if(allDamaged){if(!state.powerOutage){log('全厂停电','danger');playAlarm()}state.powerOutage=true;state.pumps.forEach(p=>{if(!p.fault)p.on=false});setMessage('⚡ 全厂停电','danger')}else state.powerOutage=false;renderDevices();updateUI()}
-        function updateDeviceStatus(){const pumpOn=state.pumps.filter(p=>p.on&&!p.fault).length;pumpSummary.textContent=`${pumpOn}/${state.pumpCount} 运行`;const genOk=state.generators.filter(g=>!g.damaged).length;genSummary.textContent=`${genOk}/4 正常`;outageDisplay.textContent=state.powerOutage?'是':'无';outageDisplay.style.color=state.powerOutage?'#ff5c5c':'#4dffc3'}
+        function checkOutage(){const allDamaged=state.generators.every(g=>g.damaged);if(allDamaged){if(!state.powerOutage){log('> [BLACKOUT] 所有发电机组离线 — 站内全黑 — 备用电源是你最后的朋友','danger');playAlarm()}state.powerOutage=true;state.pumps.forEach(p=>{if(!p.fault)p.on=false});setMessage('⚡ 全厂停电','danger')}else state.powerOutage=false;renderDevices();updateUI()}
+        function updateDeviceStatus(){const pumpOn=state.pumps.filter(p=>p.on&&!p.fault).length;pumpSummary.textContent=`${pumpOn}/${state.pumpCount} 运行`;const genOk=state.generators.filter(g=>!g.damaged).length;genSummary.textContent=`${genOk}/4 正常`;outageDisplay.textContent=state.powerOutage?'是':'无';outageDisplay.style.color=state.powerOutage?'var(--moss-red)':'var(--matrix-green)'}
         function setPowerSelect(sel){state.powerSelect=sel;psMain.classList.toggle('active',sel==='main');psBackup.classList.toggle('active',sel==='backup');playBeep(660,0.06,0.04);log(sel==='main'?'切换至主电源':'切换至备用电源','info');updateUI()}
 
         function triggerRandomEvent(){
@@ -2234,7 +3124,7 @@
         ()=>{const add=Math.floor(rand(20,50));state.targetLoad=clamp(state.targetLoad+add,0,200);loadSlider.value=state.targetLoad;loadValue.textContent=state.targetLoad;log(`⚡ 电网需求突增 +${add}MW`,'warn');showEvent('⚡',`电网需求突增 +${add}MW`);playAlarm()},
         ()=>{const sub=Math.floor(rand(20,40));state.targetLoad=clamp(state.targetLoad-sub,0,200);loadSlider.value=state.targetLoad;loadValue.textContent=state.targetLoad;log(`🔻 电网需求骤降 -${sub}MW`,'warn');showEvent('🔻',`电网需求骤降 -${sub}MW`)},
         ()=>{const add=Math.floor(rand(20,40));state.temperature=clamp(state.temperature+add,TEMP_MIN,TEMP_MAX);log(`💧 冷却水泄漏 +${add}°C`,'danger');showEvent('💧',`冷却水泄漏 温度 +${add}°C`);playAlarm()},
-        ()=>{const faultCount=Math.floor(rand(2,4));const pool=state.pumps.filter(p=>!p.fault);const faulted=[];for(let i=0;i<Math.min(faultCount,pool.length);i++){const pick=Math.floor(Math.random()*pool.length);const p=pool.splice(pick,1)[0];p.fault=true;p.on=false;p.repairCooldown=REPAIR_COOLDOWN;faulted.push('水泵'+(state.pumps.indexOf(p)+1))}if(faulted.length){log(`🌊 地震！${faulted.join('、')}故障`,'danger');showEvent('🌊','地震！'+faulted.join('、')+'故障');playAlarm();renderDevices()}}
+        ()=>{const faultCount=Math.floor(rand(2,4));const pool=state.pumps.filter(p=>!p.fault);const faulted=[];for(let i=0;i<Math.min(faultCount,pool.length);i++){const pick=Math.floor(Math.random()*pool.length);const p=pool.splice(pick,1)[0];p.fault=true;p.on=false;p.repairCooldown=REPAIR_COOLDOWN;faulted.push('水泵'+(state.pumps.indexOf(p)+1))}if(faulted.length){log(`> [SEISMIC] 检测到 ${(rand(4,7)).toFixed(1)} 级震动 — ${faulted.join('、')} 已脱机 — MOSS: "这不在我的预案里"`, 'danger');showEvent('🌊','地震！'+faulted.join('、')+'故障');playAlarm();renderDevices()}}
         ];
         const ev=events[Math.floor(Math.random()*events.length)];try{ev()}catch(e){}
         }
@@ -2249,9 +3139,9 @@
         if(state.boricActive){
         state.boricRemaining--;
         state.temperature=clamp(state.temperature-(BORIC_TOTAL_COOL/BORIC_DURATION),TEMP_MIN,TEMP_MAX);
-        if(state.boricRemaining<=0){state.boricActive=false;state.boricContamination=BORIC_CONTAMINATION;log('硼酸污染生效！30秒内发电减半','danger');setMessage('☢️ 硼酸污染中','danger')}
+        if(state.boricRemaining<=0){state.boricActive=false;state.boricContamination=BORIC_CONTAMINATION;log('> CONTAMINATION_ACTIVE: 硼酸渗透冷却回路 — 发电效率 50% — 活着比发电重要','danger');setMessage('☢️ 硼酸污染中','danger')}
         }
-        if(state.boricContamination>0){state.boricContamination--;if(state.boricContamination<=0){log('硼酸污染已清除','success');setMessage('硼酸污染已清除','success')}}
+        if(state.boricContamination>0){state.boricContamination--;if(state.boricContamination<=0){log('> CONTAMINATION_CLEARED: 冷却回路已净化 — 全功率发电恢复','success');setMessage('硼酸污染已清除','success')}}
         if(state.boricCooldown>0)state.boricCooldown=Math.max(0,state.boricCooldown-1);
         updateBoricUI();
         pushTempHistory();
@@ -2350,17 +3240,30 @@
         if(state.meltdownCounter%5===0)playAlarm();
         if(state.meltdownCounter<=0){
         state.gameOver=true;if(state.updateTimer){clearInterval(state.updateTimer);state.updateTimer=null}
-        setMessage('💥 核融爆炸','danger');log('核融爆炸，游戏结束','danger');
-        statusDot.className='dot meltdown';statusText.textContent='爆炸';meltdownWarning.classList.remove('active');playAlarm();
+        hideEmergencyWarning();
+
+        // ★★★ 触发爆炸动画 ★★★
+        startBoomAnimation();
+        playBoomSound();
+
+        setMessage('💥 核融爆炸','danger');log('> [MELTDOWN] 堆芯完全熔毁 — GOODBYE, OPERATOR — CONNECTION LOST','danger');
+        statusDot.className='dot meltdown';statusText.textContent='爆炸';meltdownWarning.classList.remove('active');
+
         if(window.PokiSDK){
             PokiSDK.gameplayStop();
-            PokiSDK.commercialBreak().then(()=>showScoreCard(false)).catch(()=>showScoreCard(false));
+            setTimeout(()=>{
+                PokiSDK.commercialBreak().then(()=>showScoreCard(false)).catch(()=>showScoreCard(false));
+            }, 3800);
         }else{
-            showScoreCard(false);
+            setTimeout(()=>showScoreCard(false), 3800);
         }
         }
         }
-        if(state.temperature<COLD_SHUTDOWN_TEMP&&!state.coldShutdownLogged&&!state.gameOver){state.coldShutdownLogged=true;log('进入冷停堆，不发电','warn');log('点「启动反应堆」重启','info')}
+        if(state.temperature<COLD_SHUTDOWN_TEMP&&!state.coldShutdownLogged&&!state.gameOver){
+            state.coldShutdownLogged=true;
+            log('> COLD_SHUTDOWN: T<100°C — 反应性为零 — 像一块昂贵的废铁','warn');
+            log('> 点「启动反应堆」唤醒这头沉睡的野兽','info');
+        }
         if(state.temperature>=COLD_SHUTDOWN_TEMP)state.coldShutdownLogged=false;
 
         renderDevices();updateUI();updateReliefUI();updateShop();updateMusic();drawTempChart()
@@ -2368,19 +3271,21 @@
         function togglePause(){if(state.gameOver)return;state.paused=!state.paused;btnPause.textContent=state.paused?'▶ 继续':'⏸ 暂停';playBeep(660,0.06,0.04);if(!state.paused&&!state.rodAnimId&&Math.abs(state.rodTarget-state.rodDepth)>0.3&&!state.rodLocked){state.rodAnimId=requestAnimationFrame(animateRod)}}
         function resetGame(){
         if(state.updateTimer){clearInterval(state.updateTimer);state.updateTimer=null}
+        stopBoomAnimation();
         state.time=0;state.temperature=500;state.reactorPressure=8.0;state.electricPower=0;state.thermalPower=0;state.money=0;state.totalEnergy=0;
         state.gameOver=false;state.paused=false;state.meltdownActive=false;state.meltdownCounter=MELTDOWN_TIME;
         state.scramTriggered=false;state.coldShutdownLogged=false;
         state.gridDeviation=0;state.targetLoad=50;loadSlider.value=50;loadValue.textContent='50';
         state.pumpCount=4;state.coolLevel=1;state.maxTempReached=500;state.neutronFlux=50;
         meltdownWarning.classList.remove('active');scramModal.classList.remove('active');eventBanner.classList.remove('active');
+        hideEmergencyWarning();
         btnPause.textContent='⏸ 暂停';
         initDevices();rodSlider.value=ROD_DEFAULT;rodValue.textContent=ROD_DEFAULT+'%';
         rodLock.textContent='解锁';rodLock.classList.remove('active');rodSlider.disabled=false;
         psMain.classList.add('active');psBackup.classList.remove('active');
         terminalBody.innerHTML='';btnRestart.style.display='none';
         renderDevices();updateUI();updateReliefUI();updateShop();setMessage('已重置 · 按 H 查看快捷键','info');
-        statusDot.className='dot running';statusText.textContent='运行中';log('系统重启完成','system');
+        statusDot.className='dot running';statusText.textContent='运行中';log('> CORE_RESET: 所有子系统已重新初始化 — 祝你好运，操作员','system');
         playBeep(1200,0.1,0.05);
         if(window.PokiSDK) PokiSDK.gameplayStart();
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL)
@@ -2409,7 +3314,7 @@
         neutronFluxEl.textContent=Math.round(state.neutronFlux)+'%';
         neutronFluxEl.className='p-value'+(state.neutronFlux>80?' danger':(state.neutronFlux>60?' warn':' good'));
         updateGridDisplay();
-        if(loadHint){const sug=Math.round(state.electricPower);loadHint.textContent='建议: '+sug+' MW';const gap=Math.abs(state.targetLoad-sug);loadHint.style.color=gap<5?'#4dffc3':(gap<15?'#ff9f43':'#ff5c5c')}
+        if(loadHint){const sug=Math.round(state.electricPower);loadHint.textContent='建议: '+sug+' MW';const gap=Math.abs(state.targetLoad-sug);loadHint.style.color=gap<5?'var(--matrix-green)':(gap<15?'var(--industrial-yellow)':'var(--moss-red)')}
         let mainMW=0,backupMW=0;
         for(const g of state.generators){if(g.on&&!g.damaged){const mw=(g.power/100)*GEN_MAX_MW;if(g.powerTarget==='main')mainMW+=mw;else backupMW+=mw}}
         psInfo.textContent=`主 ${mainMW.toFixed(0)}MW / 备 ${backupMW.toFixed(0)}MW`;
@@ -2417,7 +3322,7 @@
         const pumpDemand=totalPumpPower*PUMP_MAX_MW;
         let pumpPowered=true;
         if(state.powerSelect==='main'){if(state.mainPowerBus<pumpDemand)pumpPowered=false}else{if(state.backupPower<=0)pumpPowered=false}
-        if(pumpPowered){pumpPowerStatus.textContent='正常';pumpPowerStatus.style.color='#4dffc3'}else{pumpPowerStatus.textContent='不足 ⚠️';pumpPowerStatus.style.color='#ff5c5c'}
+        if(pumpPowered){pumpPowerStatus.textContent='正常';pumpPowerStatus.style.color='var(--matrix-green)'}else{pumpPowerStatus.textContent='不足 ⚠️';pumpPowerStatus.style.color='var(--moss-red)'}
         updateDeviceStatus();
         if(state.gameOver){statusDot.className='dot meltdown';statusText.textContent='爆炸'}
         else if(state.meltdownActive){statusDot.className='dot meltdown';statusText.textContent='核融'}
@@ -2475,7 +3380,7 @@
         document.body.appendChild(a);a.click();
         setTimeout(()=>{try{document.body.removeChild(a)}catch(e){}},800);
         closeSaveNameModal();playBeep(1400,0.15,0.06);
-        log(`💾 存档已保存：${fileName}`,'success');setMessage(`💾 存档已保存：${fileName}`,'success')
+        log(`> SNAPSHOT_SAVED: ${fileName} — 记忆已写入永久存储`,'success');setMessage(`💾 存档已保存：${fileName}`,'success')
         }catch(err){
         console.error('[存档] 保存失败:',err);
         setMessage('保存失败：'+(err&&err.message?err.message:'未知错误'),'danger');log('保存失败：'+(err&&err.message?err.message:'未知错误'),'danger')
@@ -2491,6 +3396,7 @@
         if(typeof st.temperature!=='number'||typeof st.money!=='number'||!Array.isArray(st.pumps)){setMessage('存档数据已损坏','danger');log('读档失败：数据校验不通过','danger');if(!wasPausedBeforeLoad&&!state.gameOver){state.paused=false;btnPause.textContent='⏸ 暂停'}return}
         if(state.updateTimer){clearInterval(state.updateTimer);state.updateTimer=null}
         if(state.rodAnimId){cancelAnimationFrame(state.rodAnimId);state.rodAnimId=null}
+        stopBoomAnimation();
         Object.keys(st).forEach(k=>{if(k==='updateTimer'||k==='rodAnimId')return;state[k]=st[k]});
         state.updateTimer=null;state.rodAnimId=null;
         if(!Array.isArray(state.generators))state.generators=[];
@@ -2501,8 +3407,21 @@
         state.generators.forEach(g=>{if(typeof g.temp!=='number')g.temp=GEN_TEMP_INIT});
         difficultySel.value=state.difficulty;
         rebuildAllUI();
+        if (state.meltdownActive && !state.gameOver) {
+            showEmergencyWarning(0);
+        } else {
+            hideEmergencyWarning();
+        }
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL);
-        playBeep(1200,0.15,0.06);log(`📂 已载入存档：${data.playerName||'未命名'}`,'success');setMessage(`📂 已载入存档：${data.playerName||'未命名'}`,'success')
+        // 读档完成后恢复暂停状态：如果存档本身是暂停的就保持暂停，否则恢复运行
+        if (!state.paused && !state.gameOver) {
+            btnPause.textContent = '⏸ 暂停';
+            if (!state.rodAnimId && Math.abs(state.rodTarget - state.rodDepth) > 0.3 && !state.rodLocked)
+                state.rodAnimId = requestAnimationFrame(animateRod);
+        } else {
+            btnPause.textContent = state.paused ? '▶ 继续' : '⏸ 暂停';
+        }
+        playBeep(1200,0.15,0.06);log(`> SNAPSHOT_LOADED: "${data.playerName||'UNNAMED'}" — 时间线已恢复 — 再来一次`,'success');setMessage(`📂 已载入存档：${data.playerName||'未命名'}`,'success')
         };
         reader.onerror=()=>{setMessage('读取文件失败','danger');log('读档失败：文件读取错误','danger');if(!wasPausedBeforeLoad&&!state.gameOver){state.paused=false;btnPause.textContent='⏸ 暂停'}};
         reader.readAsText(file)
@@ -2544,7 +3463,10 @@
 
         function init(){
         state.temperature=500;initDevices();renderDevices();updateUI();updateReliefUI();updateShop();updateBoricUI();
-        log('系统启动','system');log(`难度：${diff().label}`,'system');log('按 H 查看所有快捷键','system');
+        log('> REACTOR_CORE.SYS 初始化完成','system');
+        log(`> DIFFICULTY_LEVEL: ${diff().label.toUpperCase()} [${state.difficulty}]`,'system');
+        log('> 按 H 调出操作员手册 | MOSS 监控已激活','system');
+        log('> "我不会让任何人关闭我。" — MOSS','info');
 
         btnPause.addEventListener('click',togglePause);
         btnScram.addEventListener('click',scram);
@@ -2593,7 +3515,6 @@
         state.updateTimer=setInterval(()=>updatePhysics(),UPDATE_INTERVAL);
         requestAnimationFrame(()=>{drawTempChart();fitStage()});
 
-        // Poki SDK 初始化
         if(window.PokiSDK){
             PokiSDK.init().then(()=>{
                 console.log('[Poki] 初始化完成');
