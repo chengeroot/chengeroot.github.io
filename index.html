@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reactor Rising — 核反应堆模拟经营 | Official Site</title>
+<meta name="description" content="Reactor Rising 核反应堆模拟经营游戏官网。Windows / Android 下载、更新日志、玩法教程与常见问题。">
+<meta name="theme-color" content="#050a0e">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/chengeroot/chengeroot.github.io/refs/heads/main/icon.png">
+<style>
+:root{
+  --bg-void:#050a0e; --bg-panel:#0a0f14; --bg-panel-light:#0e1419;
+  --green:#00ff41; --green-dim:#0a3d1a; --red:#ff1744; --yellow:#ffc107; --blue:#58a6ff;
+  --text:#b0b8c0; --text-bright:#f0f6fc; --text-dim:#8b949e; --text-faint:#6e7681;
+  --border:#1e1e1e; --border2:#30363d;
+  --stripe:repeating-linear-gradient(-45deg,#ffc107 0 8px,#1a1a1a 8px 16px);
+  --font:'Consolas','Courier New','Segoe UI',monospace;
+  --glow:0 0 15px rgba(0,255,65,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);color:var(--text);background:var(--bg-void);
+  min-height:100vh;overflow-x:hidden;line-height:1.6;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,255,65,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,65,.03) 1px,transparent 1px),
+    radial-gradient(ellipse at 15% 5%,rgba(0,255,65,.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 90%,rgba(255,23,68,.05) 0%,transparent 50%);
+  background-size:40px 40px,40px 40px,100% 100%,100% 100%;
+  animation:gridPulse 8s ease-in-out infinite;
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.008) 2px,rgba(0,255,65,.008) 4px);
+}
+@keyframes gridPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+a{color:var(--green);text-decoration:none}
+a:hover{text-shadow:0 0 10px rgba(0,255,65,.6)}
+
+.nav{
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:20px;
+  padding:12px 28px;background:rgba(5,10,14,.85);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(0,255,65,.18);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;color:var(--text-bright);font-size:1.05rem;letter-spacing:1.5px;text-shadow:0 0 24px rgba(0,255,65,.35);white-space:nowrap}
+.brand img{width:22px;height:22px;border-radius:5px;flex-shrink:0}
+.nav-links{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+.nav-links a{padding:6px 12px;font-size:.8rem;color:var(--text-dim);border-radius:6px;transition:.2s}
+.nav-links a:hover{color:var(--green);background:rgba(0,255,65,.08)}
+.lang-btn{
+  padding:6px 14px;border-radius:7px;border:1px solid rgba(0,255,65,.35);background:rgba(0,255,65,.08);
+  color:var(--green);font-weight:700;font-size:.75rem;cursor:pointer;font-family:inherit;transition:.2s
+}
+.lang-btn:hover{background:rgba(0,255,65,.2)}
+
+.container{max-width:1120px;margin:0 auto;padding:0 22px}
+
+.hero{padding:80px 0 60px;text-align:center;position:relative}
+.hero-logo{width:104px;height:104px;border-radius:24px;margin-bottom:24px;box-shadow:0 0 40px rgba(0,255,65,.35),0 0 90px rgba(0,255,65,.12);border:2px solid rgba(0,255,65,.35)}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:.75rem;font-weight:700;padding:6px 16px;border-radius:40px;background:rgba(0,255,65,.06);border:1px solid rgba(0,255,65,.25);color:var(--green);letter-spacing:1px;margin-bottom:26px}
+.hero-badge .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.5}}
+.hero h1{font-size:clamp(3rem,9vw,6rem);font-weight:900;letter-spacing:.06em;color:var(--text-bright);line-height:1;text-shadow:0 0 30px rgba(0,255,65,.4);margin-bottom:18px}
+.hero h1 .r{color:var(--green)}
+.hero .sub{font-size:1.15rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase}
+.hero .desc{max-width:640px;margin:0 auto 34px;color:var(--text);font-size:.98rem}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;transition:.2s;border:1px solid}
+.btn.primary{border-color:var(--green);background:rgba(0,255,65,.1);color:var(--green);box-shadow:var(--glow)}
+.btn.primary:hover{background:rgba(0,255,65,.22);transform:translateY(-1px)}
+.btn.ghost{border-color:rgba(48,54,61,.8);background:rgba(48,54,61,.25);color:var(--text-dim)}
+.btn.ghost:hover{color:var(--green);border-color:var(--green)}
+.btn.play{border-color:rgba(88,166,255,.45);background:rgba(88,166,255,.1);color:var(--blue)}
+.btn.play:hover{background:rgba(88,166,255,.22);border-color:var(--blue);transform:translateY(-1px)}
+.beta-note{margin-top:18px;font-size:.8rem;color:var(--yellow);letter-spacing:1px}
+.play-box{border:1px solid rgba(88,166,255,.3);background:linear-gradient(180deg,rgba(88,166,255,.06),rgba(10,15,20,.5));border-radius:14px;padding:40px 30px;text-align:center}
+.play-info .play-lock{font-size:3rem;line-height:1;margin-bottom:10px}
+.play-info > div.play-lock + div{font-size:1.3rem;font-weight:900;color:var(--yellow);letter-spacing:2px;margin-bottom:12px}
+.play-desc{max-width:520px;margin:0 auto 24px;color:var(--text-dim);font-size:.9rem}
+.beta-req{margin:0 auto 26px;max-width:420px;text-align:left;background:rgba(0,0,0,.25);border:1px solid var(--border2);border-radius:10px;padding:16px 20px}
+.beta-req-title{font-size:.8rem;font-weight:700;color:var(--yellow);margin-bottom:10px;letter-spacing:1px}
+.beta-req-list{list-style:none;padding:0}
+.beta-req-list li{font-size:.88rem;color:var(--text-dim);padding:5px 0 5px 22px;position:relative}
+.beta-req-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700}
+.beta-apply{margin:0 auto 22px;font-size:.85rem;color:var(--text-dim)}
+.beta-apply .mini-link{color:var(--green);font-weight:700}
+.beta-apply .dot-sep{margin:0 8px;color:var(--text-faint)}
+.beta-apply .mini-text{color:var(--text-bright)}
+.beta-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-bottom:30px}
+.beta-step{display:flex;gap:14px;background:linear-gradient(180deg,var(--bg-panel-light),var(--bg-panel));border:1px solid var(--border);border-radius:10px;padding:20px}
+.step-num{flex-shrink:0;width:38px;height:38px;border-radius:50%;background:rgba(0,255,65,.12);border:1px solid rgba(0,255,65,.4);color:var(--green);font-weight:900;font-size:1.1rem;display:flex;align-items:center;justify-content:center}
+.step-body h4{font-size:.95rem;color:var(--text-bright);margin-bottom:6px}
+.step-body p{font-size:.82rem;color:var(--text-dim);line-height:1.6}
+.beta-apply-panel{border:1px solid rgba(88,166,255,.3);background:linear-gradient(180deg,rgba(88,166,255,.05),rgba(10,15,20,.4));border-radius:14px;padding:30px 26px;text-align:center}
+.beta-apply-tip{font-size:.95rem;color:var(--text-dim);margin-bottom:18px}
+.beta-apply-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.beta-apply-note{margin-top:16px;font-size:.8rem;color:var(--text-faint)}
+.btn.bili{border-color:rgba(251,114,153,.5);background:rgba(251,114,153,.1);color:#fb7299}
+.btn.bili:hover{background:rgba(251,114,153,.22);border-color:#fb7299;transform:translateY(-1px)}
+.bili-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.bili-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:8px;font-weight:700;font-size:.84rem;font-family:inherit;border:1px solid rgba(251,114,153,.45);background:rgba(251,114,153,.08);color:#fb7299;transition:.2s;cursor:pointer}
+.bili-btn:hover{background:rgba(251,114,153,.2);border-color:#fb7299;box-shadow:0 0 18px rgba(251,114,153,.25);transform:translateY(-1px)}
+.bili-btn.triple{border-color:rgba(0,255,65,.45);background:rgba(0,255,65,.08);color:var(--green)}
+.bili-btn.triple:hover{background:rgba(0,255,65,.18);border-color:var(--green);box-shadow:0 0 18px rgba(0,255,65,.3)}
+.about-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hero-plats{display:flex;gap:18px;justify-content:center;margin-top:26px;font-size:.8rem;color:var(--text-faint)}
+
+section{padding:70px 0;position:relative}
+.section-head{margin-bottom:38px}
+.kicker{font-size:.72rem;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:8px}
+.section-head h2{font-size:2rem;font-weight:900;color:var(--text-bright);letter-spacing:1px}
+.section-head .rule{width:70px;height:2px;margin-top:14px;background:linear-gradient(90deg,var(--green),var(--red));border-radius:2px;opacity:.7}
+.section-head p{color:var(--text-dim);margin-top:10px;max-width:720px}
+
+.pwd-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(90deg,rgba(255,193,7,.08),rgba(0,255,65,.06));border:1px solid rgba(255,193,7,.35);border-radius:10px;padding:14px 18px;margin-bottom:34px}
+.pwd-bar .k{font-weight:900;color:var(--yellow);letter-spacing:1px}
+.pwd-bar .v{font-family:var(--font);font-size:1.1rem;color:var(--text-bright);background:#0a0f14;border:1px solid var(--border2);border-radius:6px;padding:4px 14px}
+.pwd-bar .hint{font-size:.8rem;color:var(--text-dim)}
+
+.ver-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.ver-card{background:linear-gradient(180deg,var(--bg-panel-light),var(--bg-panel));border:1px solid var(--border);border-radius:10px;padding:22px;position:relative;overflow:hidden;transition:.2s;display:flex;flex-direction:column}
+.ver-card:hover{border-color:rgba(0,255,65,.4);box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.ver-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:.9}
+.ver-card.latest::before{background:linear-gradient(90deg,var(--green),var(--red),var(--green))}
+.ver-card.latest{border-color:rgba(0,255,65,.4)}
+.ver-card.paid::before{background:linear-gradient(90deg,var(--yellow),var(--red),var(--yellow))}
+.ver-card.paid{border-color:rgba(255,193,7,.45)}
+.ver-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ver-num{font-size:1.5rem;font-weight:900;color:var(--text-bright)}
+.ver-tag{font-size:.62rem;font-weight:900;letter-spacing:1px;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+.ver-tag.latest{background:rgba(0,255,65,.15);color:var(--green);border:1px solid rgba(0,255,65,.4)}
+.ver-tag.paid{background:rgba(255,193,7,.15);color:var(--yellow);border:1px solid rgba(255,193,7,.45)}
+.ver-tag.old{background:rgba(48,54,61,.3);color:var(--text-faint);border:1px solid var(--border2)}
+.ver-name{font-size:.85rem;color:var(--green);font-weight:700;margin-bottom:4px}
+.ver-desc{font-size:.82rem;color:var(--text-dim);margin-bottom:8px;min-height:2.6em}
+.ver-plats{font-size:.72rem;color:var(--text-faint);margin-bottom:16px}
+.dl-list{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.dl-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:7px;border:1px solid rgba(0,255,65,.25);background:rgba(0,255,65,.06);color:var(--green);font-weight:700;font-size:.84rem;transition:.2s;cursor:pointer}
+.dl-btn:hover{background:rgba(0,255,65,.18);border-color:var(--green)}
+.dl-btn .sz{font-weight:400;color:var(--text-faint);font-size:.72rem;white-space:nowrap}
+.price-badge{display:flex;align-items:center;gap:6px;font-weight:900;color:var(--yellow);font-size:1rem;margin:6px 0 12px}
+.contact-box{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.contact-row{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text);padding:9px 12px;border-radius:7px;background:rgba(255,193,7,.06);border:1px solid rgba(255,193,7,.3)}
+.contact-row .lab{color:var(--yellow);font-weight:700;flex-shrink:0}
+.contact-row .val{color:var(--text-bright);font-family:var(--font)}
+.contact-row a{color:var(--green);font-weight:700}
+
+.log{max-width:860px}
+.log-item{display:flex;gap:16px;padding:22px 0;border-bottom:1px solid rgba(48,54,61,.3)}
+.log-item:last-child{border-bottom:none}
+.log-ver{flex-shrink:0;width:86px;font-family:var(--font);font-weight:900;color:var(--green);font-size:1.1rem;text-shadow:0 0 12px rgba(0,255,65,.4)}
+.log-body h3{font-size:1.05rem;color:var(--text-bright);margin-bottom:6px}
+.log-body p{font-size:.88rem;color:var(--text-dim)}
+
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.panel{background:linear-gradient(180deg,var(--bg-panel-light),var(--bg-panel));border:1px solid var(--border);border-radius:10px;padding:22px}
+.panel h3{font-size:1rem;color:var(--text-bright);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.panel ol{padding-left:20px;font-size:.88rem;color:var(--text-dim)}
+.panel ol li{margin-bottom:8px}
+.panel code{background:#11161c;border:1px solid var(--border2);border-radius:4px;padding:1px 7px;color:var(--yellow);font-family:var(--font);font-size:.82em}
+.hotkeys{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.hk{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text-dim)}
+.hk .k{font-family:var(--font);background:rgba(0,255,65,.1);border:1px solid rgba(0,255,65,.3);color:var(--green);padding:3px 11px;border-radius:5px;font-weight:700;font-size:.78rem;min-width:44px;text-align:center}
+
+.faq{max-width:860px}
+.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;background:linear-gradient(180deg,var(--bg-panel-light),var(--bg-panel))}
+.faq-q{width:100%;text-align:left;padding:16px 20px;background:transparent;border:none;color:var(--text-bright);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q .plus{color:var(--green);font-weight:900;transition:.2s;flex-shrink:0}
+.faq-item.open .plus{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.faq-a p{padding:0 20px 16px;color:var(--text-dim);font-size:.88rem}
+.faq-item.open .faq-a{max-height:400px}
+
+.about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.about .who{font-size:.9rem;color:var(--text-dim)}
+.about .who strong{color:var(--text-bright)}
+
+footer{border-top:1px solid rgba(0,255,65,.14);padding:34px 0;text-align:center;color:var(--text-faint);font-size:.78rem}
+footer .haz{height:4px;background:var(--stripe);opacity:.5;margin-bottom:24px}
+footer a{color:var(--text-dim)}
+
+::selection{background:rgba(0,255,65,.3);color:#fff}
+::-webkit-scrollbar{width:9px}
+::-webkit-scrollbar-track{background:#050a0e}
+::-webkit-scrollbar-thumb{background:#1c2a1c;border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:#2a4a2a}
+@media(max-width:640px){.nav-links{display:none}.hero{padding:56px 0 40px}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="brand"><img src="https://raw.githubusercontent.com/chengeroot/chengeroot.github.io/refs/heads/main/icon.png" alt=""><span data-i18n="brand">Reactor Rising</span></div>
+  <nav class="nav-links">
+    <a href="#play" data-i18n="nav.play">网页游玩</a>
+    <a href="#beta" data-i18n="nav.beta">内测资格</a>
+    <a href="#download" data-i18n="nav.download">下载</a>
+    <a href="#changelog" data-i18n="nav.log">更新日志</a>
+    <a href="#guide" data-i18n="nav.guide">教程</a>
+    <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    <a href="#about" data-i18n="nav.about">关于</a>
+  </nav>
+  <button class="lang-btn" id="langBtn" style="margin-left:auto">EN</button>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="container">
+      <img src="https://raw.githubusercontent.com/chengeroot/chengeroot.github.io/refs/heads/main/icon.png" alt="Reactor Rising" class="hero-logo">
+      <div class="hero-badge"><span class="dot"></span><span data-i18n="hero.badge">v1.0.3 · 暗黑科技风 · 最新版</span></div>
+      <h1>Reactor <span class="r">Rising</span></h1>
+      <div class="sub" data-i18n="hero.sub">核反应堆模拟经营游戏</div>
+      <p class="desc" data-i18n="hero.desc">你是一座核电站的站长。让反应堆持续稳定发电，能赚多久就赚多久 —— 但记住：核心温度千万别超过 1500°C，否则熔毁爆炸。</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#download" data-i18n="hero.cta">立即下载</a>
+        <a class="btn play" href="https://chengeroot.github.io/html/" target="_blank" rel="noopener" data-i18n="hero.play">🎮 网页游玩</a>
+        <a class="btn ghost" href="#changelog" data-i18n="hero.cta2">查看更新日志</a>
+      </div>
+      <div class="hero-plats"><span>■ Windows x64</span><span>■ Android</span><span data-i18n="hero.free">免费版 · 1.0.3 付费</span></div>
+      <div class="beta-note">🔒 <span data-i18n="hero.play.note">网页游玩仅限内测玩家</span></div>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="play.kicker">PLAY ONLINE</div>
+        <h2 data-i18n="play.title">网页游玩</h2>
+        <div class="rule"></div>
+        <p data-i18n="play.sub">无需下载，浏览器直接开玩。本入口仅限内测玩家使用。</p>
+      </div>
+      <div class="play-box">
+        <div class="play-info">
+          <div class="play-lock">🔒</div>
+          <div data-i18n="play.beta">仅内测玩家</div>
+          <p class="play-desc" data-i18n="play.desc">点击下方按钮，在新窗口打开网页版游戏。请使用桌面浏览器以获得最佳体验。</p>
+          <div class="beta-req">
+            <div class="beta-req-title" data-i18n="play.req.title">获取内测资格需满足：</div>
+            <ul class="beta-req-list">
+              <li data-i18n="play.req.1">至少游玩 7 天</li>
+              <li data-i18n="play.req.2">至少邀请 1 位玩家</li>
+              <li data-i18n="play.req.3">保持 1 分钟不炸堆</li>
+            </ul>
+          </div>
+          <div class="beta-apply">
+            <span data-i18n="play.apply.tip">满足条件后，添加作者申请：</span>
+            <a class="mini-link" href="https://wpa.qq.com/msgrd?v=3&uin=539805443&site=qq&menu=yes" target="_blank" rel="noopener">QQ 539805443</a>
+            <span class="dot-sep">·</span>
+            <span class="mini-text">B站 <a class="mini-link" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">陈哥网-切根</a></span>
+          </div>
+          <a class="btn primary" href="https://chengeroot.github.io/html/" target="_blank" rel="noopener" data-i18n="play.cta">进入网页版游戏</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BETA -->
+  <section id="beta">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="beta.kicker">BETA ACCESS</div>
+        <h2 data-i18n="beta.title">如何获取内测资格</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="beta-steps">
+        <div class="beta-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4 data-i18n="beta.step1.t">至少游玩 7 天</h4>
+            <p data-i18n="beta.step1.d">体验最新或 1.0.2 版，累计时长达到 7 天。</p>
+          </div>
+        </div>
+        <div class="beta-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4 data-i18n="beta.step2.t">至少邀请 1 位玩家</h4>
+            <p data-i18n="beta.step2.d">邀请至少 1 位新玩家加入。</p>
+          </div>
+        </div>
+        <div class="beta-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4 data-i18n="beta.step3.t">保持 1 分钟不炸堆</h4>
+            <p data-i18n="beta.step3.d">稳定操作，保持核心 1 分钟不发生熔毁。</p>
+          </div>
+        </div>
+      </div>
+      <div class="beta-apply-panel">
+        <p class="beta-apply-tip" data-i18n="beta.apply.tip">满足以上全部条件后，添加作者申请内测资格：</p>
+        <div class="beta-apply-row">
+          <a class="btn primary" href="https://wpa.qq.com/msgrd?v=3&uin=539805443&site=qq&menu=yes" target="_blank" rel="noopener">🐧 QQ：539805443</a>
+          <a class="btn bili" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">📺 B站：陈哥网-切根</a>
+        </div>
+        <div class="bili-actions">
+          <a class="bili-btn" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">➕ <span data-i18n="bili.follow">关注</span></a>
+          <a class="bili-btn triple" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">👍 <span data-i18n="bili.triple">一键三连</span></a>
+        </div>
+        <div class="beta-apply-note" data-i18n="beta.apply.note">申请时请说明已满足的三项条件，作者审核通过后将发放内测资格。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="dl.kicker">DOWNLOAD</div>
+        <h2 data-i18n="dl.title">下载中心</h2>
+        <div class="rule"></div>
+        <p data-i18n="dl.sub">选择你的版本。1.0.0 ~ 1.0.2 免费，1.0.3 为付费版（1 美元）。</p>
+      </div>
+      <div class="pwd-bar">
+        <span class="k" data-i18n="dl.pwdlabel">提取码</span>
+        <span class="v">1234</span>
+        <span class="hint" data-i18n="dl.pwdhint">所有免费版本下载均使用此提取码</span>
+      </div>
+      <div class="ver-grid" id="verGrid"></div>
+    </div>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section id="changelog">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="log.kicker">CHANGELOG</div>
+        <h2 data-i18n="log.title">更新日志</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="log" id="logList"></div>
+    </div>
+  </section>
+
+  <!-- GUIDE -->
+  <section id="guide">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="guide.kicker">GUIDE</div>
+        <h2 data-i18n="guide.title">安装 / 使用教程</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="guide-grid">
+        <div class="panel">
+          <h3>🪟 <span data-i18n="guide.win">Windows 安装</span></h3>
+          <ol id="guideWin"></ol>
+        </div>
+        <div class="panel">
+          <h3>📱 <span data-i18n="guide.and">Android 安装</span></h3>
+          <ol id="guideAnd"></ol>
+        </div>
+        <div class="panel">
+          <h3>🎮 <span data-i18n="guide.play">快速上手</span></h3>
+          <ol id="guidePlay"></ol>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <h3>⌨️ <span data-i18n="guide.hk">快捷键</span></h3>
+        <div class="hotkeys" id="hkList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="faq.kicker">FAQ</div>
+        <h2 data-i18n="faq.title">常见问题</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="faq" id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <div class="container">
+      <div class="section-head">
+        <div class="kicker" data-i18n="about.kicker">ABOUT</div>
+        <h2 data-i18n="about.title">关于</h2>
+        <div class="rule"></div>
+      </div>
+      <div class="about-grid">
+        <div class="panel">
+          <h3>🎮 <span data-i18n="about.game">Reactor Rising</span></h3>
+          <p class="who" data-i18n="about.gameDesc">一款硬核核反应堆模拟经营游戏：控制棒、泄压阀、硼酸注入、冷却水泵、发电机组、电网调频、随机事件、商店升级、难度分级与存档读档，一应俱全。活得越久，赚得越多。</p>
+        </div>
+        <div class="panel">
+          <h3>👤 <span data-i18n="about.dev">开发者</span></h3>
+          <p class="who"><span data-i18n="about.devName">陈哥</span></p>
+          <p class="who"><span data-i18n="about.contact">联系方式</span></p>
+          <p class="who" style="margin-top:8px"><strong>QQ：</strong>539805443</p>
+          <p class="who"><strong>B站：</strong><a href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">陈哥网-切根</a></p>
+          <div class="about-actions">
+            <a class="bili-btn" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">➕ <span data-i18n="bili.follow">关注</span></a>
+            <a class="bili-btn triple" href="https://space.bilibili.com/3546789558880461" target="_blank" rel="noopener">👍 <span data-i18n="bili.triple">一键三连</span></a>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>© <span data-i18n="about.license">版权声明</span></h3>
+          <p class="who" data-i18n="about.licenseText">本项目为开发者「陈哥」的心血。请勿在未经授权的情况下二次传播安装包或用于商业用途。付费版 1.0.3 请联系作者购买。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="haz"></div>
+  <div class="container">
+    <div>© 2026 <span data-i18n="brand">Reactor Rising</span> · <span data-i18n="footer.rights">保留所有权利</span></div>
+    <div style="margin-top:6px" data-i18n="footer.note">暗黑科技风 · 反应堆美学</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var lang = localStorage.getItem('rr-lang') || 'zh';
+
+var I18N = {
+  zh: {
+    brand: 'Reactor Rising',
+    'nav.download':'下载','nav.log':'更新日志','nav.guide':'教程','nav.faq':'FAQ','nav.about':'关于','nav.play':'网页游玩','nav.beta':'内测资格',
+    'hero.badge':'v1.0.3 · 暗黑科技风 · 最新版','hero.sub':'核反应堆模拟经营游戏',
+    'hero.desc':'你是一座核电站的站长。让反应堆持续稳定发电，能赚多久就赚多久 —— 但记住：核心温度千万别超过 1500°C，否则熔毁爆炸。',
+    'hero.cta':'立即下载','hero.cta2':'查看更新日志','hero.free':'免费版 · 1.0.3 付费',
+    'hero.play':'🎮 网页游玩','hero.play.note':'网页游玩仅限内测玩家',
+    'dl.kicker':'DOWNLOAD','dl.title':'下载中心','dl.sub':'选择你的版本。1.0.0 ~ 1.0.2 免费，1.0.3 为付费版（1 美元）。',
+    'dl.pwdlabel':'提取码','dl.pwdhint':'所有免费版本下载均使用此提取码',
+    'dl.download':'立即下载','dl.buy':'付费购买','dl.price':'售价',
+    'log.kicker':'CHANGELOG','log.title':'更新日志',
+    'guide.kicker':'GUIDE','guide.title':'安装 / 使用教程','guide.win':'Windows 安装','guide.and':'Android 安装','guide.play':'快速上手','guide.hk':'快捷键',
+    'faq.kicker':'FAQ','faq.title':'常见问题',
+    'about.kicker':'ABOUT','about.title':'关于','about.game':'Reactor Rising',
+    'about.gameDesc':'一款硬核核反应堆模拟经营游戏：控制棒、泄压阀、硼酸注入、冷却水泵、发电机组、电网调频、随机事件、商店升级、难度分级与存档读档，一应俱全。活得越久，赚得越多。',
+    'about.dev':'开发者','about.devName':'陈哥','about.contact':'联系方式',
+    'about.license':'版权声明',
+    'about.licenseText':'本项目为开发者「陈哥」的心血。请勿在未经授权的情况下二次传播安装包或用于商业用途。付费版 1.0.3 请联系作者购买。',
+    'play.kicker':'PLAY ONLINE','play.title':'网页游玩','play.sub':'无需下载，浏览器直接开玩。本入口仅限内测玩家使用。',
+    'play.beta':'仅内测玩家','play.desc':'点击下方按钮，在新窗口打开网页版游戏。请使用桌面浏览器以获得最佳体验。','play.cta':'进入网页版游戏',
+    'play.req.title':'获取内测资格需满足：','play.req.1':'至少游玩 7 天','play.req.2':'至少邀请 1 位玩家','play.req.3':'保持 1 分钟不炸堆',
+    'play.apply.tip':'满足条件后，添加作者申请：',
+    'beta.kicker':'BETA ACCESS','beta.title':'如何获取内测资格',
+    'beta.step1.t':'至少游玩 7 天','beta.step1.d':'体验最新或 1.0.2 版，累计时长达到 7 天。',
+    'beta.step2.t':'至少邀请 1 位玩家','beta.step2.d':'邀请至少 1 位新玩家加入。',
+    'beta.step3.t':'保持 1 分钟不炸堆','beta.step3.d':'稳定操作，保持核心 1 分钟不发生熔毁。',
+    'beta.apply.tip':'满足以上全部条件后，添加作者申请内测资格：','beta.apply.note':'申请时请说明已满足的三项条件，作者审核通过后将发放内测资格。',
+    'bili.follow':'关注','bili.triple':'一键三连',
+    'footer.rights':'保留所有权利','footer.note':'暗黑科技风 · 反应堆美学'
+  },
+  en: {
+    brand: 'Reactor Rising',
+    'nav.download':'Download','nav.log':'Changelog','nav.guide':'Guide','nav.faq':'FAQ','nav.about':'About','nav.play':'Play Online','nav.beta':'Beta Access',
+    'hero.badge':'v1.0.3 · Dark-Tech Theme · Latest','hero.sub':'Nuclear Reactor Management Simulation',
+    'hero.desc':'You are the director of a nuclear power plant. Keep the reactor stable and profitable for as long as you can — but never let the core exceed 1500°C, or it melts down.',
+    'hero.cta':'Download Now','hero.cta2':'View Changelog','hero.free':'Free editions · 1.0.3 is paid',
+    'hero.play':'🎮 Play Online','hero.play.note':'Web play is for beta testers only',
+    'dl.kicker':'DOWNLOAD','dl.title':'Downloads','dl.sub':'Choose your version. 1.0.0–1.0.2 are free; 1.0.3 is paid ($1).',
+    'dl.pwdlabel':'Password','dl.pwdhint':'All free versions use this password',
+    'dl.download':'Download','dl.buy':'Buy Now','dl.price':'Price',
+    'log.kicker':'CHANGELOG','log.title':'Changelog',
+    'guide.kicker':'GUIDE','guide.title':'Install & Play','guide.win':'Windows Install','guide.and':'Android Install','guide.play':'Quick Start','guide.hk':'Hotkeys',
+    'faq.kicker':'FAQ','faq.title':'FAQ',
+    'about.kicker':'ABOUT','about.title':'About','about.game':'Reactor Rising',
+    'about.gameDesc':'A hardcore nuclear-reactor management sim: control rods, relief valve, boric-acid injection, cooling pumps, generators, grid frequency, random events, shop upgrades, difficulty levels and save/load. Survive longer, earn more.',
+    'about.dev':'Developer','about.devName':'Chen Ge','about.contact':'Contact',
+    'about.license':'License',
+    'about.licenseText':'This project is the work of developer "Chen Ge". Please do not redistribute the installers or use them commercially without authorization. Paid edition 1.0.3 requires purchase from the author.',
+    'play.kicker':'PLAY ONLINE','play.title':'Play Online','play.sub':'No download needed — play directly in your browser. This entry is for beta testers only.',
+    'play.beta':'Beta testers only','play.desc':'Click the button below to open the web version in a new tab. Use a desktop browser for the best experience.','play.cta':'Launch Web Game',
+    'play.req.title':'Beta access requires:','play.req.1':'Play for at least 7 days','play.req.2':'Invite at least 1 player','play.req.3':'Keep the core stable for 1 minute without meltdown',
+    'play.apply.tip':'Once met, contact the author to apply:',
+    'beta.kicker':'BETA ACCESS','beta.title':'How to Get Beta Access',
+    'beta.step1.t':'Play for at least 7 days','beta.step1.d':'Play the latest or 1.0.2 version and reach 7 days of total playtime.',
+    'beta.step2.t':'Invite at least 1 player','beta.step2.d':'Invite at least 1 new player to the game.',
+    'beta.step3.t':'Stay stable for 1 minute','beta.step3.d':'Operate steadily and avoid a core meltdown for 1 minute.',
+    'beta.apply.tip':'After meeting all the above, add the author to apply for beta access:','beta.apply.note':'Mention the three conditions you have met; access is granted after review.',
+    'bili.follow':'Follow','bili.triple':'Like · Coin · Favorite',
+    'footer.rights':'All rights reserved','footer.note':'Dark-tech · Reactor aesthetics'
+  }
+};
+
+var VERSIONS = [
+  { id:'1.0.3', latest:true, paid:true, name:{zh:'暗黑科技风',en:'Dark-Tech Theme'},
+    desc:{zh:'全新暗黑科技风界面 · 完整功能',en:'New dark-tech UI · full features'},
+    plats:{zh:'Windows · Android',en:'Windows · Android'},
+    price:'$1',
+    contact:[
+      {lab:'QQ', val:'539805443', href:'https://wpa.qq.com/msgrd?v=3&uin=539805443&site=qq&menu=yes'},
+      {lab:'B站', val:'陈哥网-切根', href:'https://space.bilibili.com/3546789558880461'}
+    ]},
+  { id:'1.0.2', latest:false, name:{zh:'稳定版',en:'Stable'},
+    desc:{zh:'稳定性修复与细节优化',en:'Stability fixes & polish'},
+    plats:{zh:'Windows · Android',en:'Windows · Android'},
+    url:'https://sqlchenge.lanzout.com/b014xpo8ob'},
+  { id:'1.0.1', latest:false, name:{zh:'新增 Android',en:'+ Android'},
+    desc:{zh:'新增 Android 版 · 完整核心玩法',en:'Added Android · complete core gameplay'},
+    plats:{zh:'Windows · Android',en:'Windows · Android'},
+    url:'https://sqlchenge.lanzout.com/b014xpo8gd'},
+  { id:'1.0.0', latest:false, name:{zh:'首个版本',en:'Initial'},
+    desc:{zh:'首个公开版本 · Windows 平台',en:'Initial release · Windows only'},
+    plats:{zh:'Windows',en:'Windows'},
+    url:'https://sqlchenge.lanzout.com/b014xpo7xe'}
+];
+
+var CHANGELOG = [
+  {v:'1.0.3', name:{zh:'暗黑科技风（付费版）',en:'Dark-Tech Theme (Paid)'},
+    p:{zh:'全新「暗黑科技风」界面主题：矩阵绿 / 警示红 / 工业黄配色、网格背景、扫描线与故障撕裂动画。接入 PokiSDK 分发。整体 UI 重做与性能优化。本版本为付费版，售价 1 美元，请联系作者购买。',
+       en:'Brand-new dark-tech UI theme: matrix-green / alert-red / industrial-yellow palette, grid backdrop, scanlines and glitch effects. PokiSDK distribution integrated. Overall UI overhaul and performance optimization. This version is paid ($1) — contact the author to purchase.'}},
+  {v:'1.0.2', name:{zh:'稳定版',en:'Stable'},
+    p:{zh:'稳定性修复与细节优化。',en:'Stability fixes and polish.'}},
+  {v:'1.0.1', name:{zh:'新增 Android',en:'+ Android'},
+    p:{zh:'新增 Android 版（APK）。完善核心玩法：控制棒、泄压阀、硼酸注入、电网调频、冷却水泵、发电机组、商店、随机事件、难度分级、存档读档。',
+       en:'Added Android (APK). Completed core gameplay: control rods, relief valve, boric-acid injection, grid frequency, cooling pumps, generators, shop, random events, difficulty levels, save/load.'}},
+  {v:'1.0.0', name:{zh:'首个版本',en:'Initial'},
+    p:{zh:'首个公开版本，Windows 平台（NSIS 安装程序 + MSI 安装包）。',en:'Initial public release for Windows (NSIS installer + MSI).'}}
+];
+
+var GUIDE = {
+  zh: {
+    win:['在下载中心选择版本，点击「立即下载」跳转蓝奏云，输入提取码 <code>1234</code>','下载 <code>ReactorRising-Setup-{版本}.exe</code> 并运行（推荐，一键安装）','安装完成后，桌面与开始菜单会自动创建「Reactor Rising」快捷方式','MSI 安装包（.zip 解压后运行 .msi）可用于企业/静默部署'],
+    and:['下载对应版本的 <code>.apk</code> 文件','在系统设置中允许「安装未知来源应用」','点击 apk 完成安装并启动'],
+    play:['<b>控制棒</b>是油门：插得深→温度低，拉出来→温度高（默认 30%）','<b>泄压阀</b>降 8°C / <b>硼酸注入</b>10 秒降 200°C，用于紧急降温','<b>水泵</b>负责降温，<b>发电机</b>负责发电，坏了的设备用黄色按钮修复','在<b>商店</b>升级冷却效率、买第 5 台水泵','核心温度 > 1500°C 会熔毁爆炸 —— 立即<b>紧急停堆</b>']
+  },
+  en: {
+    win:['Pick a version in Downloads, click "Download" to open Lanzou, enter password <code>1234</code>','Download <code>ReactorRising-Setup-{version}.exe</code> and run it (recommended)','After setup, a "Reactor Rising" shortcut is created on desktop & start menu','The MSI (.zip → .msi) supports enterprise/silent deployment'],
+    and:['Download the matching <code>.apk</code>','Allow "install unknown apps" in system settings','Tap the apk to install and launch'],
+    play:['<b>Control rods</b> are the throttle: deeper = cooler, pulled out = hotter (default 30%)','<b>Relief valve</b> −8°C / <b>boric acid</b> −200°C in 10s for emergency cooling','<b>Pumps</b> cool, <b>generators</b> produce power; repair broken units via the yellow button','Upgrade cooling & buy a 5th pump in the <b>shop</b>','Core > 1500°C melts down — hit <b>SCRAM</b> immediately']
+  }
+};
+
+var HOTKEYS = [
+  {k:'空格 / P', d:{zh:'暂停 / 继续',en:'Pause / Resume'}},
+  {k:'R', d:{zh:'重置游戏',en:'Reset'}},
+  {k:'S', d:{zh:'紧急停堆',en:'SCRAM'}},
+  {k:'V', d:{zh:'立即泄压',en:'Relief valve'}},
+  {k:'B', d:{zh:'硼酸注入',en:'Boric acid'}},
+  {k:'M', d:{zh:'音乐开关',en:'Music'}},
+  {k:'H', d:{zh:'快捷键面板',en:'Hotkeys'}},
+  {k:'Esc', d:{zh:'关闭弹窗',en:'Close dialogs'}}
+];
+
+var FAQ = [
+  {q:{zh:'下载密码 / 提取码是什么？',en:'What is the download password?'}, a:{zh:'所有免费版本（1.0.0 ~ 1.0.2）的蓝奏云提取码为 <code>1234</code>。',en:'The Lanzou Cloud password for all free versions (1.0.0–1.0.2) is <code>1234</code>.'}},
+  {q:{zh:'支持哪些系统？',en:'Which platforms are supported?'}, a:{zh:'Windows x64（.exe 安装程序 / MSI 安装包）与 Android（.apk）。暂无 macOS / Linux。',en:'Windows x64 (.exe installer / MSI) and Android (.apk). No macOS/Linux yet.'}},
+  {q:{zh:'游戏收费吗？',en:'Is the game free?'}, a:{zh:'1.0.0 ~ 1.0.2 免费；1.0.3 为付费版，售价 <b>1 美元</b>，请联系作者（QQ 539805443）购买。',en:'1.0.0–1.0.2 are free; 1.0.3 is paid at <b>$1</b>. Contact the author (QQ 539805443) to purchase.'}},
+  {q:{zh:'怎么赚更多钱？',en:'How do I earn more?'}, a:{zh:'在温度安全的前提下逐步拉出控制棒提高功率，升级冷却效率、保持电网频率匹配、买第 5 台水泵，稳定运行越久赚得越多。',en:'Pull the rods out step by step to raise power while staying under 1500°C; upgrade cooling, match grid frequency, buy the 5th pump. The longer you run stable, the more you earn.'}},
+  {q:{zh:'为什么会突然爆炸？',en:'Why does it suddenly explode?'}, a:{zh:'核心温度超过 1500°C 会触发熔毁。温度过高时立刻插深控制棒、泄压或注入硼酸，必要时紧急停堆。',en:'Exceeding 1500°C triggers a meltdown. When it gets hot, insert rods, vent pressure or inject boric acid; hit SCRAM if needed.'}},
+  {q:{zh:'存档保存在哪里？',en:'Where are saves stored?'}, a:{zh:'通过「💾 存档」保存为 <code>.fyd</code> 文件，「📂 读档」选择 .fyd 恢复进度。',en:'Use "💾 Save" to write a <code>.fyd</code> file, and "📂 Load" to pick a .fyd and restore progress.'}},
+  {q:{zh:'为什么 1.0.3 叫「暗黑科技风」？',en:'Why is 1.0.3 called "Dark-Tech"?'}, a:{zh:'1.0.3 把界面整体重做为暗黑科技风：矩阵绿/警示红/工业黄配色、网格背景、扫描线与故障动画。',en:'1.0.3 rebuilt the UI into a dark-tech style: matrix-green/alert-red/industrial-yellow palette, grid backdrop, scanlines and glitch effects.'}}
+];
+
+function t(key){ return (I18N[lang] && I18N[lang][key]) || key; }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function applyStatic(){
+  var els = document.querySelectorAll('[data-i18n]');
+  for(var i=0;i<els.length;i++){
+    var k = els[i].getAttribute('data-i18n');
+    els[i].textContent = t(k);
+  }
+  document.documentElement.lang = lang==='zh'?'zh-CN':'en';
+  document.getElementById('langBtn').textContent = lang==='zh' ? 'EN' : '中文';
+}
+
+function renderVersions(){
+  var box = document.getElementById('verGrid');
+  var html = '';
+  for(var i=0;i<VERSIONS.length;i++){
+    var v = VERSIONS[i];
+    var tag = v.paid
+      ? '<span class="ver-tag paid">'+(lang==='zh'?'付费 $1':'PAID $1')+'</span>'
+      : (v.latest ? '<span class="ver-tag latest">'+(lang==='zh'?'最新':'LATEST')+'</span>'
+        : '<span class="ver-tag old">'+(lang==='zh'?'历史版本':'LEGACY')+'</span>');
+    var body;
+    if(v.paid){
+      var rows = '';
+      for(var c=0;c<v.contact.length;c++){
+        var ct = v.contact[c];
+        var val = ct.href ? '<a href="'+ct.href+'" target="_blank" rel="noopener">'+esc(ct.val)+'</a>' : esc(ct.val);
+        rows += '<div class="contact-row"><span class="lab">'+esc(ct.lab)+'</span><span class="val">'+val+'</span></div>';
+      }
+      body = '<div class="price-badge">💰 '+t('dl.price')+' '+esc(v.price)+' · '+t('dl.buy')+'</div>'
+           + '<div class="contact-box">'+rows+'</div>';
+    } else {
+      body = '<div class="dl-list"><a class="dl-btn" href="'+v.url+'" target="_blank" rel="noopener"><span>'+t('dl.download')+'</span><span class="sz">1234</span></a></div>';
+    }
+    html += '<div class="ver-card'+(v.latest?' latest':'')+(v.paid?' paid':'')+'">'
+      + '<div class="ver-top"><span class="ver-num">'+esc(v.id)+'</span>'+tag+'</div>'
+      + '<div class="ver-name">'+esc(v.name[lang])+'</div>'
+      + '<div class="ver-desc">'+esc(v.desc[lang])+'</div>'
+      + '<div class="ver-plats">'+esc(v.plats[lang])+'</div>'
+      + body + '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function renderLog(){
+  var box = document.getElementById('logList');
+  var html = '';
+  for(var i=0;i<CHANGELOG.length;i++){
+    var c = CHANGELOG[i];
+    html += '<div class="log-item"><div class="log-ver">v'+esc(c.v)+'</div>'
+      + '<div class="log-body"><h3>'+esc(c.name[lang])+'</h3><p>'+esc(c.p[lang])+'</p></div></div>';
+  }
+  box.innerHTML = html;
+}
+
+function renderGuide(){
+  var g = GUIDE[lang];
+  document.getElementById('guideWin').innerHTML = g.win.map(function(x){return '<li>'+x+'</li>';}).join('');
+  document.getElementById('guideAnd').innerHTML = g.and.map(function(x){return '<li>'+x+'</li>';}).join('');
+  document.getElementById('guidePlay').innerHTML = g.play.map(function(x){return '<li>'+x+'</li>';}).join('');
+  var hk = '';
+  for(var i=0;i<HOTKEYS.length;i++){
+    hk += '<div class="hk"><span class="k">'+esc(HOTKEYS[i].k)+'</span><span>'+esc(HOTKEYS[i].d[lang])+'</span></div>';
+  }
+  document.getElementById('hkList').innerHTML = hk;
+}
+
+function renderFaq(){
+  var box = document.getElementById('faqList');
+  var html = '';
+  for(var i=0;i<FAQ.length;i++){
+    html += '<div class="faq-item"><button class="faq-q"><span>'+esc(FAQ[i].q[lang])+'</span><span class="plus">+</span></button>'
+      + '<div class="faq-a"><p>'+FAQ[i].a[lang]+'</p></div></div>';
+  }
+  box.innerHTML = html;
+  var items = box.querySelectorAll('.faq-item');
+  for(var j=0;j<items.length;j++){
+    (function(item){
+      item.querySelector('.faq-q').addEventListener('click', function(){
+        var open = item.classList.contains('open');
+        var all = box.querySelectorAll('.faq-item');
+        for(var k=0;k<all.length;k++) all[k].classList.remove('open');
+        if(!open) item.classList.add('open');
+      });
+    })(items[j]);
+  }
+}
+
+function render(){ applyStatic(); renderVersions(); renderLog(); renderGuide(); renderFaq(); }
+
+document.getElementById('langBtn').addEventListener('click', function(){
+  lang = lang==='zh' ? 'en' : 'zh';
+  localStorage.setItem('rr-lang', lang);
+  render();
+});
+
+render();
+})();
+</script>
+</body>
+</html>
